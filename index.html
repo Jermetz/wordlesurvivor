@@ -25,8 +25,8 @@
 
         body {
             background-color: var(--bg-color);
-            /* Ensure you have the bg-pattern.jpg in your folder for this to work */
-            background-image: linear-gradient(rgba(26, 26, 26, 0.85), rgba(26, 26, 26, 0.85)), url('bg-pattern.jpg.png');
+            /* Restored background image with a lighter dimming overlay (0.5 opacity instead of 0.85) */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('bg-pattern.jpg');
             background-repeat: repeat;
             background-size: 200px; 
             background-attachment: fixed;
@@ -38,6 +38,8 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            /* Allow native pull-to-refresh behavior */
+            overscroll-behavior-y: contain; 
         }
 
         header {
@@ -97,19 +99,47 @@
             margin-right: 15px; 
             color: var(--accent); 
             width: 35px;
+            text-align: center;
             text-shadow: var(--text-shadow);
         }
+        
         .name { 
             flex-grow: 1; 
             font-size: 1.3rem; /* Significantly larger name font */
             text-shadow: var(--text-shadow);
             letter-spacing: 0.5px;
         }
+
+        /* NEW RECENT CHANGE COLUMN STYLES */
+        .change-container {
+            text-align: right;
+            margin-right: 15px;
+            min-width: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .change-label {
+            font-size: 0.65rem;
+            color: #666;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .change-positive { color: #2e7d32; font-weight: 900; font-size: 1.1rem; text-shadow: var(--text-shadow); }
+        .change-negative { color: #d32f2f; font-weight: 900; font-size: 1.1rem; text-shadow: var(--text-shadow); }
+        .change-neutral { color: #666; font-weight: bold; font-size: 1.1rem; }
+
         .score { 
             font-size: 1.6rem; /* Large, clear scores */
             font-weight: 900;
             text-shadow: var(--text-shadow);
             color: var(--accent);
+            min-width: 45px;
+            text-align: right;
         }
 
         .extinguished {
@@ -139,7 +169,7 @@
             max-width: 450px;
         }
 
-        .action-btn, #refresh-btn, #bigr-btn {
+        .action-btn, #bigr-btn {
             flex: 1;
             background: var(--card-bg); /* Parchment background for buttons */
             border: 3px solid var(--accent); /* Thicker, high contrast border */
@@ -154,7 +184,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         
-        #refresh-btn, #bigr-btn {
+        #bigr-btn {
              margin-top: 20px;
              width: 100%;
              max-width: 450px;
@@ -247,7 +277,6 @@
     <button id="rules-btn" class="action-btn">VIEW RULES</button>
     <button id="stakes-btn" class="action-btn">VIEW DAILY STAKES</button>
 </div>
-<button id="refresh-btn" onclick="location.reload()">REFRESH TRIBE</button>
 <button id="bigr-btn">BIG R</button>
 
 <div id="rulesModal" class="modal">
@@ -309,7 +338,7 @@
     <span class="close" onclick="closeModal('bigrModal')">&times;</span>
     <div class="modal-header">Ultimate Survivor</div>
     <div class="modal-body" style="text-align: center; margin-top: 15px;">
-        <img src="bigr.jpg" alt="Big R Ultimate Survivor" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
+        <img src="bigr.png" alt="Big R Ultimate Survivor" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
     </div>
   </div>
 </div>
@@ -325,12 +354,20 @@
             const rows = data.split('\n').slice(1); // Skip header row
 
             const players = rows.map(row => {
-                const [name, score] = row.split(',');
-                return { name, score: parseInt(score) || 0 };
+                // Now extracting 3 columns: Name, Score, Change
+                const [name, score, change] = row.split(',');
+                return { 
+                    name: name ? name.trim() : '', 
+                    score: parseInt(score) || 0,
+                    change: parseInt(change) || 0
+                };
             }).sort((a, b) => b.score - a.score);
 
             const container = document.getElementById('leaderboard');
             container.innerHTML = '';
+            
+            // Check if everyone is still at the starting score of 50
+            const allUnranked = players.every(p => p.score === 50);
 
             players.forEach((player, index) => {
                 if(!player.name) return;
@@ -340,12 +377,30 @@
                 
                 // Example: If score is below 40, they are "Extinguished"
                 if (player.score < 40) card.classList.add('extinguished');
+                
+                // Determine rank display: show "-" if game hasn't started changing yet
+                const rankDisplay = allUnranked ? '-' : `#${index + 1}`;
+
+                // Determine change column styling
+                let changeDisplay = '-';
+                let changeClass = 'change-neutral';
+                if (player.change > 0) {
+                    changeDisplay = `+${player.change}`;
+                    changeClass = 'change-positive';
+                } else if (player.change < 0) {
+                    changeDisplay = `${player.change}`;
+                    changeClass = 'change-negative';
+                }
 
                 card.innerHTML = `
-                    <div class="rank">#${index + 1}</div>
+                    <div class="rank">${rankDisplay}</div>
                     <div class="name">
                         ${player.name}
                         ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
+                    </div>
+                    <div class="change-container">
+                        <span class="change-label">Change</span>
+                        <span class="${changeClass}">${changeDisplay}</span>
                     </div>
                     <div class="score">${player.score}</div>
                 `;
