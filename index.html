@@ -619,7 +619,7 @@
                 }
 
                 // Generate Idol String
-                const idolString = player.idols > 0 ? '🗿'.repeat(player.idols) : '';
+                const idolString = player.idols > 0 ? '📿'.repeat(player.idols) : '';
 
                 card.innerHTML = `
                     <div class="card-main">
@@ -636,14 +636,14 @@
                         <div class="score">${player.score}</div>
                     </div>
                     <div class="history-drawer">
-                        <div class="history-title"><strong>Voting History</strong></div>
+                        <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
                             <div class="history-day">
-                                <span class="history-label">DAY -3</span>
+                                <span class="history-label">3 DAYS AGO</span>
                                 <span class="history-value">${player.hist3}</span>
                             </div>
                             <div class="history-day">
-                                <span class="history-label">DAY -2</span>
+                                <span class="history-label">2 DAYS AGO</span>
                                 <span class="history-value">${player.hist2}</span>
                             </div>
                             <div class="history-day">
