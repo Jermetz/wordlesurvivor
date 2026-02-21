@@ -81,11 +81,47 @@
             width: 100%;
             max-width: 450px;
             border-radius: 8px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             font-size: 1.1rem;
             letter-spacing: 1px;
             border: 2px solid #fff;
+        }
+
+        /* NEW BEST WORDLE BANNER STYLES */
+        #best-wordle-banner {
+            display: none; /* Hidden by default until we check the sheet */
+            background: var(--card-bg);
+            border: 3px dashed var(--accent);
+            color: var(--text);
+            padding: 15px;
+            text-align: center;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        #best-wordle-banner.visible {
+            display: block; /* Shown if there is text in the sheet */
+        }
+
+        .banner-title {
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            font-weight: 900;
+            text-decoration: underline;
+        }
+
+        .banner-content {
+            font-size: 1.1rem;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-weight: bold;
+            font-style: italic;
         }
 
         #leaderboard {
@@ -372,6 +408,11 @@
 
 <div id="countdown-timer">CALCULATING NEXT TRIBAL...</div>
 
+<div id="best-wordle-banner">
+    <div class="banner-title">🌟 Best Wordle of the Week 🌟</div>
+    <div class="banner-content" id="best-wordle-text"></div>
+</div>
+
 <div id="leaderboard">
     <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
 </div>
@@ -496,7 +537,26 @@
         try {
             const response = await fetch(SHEET_URL);
             const data = await response.text();
-            const rows = data.split('\n').slice(1); // Skip header row
+            
+            // We split into all rows to check the header row first
+            const allRows = data.split('\n');
+            const headerRow = allRows[0].split(',');
+            
+            // --- NEW: BEST WORDLE BANNER LOGIC ---
+            // Check the 8th column (index 7) of the very first row for banner text
+            const bannerText = headerRow[7] ? headerRow[7].trim() : '';
+            const bannerContainer = document.getElementById('best-wordle-banner');
+            const bannerTextEl = document.getElementById('best-wordle-text');
+            
+            if (bannerText && bannerText.length > 0) {
+                bannerTextEl.innerText = bannerText;
+                bannerContainer.classList.add('visible');
+            } else {
+                bannerContainer.classList.remove('visible');
+            }
+            // --------------------------------------
+
+            const rows = allRows.slice(1); // Skip header row for player data
 
             const players = rows.map(row => {
                 // EXTREMELY IMPORTANT: Your CSV must now have exactly 7 columns for these features to work:
