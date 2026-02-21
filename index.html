@@ -391,6 +391,9 @@
             // Check if everyone is still at the starting score of 50
             const allUnranked = players.every(p => p.score === 50);
 
+            let currentRank = 1;
+            let previousScore = null;
+
             players.forEach((player, index) => {
                 if(!player.name) return;
                 
@@ -400,8 +403,14 @@
                 // Example: If score is below 40, they are "Extinguished"
                 if (player.score < 40) card.classList.add('extinguished');
                 
+                // Update rank based on tie logic (Dense Ranking)
+                if (previousScore !== null && player.score < previousScore) {
+                    currentRank++;
+                }
+                previousScore = player.score;
+
                 // Determine rank display: show "-" if game hasn't started changing yet
-                const rankDisplay = allUnranked ? '-' : `#${index + 1}`;
+                const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
 
                 // Determine change column styling
                 let changeDisplay = '-';
@@ -454,9 +463,4 @@
     window.onclick = function(event) {
         if (event.target == rulesModal) { rulesModal.style.display = "none"; }
         if (event.target == stakesModal) { stakesModal.style.display = "none"; }
-        if (event.target == bigrModal) { bigrModal.style.display = "none"; }
-    }
-</script>
-
-</body>
-</html>
+        if (event.target == bigrModal) { bigrModal
