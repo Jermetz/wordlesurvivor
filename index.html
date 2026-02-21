@@ -21,6 +21,7 @@
             --text: #2b1d0e; /* NEW: Deep dark brown (almost black) for main text */
             --text-shadow: 1px 1px 1px rgba(0,0,0,0.2); /* NEW: Subtle rugged shadow */
             --low-score: #eb4034;
+            --leaf-green: #2e7d32; /* New green for the banner border */
         }
 
         body {
@@ -42,11 +43,10 @@
             overscroll-behavior-y: contain; 
         }
 
-        /* --- NEW FIRE BACKGROUND EFFECTS --- */
+        /* --- FIRE BACKGROUND EFFECTS --- */
         .fire-glow {
             position: fixed;
             bottom: 0; left: 0; width: 100%; height: 55%;
-            /* UPDATED GRADIENT: HOTTER ORANGE, MORE OPAQUE AT BOTTOM */
             background: radial-gradient(circle at 50% 110%, rgba(255, 140, 0, 0.6) 0%, rgba(217, 81, 0, 0.4) 30%, transparent 70%);
             pointer-events: none;
             z-index: -2;
@@ -80,32 +80,30 @@
         }
         /* ----------------------------------- */
 
+        /* UPDATED HEADER STYLES FOR IMAGE BANNER */
         header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
+            padding-top: 10px;
+            width: 100%;
             display: flex;
-            align-items: center;
             justify-content: center;
         }
 
-        .palm-tree {
-            font-size: 3rem; /* Larger icons */
-            margin: 0 10px;
-            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+        .banner-image {
+            max-width: 90%; /* Ensure it doesn't touch the edges on small screens */
+            width: 380px; /* Ideal width for desktop/tablets so the square isn't too huge */
+            height: auto; /* Maintain square aspect ratio */
+            border-radius: 12px; /* Soften the corners */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7); /* Deep shadow to make it pop off the leaves */
+            border: 3px solid var(--card-border); /* Rugged border to match the theme */
         }
 
-        h1 { 
-            font-size: 1.8rem; /* Larger header */
-            color: var(--accent); 
-            margin: 0; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* Stronger shadow for title so it pops off dark bg */
-        }
+        /* General paragraph style (used in modals) */
         p { 
-            font-size: 1rem; /* Larger subtext */
+            font-size: 1rem;
             margin: 5px 0; 
-            color: #cccccc; /* Lighter gray for header subtext against dark bg */
+            color: var(--text);
             font-weight: bold;
         }
 
@@ -429,6 +427,7 @@
             color: var(--text);
             font-size: 1.1rem; /* Larger body text */
             line-height: 1.5; /* More space between lines for readability */
+            color: var(--text); /* Ensure text is dark */
         }
 
     </style>
@@ -438,12 +437,7 @@
 <div class="fire-glow"></div>
 
 <header>
-    <span class="palm-tree">🌴</span>
-    <div>
-        <h1>WORDLE: EDGE OF EXTINCTION</h1>
-        <p>Current Rankings</p>
-    </div>
-    <span class="palm-tree">🌴</span>
+    <img src="image_27.png" alt="Survivor Wordle: Edge of Extinction Logo" class="banner-image">
 </header>
 
 <div id="countdown-timer">CALCULATING NEXT TRIBAL...</div>
