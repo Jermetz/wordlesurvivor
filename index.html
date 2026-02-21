@@ -195,30 +195,6 @@
             color: var(--text);
             font-size: 1rem;
         }
-        
-        /* Daily Stakes Table */
-        .stakes-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-        .stakes-table th, .stakes-table td {
-            border: 1px solid #555;
-            padding: 8px;
-            text-align: left;
-        }
-        .stakes-table th {
-            background-color: #444;
-            color: var(--accent);
-        }
-        .stakes-row-1 { background-color: #8B4513; } /* Legacy */
-        .stakes-row-2 { background-color: #A0522D; } /* Idol */
-        .stakes-row-3 { background-color: #556B2F; } /* Reward */
-        .stakes-row-4 { background-color: #6B8E23; } /* Shelter */
-        .stakes-row-5 { background-color: #CD853F; } /* Vote */
-        .stakes-row-6 { background-color: #D2691E; } /* Danger */
-        .stakes-row-x { background-color: #B22222; } /* Tribal */
 
     </style>
 </head>
@@ -291,47 +267,8 @@
 <div id="stakesModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('stakesModal')">&times;</span>
-    <div class="modal-header">THE DAILY STAKES</div>
-    <div class="modal-body">
-        <table class="stakes-table">
-            <thead>
-                <tr>
-                    <th>GUESS</th>
-                    <th>REWARD / PENALTY</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="stakes-row-1">
-                    <td>1/6 👑</td>
-                    <td>LEGACY ADVANTAGE: +3 Points (2 Idols)</td>
-                </tr>
-                <tr class="stakes-row-2">
-                    <td>2/6 🏆</td>
-                    <td>HIDDEN IMMUNITY IDOL: +2 Points (1 idol)</td>
-                </tr>
-                <tr class="stakes-row-3">
-                    <td>3/6 🛡️</td>
-                    <td>REWARD CHALLENGE: +1 Point</td>
-                </tr>
-                <tr class="stakes-row-4">
-                    <td>4/6 🪷</td>
-                    <td>THE SHELTER: 0 Points</td>
-                </tr>
-                <tr class="stakes-row-5">
-                    <td>5/6 ⛔</td>
-                    <td>VOTE AGAINST YOU: -1 Point</td>
-                </tr>
-                <tr class="stakes-row-6">
-                    <td>6/6 ⛔</td>
-                    <td>DANGER ZONE: 🔥 -2 Points</td>
-                </tr>
-                <tr class="stakes-row-x">
-                    <td>X/6 🔥</td>
-                    <td>TRIBAL COUNCIL: -3 Points</td>
-                </tr>
-            </tbody>
-        </table>
-        <p style="text-align:center; margin-top: 10px;"><strong>✅ SURVIVOR WEDNESDAYS: ALL POINTS DOUBLED</strong></p>
+    <div class="modal-body" style="text-align: center; margin-top: 15px;">
+        <img src="dailystakes.jpg" alt="The Daily Stakes" style="max-width: 100%; height: auto; border-radius: 8px;">
     </div>
   </div>
 </div>
