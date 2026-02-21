@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Survivor Scoreboard</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --accent: #ffae00; /* Survivor Orange */
+            --text: #ffffff;
+            --low-score: #eb4034;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            font-family: 'Arial Black', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 { font-size: 1.5rem; color: var(--accent); margin: 0; text-transform: uppercase; }
+        p { font-size: 0.8rem; margin: 5px 0; color: #888; }
+
+        #leaderboard {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .player-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--accent);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .rank { font-size: 1.2rem; margin-right: 15px; color: var(--accent); width: 30px; }
+        .name { flex-grow: 1; font-size: 1.1rem; }
+        .score { font-size: 1.3rem; font-weight: bold; }
+
+        .extinguished {
+            opacity: 0.5;
+            border-left: 5px solid #555;
+            filter: grayscale(1);
+        }
+
+        .legacy-tag {
+            font-size: 0.6rem;
+            background: gold;
+            color: black;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        #refresh-btn {
+            margin-top: 30px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>EDGE OF EXTINCTION</h1>
+    <p>Current Rankings</p>
+</header>
+
+<div id="leaderboard">
+    <p style="text-align:center">Gathering the tribe...</p>
+</div>
+
+<button id="refresh-btn" onclick="location.reload()">REFRESH TRIBE</button>
+
+<script>
+    // PASTE YOUR GOOGLE SHEET CSV URL HERE
+    const SHEET_URL = 'YOUR_GOOGLE_SHEET_CSV_URL_HERE';
+
+    async function loadScores() {
+        try {
+            const response = await fetch(SHEET_URL);
+            const data = await response.text();
+            const rows = data.split('\n').slice(1); // Skip header row
+
+            const players = rows.map(row => {
+                const [name, score] = row.split(',');
+                return { name, score: parseInt(score) || 0 };
+            }).sort((a, b) => b.score - a.score);
+
+            const container = document.getElementById('leaderboard');
+            container.innerHTML = '';
+
+            players.forEach((player, index) => {
+                if(!player.name) return;
+                
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                
+                // Example: If score is below 40, they are "Extinguished"
+                if (player.score < 40) card.classList.add('extinguished');
+
+                card.innerHTML = `
+                    <div class="rank">#${index + 1}</div>
+                    <div class="name">
+                        ${player.name}
+                        ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
+                    </div>
+                    <div class="score">${player.score}</div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (e) {
+            document.getElementById('leaderboard').innerHTML = '<p>The tribe has spoken (Error loading data).</p>';
+        }
+    }
+
+    loadScores();
+</script>
+
+</body>
+</html>
