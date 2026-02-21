@@ -42,6 +42,43 @@
             overscroll-behavior-y: contain; 
         }
 
+        /* --- NEW FIRE BACKGROUND EFFECTS --- */
+        .fire-glow {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%; height: 50%;
+            background: radial-gradient(circle at 50% 120%, rgba(217, 81, 0, 0.35), transparent 70%);
+            pointer-events: none;
+            z-index: -2;
+            animation: flicker 4s infinite alternate;
+        }
+        
+        .ember {
+            position: fixed;
+            bottom: -20px;
+            background: #ff7300;
+            border-radius: 50%;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: -1;
+            animation: floatUp linear infinite;
+            box-shadow: 0 0 8px #ff7300, 0 0 15px #ff2a00;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.7; transform: scale(1); }
+            25% { opacity: 1; transform: scale(1.05); }
+            50% { opacity: 0.8; transform: scale(1); }
+            75% { opacity: 0.95; transform: scale(1.02); }
+            100% { opacity: 0.85; transform: scale(1); }
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1) translateX(0); opacity: 1; }
+            50% { transform: translateY(-50vh) scale(0.8) translateX(20px); opacity: 0.8; }
+            100% { transform: translateY(-100vh) scale(0) translateX(-20px); opacity: 0; }
+        }
+        /* ----------------------------------- */
+
         header {
             text-align: center;
             margin-bottom: 15px;
@@ -397,6 +434,8 @@
 </head>
 <body>
 
+<div class="fire-glow"></div>
+
 <header>
     <span class="palm-tree">🌴</span>
     <div>
@@ -639,16 +678,16 @@
                         <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
                             <div class="history-day">
-                                <span class="history-label">3 DAYS AGO</span>
-                                <span class="history-value">${player.hist3}</span>
+                                <span class="history-label">YESTERDAY</span>
+                                <span class="history-value">${player.hist1}</span>
                             </div>
                             <div class="history-day">
                                 <span class="history-label">2 DAYS AGO</span>
                                 <span class="history-value">${player.hist2}</span>
                             </div>
                             <div class="history-day">
-                                <span class="history-label">YESTERDAY</span>
-                                <span class="history-value">${player.hist1}</span>
+                                <span class="history-label">3 DAYS AGO</span>
+                                <span class="history-value">${player.hist3}</span>
                             </div>
                         </div>
                     </div>
@@ -689,6 +728,28 @@
         if (event.target == stakesModal) { stakesModal.style.display = "none"; }
         if (event.target == bigrModal) { bigrModal.style.display = "none"; }
     }
+
+    // --- NEW: FIRE EMBERS EFFECT ---
+    function createEmbers() {
+        const body = document.body;
+        for(let i = 0; i < 35; i++) {
+            let ember = document.createElement('div');
+            ember.className = 'ember';
+            // Randomize starting horizontal position
+            ember.style.left = Math.random() * 100 + 'vw';
+            // Randomize speed and delay so they don't all float up at once
+            ember.style.animationDuration = (Math.random() * 4 + 3) + 's'; 
+            ember.style.animationDelay = Math.random() * 5 + 's';
+            // Randomize ember size
+            let size = Math.random() * 6 + 2; 
+            ember.style.width = size + 'px';
+            ember.style.height = size + 'px';
+            body.appendChild(ember);
+        }
+    }
+    createEmbers();
+    // --------------------------------
+
 </script>
 </body>
 </html>
