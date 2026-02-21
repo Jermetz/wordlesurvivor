@@ -45,8 +45,9 @@
         /* --- NEW FIRE BACKGROUND EFFECTS --- */
         .fire-glow {
             position: fixed;
-            bottom: 0; left: 0; width: 100%; height: 50%;
-            background: radial-gradient(circle at 50% 120%, rgba(217, 81, 0, 0.35), transparent 70%);
+            bottom: 0; left: 0; width: 100%; height: 55%;
+            /* UPDATED GRADIENT: HOTTER ORANGE, MORE OPAQUE AT BOTTOM */
+            background: radial-gradient(circle at 50% 110%, rgba(255, 140, 0, 0.6) 0%, rgba(217, 81, 0, 0.4) 30%, transparent 70%);
             pointer-events: none;
             z-index: -2;
             animation: flicker 4s infinite alternate;
@@ -65,11 +66,11 @@
         }
 
         @keyframes flicker {
-            0% { opacity: 0.7; transform: scale(1); }
-            25% { opacity: 1; transform: scale(1.05); }
-            50% { opacity: 0.8; transform: scale(1); }
-            75% { opacity: 0.95; transform: scale(1.02); }
-            100% { opacity: 0.85; transform: scale(1); }
+            0% { opacity: 0.8; transform: scale(1); }
+            25% { opacity: 1; transform: scale(1.02); }
+            50% { opacity: 0.9; transform: scale(1); }
+            75% { opacity: 1; transform: scale(1.01); }
+            100% { opacity: 0.9; transform: scale(1); }
         }
 
         @keyframes floatUp {
@@ -732,16 +733,16 @@
     // --- NEW: FIRE EMBERS EFFECT ---
     function createEmbers() {
         const body = document.body;
-        for(let i = 0; i < 35; i++) {
+        // INCREASED COUNT FROM 35 TO 80
+        for(let i = 0; i < 80; i++) {
             let ember = document.createElement('div');
             ember.className = 'ember';
-            // Randomize starting horizontal position
             ember.style.left = Math.random() * 100 + 'vw';
-            // Randomize speed and delay so they don't all float up at once
-            ember.style.animationDuration = (Math.random() * 4 + 3) + 's'; 
-            ember.style.animationDelay = Math.random() * 5 + 's';
-            // Randomize ember size
-            let size = Math.random() * 6 + 2; 
+            // WIDER SPEED RANGE: Now 2s (fast) to 8s (slow)
+            ember.style.animationDuration = (Math.random() * 6 + 2) + 's'; 
+            ember.style.animationDelay = Math.random() * 10 + 's';
+            // Slight tweak to size for more variance
+            let size = Math.random() * 7 + 1; 
             ember.style.width = size + 'px';
             ember.style.height = size + 'px';
             body.appendChild(ember);
