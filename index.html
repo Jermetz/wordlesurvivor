@@ -25,11 +25,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
 
         header {
             text-align: center;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .palm-tree {
+            font-size: 2.5rem;
+            margin: 0 10px;
         }
 
         h1 { font-size: 1.5rem; color: var(--accent); margin: 0; text-transform: uppercase; }
@@ -41,6 +50,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            flex-grow: 1;
         }
 
         .player-card {
@@ -74,6 +84,27 @@
             vertical-align: middle;
         }
 
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-family: 'Arial Black', sans-serif;
+            text-transform: uppercase;
+        }
+
         #refresh-btn {
             margin-top: 30px;
             background: transparent;
@@ -82,25 +113,220 @@
             padding: 10px 20px;
             border-radius: 20px;
             font-size: 0.8rem;
+            cursor: pointer;
+            font-family: 'Arial Black', sans-serif;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 5% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid var(--accent);
+            width: 90%; /* Could be more or less, depending on screen size */
+            max-width: 500px;
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-weight: normal;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: var(--accent);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            font-family: 'Arial Black', sans-serif;
+            color: var(--accent);
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .modal-body h3 {
+            color: var(--accent);
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .modal-body ul {
+            padding-left: 20px;
+        }
+
+        .modal-body li {
+            margin-bottom: 5px;
+        }
+        
+        /* Daily Stakes Table */
+        .stakes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        .stakes-table th, .stakes-table td {
+            border: 1px solid #555;
+            padding: 8px;
+            text-align: left;
+        }
+        .stakes-table th {
+            background-color: #444;
+            color: var(--accent);
+        }
+        .stakes-row-1 { background-color: #8B4513; } /* Legacy */
+        .stakes-row-2 { background-color: #A0522D; } /* Idol */
+        .stakes-row-3 { background-color: #556B2F; } /* Reward */
+        .stakes-row-4 { background-color: #6B8E23; } /* Shelter */
+        .stakes-row-5 { background-color: #CD853F; } /* Vote */
+        .stakes-row-6 { background-color: #D2691E; } /* Danger */
+        .stakes-row-x { background-color: #B22222; } /* Tribal */
+
     </style>
 </head>
 <body>
 
 <header>
-    <h1>EDGE OF EXTINCTION</h1>
-    <p>Current Rankings</p>
+    <span class="palm-tree">🌴</span>
+    <div>
+        <h1>WORDLE: EDGE OF EXTINCTION</h1>
+        <p>Current Rankings</p>
+    </div>
+    <span class="palm-tree">🌴</span>
 </header>
 
 <div id="leaderboard">
     <p style="text-align:center">Gathering the tribe...</p>
 </div>
 
+<div class="button-container">
+    <button id="rules-btn" class="action-btn">VIEW RULES</button>
+    <button id="stakes-btn" class="action-btn">VIEW DAILY STAKES</button>
+</div>
 <button id="refresh-btn" onclick="location.reload()">REFRESH TRIBE</button>
+
+<div id="rulesModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('rulesModal')">&times;</span>
+    <div class="modal-header">ATTENTION CASTAWAYS!</div>
+    <div class="modal-body">
+        <p>In honor of Survivor Season 50, we are officially kicking off: <strong>WORDLE: EDGE OF EXTINCTION</strong>.</p>
+        <p>You just play Wordle daily per usual but now there’s running points, pride and survivor themed stakes involved :)</p>
+        <p><strong>WE START:</strong> The 1st day of Survivor 50: Wed. Feb. 25th. (The season is approx 14 weeks long)</p>
+        <p>I’ll be your “Jeff Probst”, come on in survivors!</p>
+
+        <h3>THE SETUP</h3>
+        <p>Everyone starts with 50 Life Points. The "Sole Wordler" is whoever has the most points remaining after the Survivor 50 Finale night.</p>
+        <p>I will keep track of all points and post a weekly update (Tree Mail) by Wednesday morning.</p>
+        
+        <h3>HARD MODE BONUS</h3>
+        <p>Hard Mode (*) players get +1 Point to offset any scoring penalty.</p>
+        <p><em>Note: This only applies to negative scores (it doesn't boost a 4/6 or better).</em></p>
+
+        <h3>THE FINE PRINT</h3>
+        <ul>
+            <li><strong>HONOR SYSTEM:</strong> No cheating. No using free hints or multiple devices. We play fair or your torch gets snuffed.</li>
+            <li><strong>THE DEADLINE:</strong> Post by 11:59 PM ET. Miss a day? -5 Point Penalty (unless you use a Shot in the Dark, or an advantage saves you).</li>
+        </ul>
+
+        <h3>SHOT IN THE DARK</h3>
+        <p>You have the power to erase your 5 worst scores. Reply "Playing my Shot in the Dark!" to wipe a terrible score (or a missed day) from your record.</p>
+
+        <h3>IDOLS & ADVANTAGES</h3>
+        <ul>
+            <li><strong>2/6 (Hidden Immunity Idol):</strong> You immediately score +2 points AND bank an idol. To use it, shout "PLAYING MY IDOL!" on a future bad day. It will negate that day's penalty, bringing your score to a safe 0.</li>
+            <li><strong>1/6 (Legacy Advantage):</strong> Did you guess it on the first try?! You earn +3 points and a Permanent, Automatic Idol. You don't even have to declare it—this advantage permanently sits in your inventory and will automatically deploy to save you from your next fatal penalty (like an X/6 or a missed day).</li>
+            <li><strong>Bank Rule:</strong> You can only hold 2 standard Idols at a time. All standard idols expire 1 week before the finale.</li>
+        </ul>
+
+        <h3>EDGE OF EXTINCTION</h3>
+        <p>Hit 0 Points? You're out. To return to the game, you must score 4/6 or better for 3 days in a row.</p>
+
+        <h3>SURVIVOR WEDNESDAYS</h3>
+        <p>On episode nights, all gains and losses are DOUBLED. Hard mode bonus (+1 pt) still applies to negative scores only.</p>
+        
+        <p style="text-align:center; margin-top: 20px;"><strong>Outwit, Outplay, Outwordle! Who will be the Sole Wordler?</strong></p>
+    </div>
+  </div>
+</div>
+
+<div id="stakesModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('stakesModal')">&times;</span>
+    <div class="modal-header">THE DAILY STAKES</div>
+    <div class="modal-body">
+        <table class="stakes-table">
+            <thead>
+                <tr>
+                    <th>GUESS</th>
+                    <th>REWARD / PENALTY</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="stakes-row-1">
+                    <td>1/6 👑</td>
+                    <td>LEGACY ADVANTAGE: +3 Points (2 Idols)</td>
+                </tr>
+                <tr class="stakes-row-2">
+                    <td>2/6 🏆</td>
+                    <td>HIDDEN IMMUNITY IDOL: +2 Points (1 idol)</td>
+                </tr>
+                <tr class="stakes-row-3">
+                    <td>3/6 🛡️</td>
+                    <td>REWARD CHALLENGE: +1 Point</td>
+                </tr>
+                <tr class="stakes-row-4">
+                    <td>4/6 🪷</td>
+                    <td>THE SHELTER: 0 Points</td>
+                </tr>
+                <tr class="stakes-row-5">
+                    <td>5/6 ⛔</td>
+                    <td>VOTE AGAINST YOU: -1 Point</td>
+                </tr>
+                <tr class="stakes-row-6">
+                    <td>6/6 ⛔</td>
+                    <td>DANGER ZONE: 🔥 -2 Points</td>
+                </tr>
+                <tr class="stakes-row-x">
+                    <td>X/6 🔥</td>
+                    <td>TRIBAL COUNCIL: -3 Points</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="text-align:center; margin-top: 10px;"><strong>✅ SURVIVOR WEDNESDAYS: ALL POINTS DOUBLED</strong></p>
+    </div>
+  </div>
+</div>
 
 <script>
     // PASTE YOUR GOOGLE SHEET CSV URL HERE
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pubhtml';
 
     async function loadScores() {
         try {
@@ -141,6 +367,24 @@
     }
 
     loadScores();
+
+    // Modal Logic
+    const rulesModal = document.getElementById("rulesModal");
+    const stakesModal = document.getElementById("stakesModal");
+    const rulesBtn = document.getElementById("rules-btn");
+    const stakesBtn = document.getElementById("stakes-btn");
+
+    rulesBtn.onclick = function() { rulesModal.style.display = "block"; }
+    stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == rulesModal) { rulesModal.style.display = "none"; }
+        if (event.target == stakesModal) { stakesModal.style.display = "none"; }
+    }
 </script>
 
 </body>
