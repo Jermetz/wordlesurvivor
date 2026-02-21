@@ -13,21 +13,25 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <style>
         :root {
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --accent: #ffae00; /* Survivor Orange */
-            --text: #ffffff;
+            /* Updated Palette for High Contrast Parchment Look */
+            --bg-color: #1a1a1a; /* Keep jungle background dark */
+            --card-bg: #f4e4bc; /* NEW: Light Parchment color */
+            --card-border: #c7b299; /* NEW: Slightly darker border for definition */
+            --accent: #d95100; /* NEW: A deeper, burnt orange for better contrast on light bg */
+            --text: #2b1d0e; /* NEW: Deep dark brown (almost black) for main text */
+            --text-shadow: 1px 1px 1px rgba(0,0,0,0.2); /* NEW: Subtle rugged shadow */
             --low-score: #eb4034;
         }
 
         body {
             background-color: var(--bg-color);
+            /* Ensure you have the bg-pattern.jpg in your folder for this to work */
             background-image: linear-gradient(rgba(26, 26, 26, 0.85), rgba(26, 26, 26, 0.85)), url('bg-pattern.jpg');
             background-repeat: repeat;
-            background-size: 200px; /* Adjust this value to make the pattern larger or smaller */
+            background-size: 200px; 
             background-attachment: fixed;
             color: var(--text);
-            font-family: 'Arial Black', sans-serif;
+            font-family: 'Arial Black', 'Helvetica Neue', sans-serif; /* Added fallback */
             margin: 0;
             padding: 20px;
             display: flex;
@@ -38,135 +42,160 @@
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .palm-tree {
-            font-size: 2.5rem;
+            font-size: 3rem; /* Larger icons */
             margin: 0 10px;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
         }
 
-        h1 { font-size: 1.5rem; color: var(--accent); margin: 0; text-transform: uppercase; }
-        p { font-size: 0.8rem; margin: 5px 0; color: #888; }
+        h1 { 
+            font-size: 1.8rem; /* Larger header */
+            color: var(--accent); 
+            margin: 0; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* Stronger shadow for title so it pops off dark bg */
+        }
+        p { 
+            font-size: 1rem; /* Larger subtext */
+            margin: 5px 0; 
+            color: #cccccc; /* Lighter gray for header subtext against dark bg */
+            font-weight: bold;
+        }
 
         #leaderboard {
             width: 100%;
-            max-width: 400px;
+            max-width: 450px; /* Slightly wider to accommodate larger text */
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px; /* More space between cards */
             flex-grow: 1;
         }
 
+        /* THE NEW PARCHMENT CARD STYLE */
         .player-card {
             background: var(--card-bg);
-            padding: 15px;
-            border-radius: 10px;
+            border: 2px solid var(--card-border); /* Defines the edges clearly */
+            padding: 18px; /* More internal spacing */
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 5px solid var(--accent);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border-left: 8px solid var(--accent); /* Thicker accent bar */
+            box-shadow: 0 6px 10px rgba(0,0,0,0.4); /* Deeper shadow for "pop" */
+            color: var(--text); /* Dark text on light background */
         }
 
-        .rank { font-size: 1.2rem; margin-right: 15px; color: var(--accent); width: 30px; }
-        .name { flex-grow: 1; font-size: 1.1rem; }
-        .score { font-size: 1.3rem; font-weight: bold; }
+        .rank { 
+            font-size: 1.4rem; /* Larger */
+            margin-right: 15px; 
+            color: var(--accent); 
+            width: 35px;
+            text-shadow: var(--text-shadow);
+        }
+        .name { 
+            flex-grow: 1; 
+            font-size: 1.3rem; /* Significantly larger name font */
+            text-shadow: var(--text-shadow);
+            letter-spacing: 0.5px;
+        }
+        .score { 
+            font-size: 1.6rem; /* Large, clear scores */
+            font-weight: 900;
+            text-shadow: var(--text-shadow);
+            color: var(--accent);
+        }
 
         .extinguished {
-            opacity: 0.5;
-            border-left: 5px solid #555;
-            filter: grayscale(1);
+            opacity: 0.7; /* Less transparent so it's still readable */
+            border-left: 8px solid #555;
+            filter: grayscale(0.8);
+            background-color: #dcd0b2; /* Slightly darker/dirtier parchment for eliminated players */
         }
 
         .legacy-tag {
-            font-size: 0.6rem;
-            background: gold;
-            color: black;
-            padding: 2px 5px;
-            border-radius: 3px;
+            font-size: 0.8rem; /* Larger tag */
+            background: var(--accent); /* Use accent color */
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
             margin-left: 10px;
             vertical-align: middle;
+            text-shadow: none;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
         .button-container {
             display: flex;
-            gap: 10px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 35px;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
         }
 
-        .action-btn {
+        .action-btn, #refresh-btn {
             flex: 1;
-            background: transparent;
-            border: 1px solid var(--accent);
+            background: var(--card-bg); /* Parchment background for buttons */
+            border: 3px solid var(--accent); /* Thicker, high contrast border */
             color: var(--accent);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 14px 20px; /* Larger touch targets */
+            border-radius: 25px;
+            font-size: 1.1rem; /* Larger button text */
             cursor: pointer;
             font-family: 'Arial Black', sans-serif;
             text-transform: uppercase;
+            font-weight: 900;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-
+        
         #refresh-btn {
-            margin-top: 30px;
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            font-family: 'Arial Black', sans-serif;
+             margin-top: 20px;
+             width: 100%;
+             max-width: 450px;
         }
 
-        /* Modal Styles */
+        /* Modal Styles Updated for Parchment Theme */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.85); /* Darker background overlay */
             padding-top: 60px;
         }
 
         .modal-content {
-            background-color: var(--card-bg);
-            margin: 5% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid var(--accent);
-            width: 90%; /* Could be more or less, depending on screen size */
-            max-width: 500px;
-            border-radius: 10px;
-            color: var(--text);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--card-bg); /* Parchment modal */
+            margin: 5% auto; 
+            padding: 25px;
+            border: 3px solid var(--accent);
+            width: 90%; 
+            max-width: 550px;
+            border-radius: 12px;
+            color: var(--text); /* Dark text */
+            /* Switched modal font to Arial Black for consistency and ruggedness */
+            font-family: 'Arial Black', sans-serif; 
             font-weight: normal;
             max-height: 80vh;
             overflow-y: auto;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
         .close {
             color: var(--accent);
             float: right;
-            font-size: 28px;
+            font-size: 32px; /* Larger close button */
             font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
         }
 
         .modal-header {
@@ -174,30 +203,27 @@
             color: var(--accent);
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-size: 1.5rem; /* Larger modal headers */
+            text-shadow: var(--text-shadow);
+            text-decoration: underline;
         }
 
         .modal-body h3 {
             color: var(--accent);
-            margin-top: 15px;
-            margin-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+             text-shadow: var(--text-shadow);
         }
 
-        .modal-body ul {
-            padding-left: 20px;
-        }
-
-        .modal-body li {
-            margin-bottom: 5px;
-        }
-
-        /* Update Rules text to be consistently bold, white, and same size */
+        /* Update Rules text for high readability */
         #rulesModal .modal-body p,
         #rulesModal .modal-body li {
             font-weight: bold;
             color: var(--text);
-            font-size: 1rem;
+            font-size: 1.1rem; /* Larger body text */
+            line-height: 1.5; /* More space between lines for readability */
         }
 
     </style>
@@ -214,7 +240,7 @@
 </header>
 
 <div id="leaderboard">
-    <p style="text-align:center">Gathering the tribe...</p>
+    <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
 </div>
 
 <div class="button-container">
@@ -272,7 +298,7 @@
   <div class="modal-content">
     <span class="close" onclick="closeModal('stakesModal')">&times;</span>
     <div class="modal-body" style="text-align: center; margin-top: 15px;">
-        <img src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; height: auto; border-radius: 8px;">
+        <img src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
     </div>
   </div>
 </div>
@@ -315,7 +341,7 @@
                 container.appendChild(card);
             });
         } catch (e) {
-            document.getElementById('leaderboard').innerHTML = '<p>The tribe has spoken (Error loading data).</p>';
+            document.getElementById('leaderboard').innerHTML = '<p style="color:white; font-size:1.2rem;">The tribe has spoken (Error loading data).</p>';
         }
     }
 
