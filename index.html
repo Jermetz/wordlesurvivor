@@ -44,7 +44,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -71,6 +71,23 @@
             font-weight: bold;
         }
 
+        /* NEW COUNTDOWN BANNER STYLES */
+        #countdown-timer {
+            background: var(--accent);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: 900;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            border: 2px solid #fff;
+        }
+
         #leaderboard {
             width: 100%;
             max-width: 450px; /* Slightly wider to accommodate larger text */
@@ -84,14 +101,23 @@
         .player-card {
             background: var(--card-bg);
             border: 2px solid var(--card-border); /* Defines the edges clearly */
-            padding: 18px; /* More internal spacing */
             border-radius: 12px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column; /* Changed to allow drawer stacking */
             border-left: 8px solid var(--accent); /* Thicker accent bar */
             box-shadow: 0 6px 10px rgba(0,0,0,0.4); /* Deeper shadow for "pop" */
             color: var(--text); /* Dark text on light background */
+            cursor: pointer; /* Indicates card is tap-able */
+            transition: all 0.2s ease-in-out;
+            overflow: hidden; /* Keeps drawer contained within border radius */
+        }
+
+        /* Wraps the main card info to preserve original layout */
+        .card-main {
+            padding: 18px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .rank { 
@@ -108,6 +134,16 @@
             font-size: 1.3rem; /* Significantly larger name font */
             text-shadow: var(--text-shadow);
             letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        /* NEW IDOL STYLES */
+        .idols {
+            font-size: 1.2rem;
+            filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3));
         }
 
         /* NEW RECENT CHANGE COLUMN STYLES */
@@ -142,6 +178,52 @@
             text-align: right;
         }
 
+        /* NEW HISTORY DRAWER STYLES */
+        .history-drawer {
+            display: none;
+            background: rgba(0,0,0,0.06);
+            border-top: 2px solid var(--card-border);
+            padding: 15px 18px;
+        }
+
+        .player-card.expanded .history-drawer {
+            display: block; /* Shows drawer when expanded class is added */
+        }
+
+        .history-title {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .history-grid {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .history-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .history-label {
+            font-size: 0.65rem;
+            color: #666;
+            margin-bottom: 5px;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .history-value {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--text);
+        }
+
         .extinguished {
             opacity: 0.7; /* Less transparent so it's still readable */
             border-left: 8px solid #555;
@@ -155,7 +237,6 @@
             color: white;
             padding: 4px 8px;
             border-radius: 4px;
-            margin-left: 10px;
             vertical-align: middle;
             text-shadow: none;
             box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
@@ -289,6 +370,8 @@
     <span class="palm-tree">🌴</span>
 </header>
 
+<div id="countdown-timer">CALCULATING NEXT TRIBAL...</div>
+
 <div id="leaderboard">
     <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
 </div>
@@ -370,6 +453,45 @@
     // PASTE YOUR GOOGLE SHEET CSV URL HERE
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
+    // --- NEW: COUNTDOWN TIMER LOGIC ---
+    function updateCountdown() {
+        const now = new Date();
+        const target = new Date();
+        
+        // Find next Wednesday (0 = Sun, 1 = Mon, ..., 3 = Wed)
+        let daysUntilWed = (3 - now.getDay() + 7) % 7;
+        
+        // If today is Wed but past 8 PM (20:00), aim for next Wed
+        if (daysUntilWed === 0 && now.getHours() >= 20) {
+            daysUntilWed = 7;
+        }
+        
+        target.setDate(now.getDate() + daysUntilWed);
+        target.setHours(20, 0, 0, 0); // 8:00 PM local time
+
+        const diff = target.getTime() - now.getTime();
+        const countdownEl = document.getElementById('countdown-timer');
+        
+        if (countdownEl) {
+            if (diff > 0 && diff < 1000 * 60 * 60 * 2) {
+                 // Within 2 hours of air time
+                 countdownEl.innerText = "TRIBAL COUNCIL: TONIGHT!";
+            } else if (diff > 0) {
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                countdownEl.innerText = `TRIBAL COUNCIL IN: ${d}D ${h}H ${m}M`;
+            } else {
+                countdownEl.innerText = "TRIBAL COUNCIL IS LIVE!";
+            }
+        }
+    }
+    
+    // Start countdown and update every minute
+    updateCountdown();
+    setInterval(updateCountdown, 60000); 
+    // ----------------------------------
+
     async function loadScores() {
         try {
             const response = await fetch(SHEET_URL);
@@ -377,12 +499,17 @@
             const rows = data.split('\n').slice(1); // Skip header row
 
             const players = rows.map(row => {
-                // Now extracting 3 columns: Name, Score, Change
-                const [name, score, change] = row.split(',');
+                // EXTREMELY IMPORTANT: Your CSV must now have exactly 7 columns for these features to work:
+                // Column 1: Name, Column 2: Score, Column 3: Change, Column 4: Idols, Column 5: Yday History, Column 6: Day-2 History, Column 7: Day-3 History
+                const [name, score, change, idols, hist1, hist2, hist3] = row.split(',');
                 return { 
                     name: name ? name.trim() : '', 
                     score: parseInt(score) || 0,
-                    change: parseInt(change) || 0
+                    change: parseInt(change) || 0,
+                    idols: parseInt(idols) || 0,
+                    hist1: hist1 ? hist1.trim() : '-',
+                    hist2: hist2 ? hist2.trim() : '-',
+                    hist3: hist3 ? hist3.trim() : '-'
                 };
             }).sort((a, b) => b.score - a.score);
 
@@ -400,6 +527,11 @@
                 
                 const card = document.createElement('div');
                 card.className = 'player-card';
+                
+                // Add click listener for the expandable drawer
+                card.addEventListener('click', () => {
+                    card.classList.toggle('expanded');
+                });
                 
                 // Example: If score is below 40, they are "Extinguished"
                 if (player.score < 40) card.classList.add('extinguished');
@@ -424,17 +556,40 @@
                     changeClass = 'change-negative';
                 }
 
+                // Generate Idol String
+                const idolString = player.idols > 0 ? '🗿'.repeat(player.idols) : '';
+
                 card.innerHTML = `
-                    <div class="rank">${rankDisplay}</div>
-                    <div class="name">
-                        ${player.name}
-                        ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
+                    <div class="card-main">
+                        <div class="rank">${rankDisplay}</div>
+                        <div class="name">
+                            ${player.name}
+                            ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
+                            <span class="idols">${idolString}</span>
+                        </div>
+                        <div class="change-container">
+                            <span class="change-label">Change</span>
+                            <span class="${changeClass}">${changeDisplay}</span>
+                        </div>
+                        <div class="score">${player.score}</div>
                     </div>
-                    <div class="change-container">
-                        <span class="change-label">Change</span>
-                        <span class="${changeClass}">${changeDisplay}</span>
+                    <div class="history-drawer">
+                        <div class="history-title"><strong>Voting History</strong></div>
+                        <div class="history-grid">
+                            <div class="history-day">
+                                <span class="history-label">DAY -3</span>
+                                <span class="history-value">${player.hist3}</span>
+                            </div>
+                            <div class="history-day">
+                                <span class="history-label">DAY -2</span>
+                                <span class="history-value">${player.hist2}</span>
+                            </div>
+                            <div class="history-day">
+                                <span class="history-label">YESTERDAY</span>
+                                <span class="history-value">${player.hist1}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="score">${player.score}</div>
                 `;
                 container.appendChild(card);
             });
