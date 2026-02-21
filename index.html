@@ -190,6 +190,26 @@
              max-width: 450px;
         }
 
+        /* Button style for the SMS link inside the modal */
+        .text-btn {
+            display: block;
+            background: var(--card-bg);
+            border: 3px solid var(--accent);
+            color: var(--accent);
+            padding: 14px 20px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-family: 'Arial Black', sans-serif;
+            text-transform: uppercase;
+            font-weight: 900;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            margin: 25px auto 10px auto;
+            max-width: 90%;
+        }
+
         /* Modal Styles Updated for Parchment Theme */
         .modal {
             display: none; 
@@ -289,7 +309,7 @@
         <p><strong>WE START:</strong> The 1st day of Survivor 50: Wed. Feb. 25th. (The season is approx 14 weeks long)</p>
         <p>I’ll be your “Jeff Probst”, come on in survivors!</p>
 
-        <h3>THE SETUP</h3>
+        <h3 style="text-align: center; font-size: 1.4rem;">THE SETUP (FINE PRINT)</h3>
         <p>Everyone starts with 50 Life Points. The "Sole Wordler" is whoever has the most points remaining after the Survivor 50 Finale night.</p>
         <p>I will keep track of all points and post a weekly update (Tree Mail) by Wednesday morning.</p>
         
@@ -297,11 +317,11 @@
         <p>Hard Mode (*) players get +1 Point to offset any scoring penalty.</p>
         <p><em>Note: This only applies to negative scores (it doesn't boost a 4/6 or better).</em></p>
 
-        <h3>THE FINE PRINT</h3>
-        <ul>
-            <li><strong>HONOR SYSTEM:</strong> No cheating. No using free hints or multiple devices. We play fair or your torch gets snuffed.</li>
-            <li><strong>THE DEADLINE:</strong> Post by 11:59 PM ET. Miss a day? -5 Point Penalty (unless you use a Shot in the Dark, or an advantage saves you).</li>
-        </ul>
+        <h3>HONOR SYSTEM</h3>
+        <p>No cheating. No using free hints or multiple devices. We play fair or your torch gets snuffed.</p>
+
+        <h3>THE DEADLINE</h3>
+        <p>Post by 11:59 PM ET. Miss a day? -5 Point Penalty (unless you use a Shot in the Dark, or an advantage saves you).</p>
 
         <h3>SHOT IN THE DARK</h3>
         <p>You have the power to erase your 5 worst scores. Reply "Playing my Shot in the Dark!" to wipe a terrible score (or a missed day) from your record.</p>
@@ -320,6 +340,8 @@
         <p>On episode nights, all gains and losses are DOUBLED. Hard mode bonus (+1 pt) still applies to negative scores only.</p>
         
         <p style="text-align:center; margin-top: 20px;"><strong>Outwit, Outplay, Outwordle! Who will be the Sole Wordler?</strong></p>
+
+        <a href="sms:2676002525" class="text-btn">RULE QUESTION? TEXT JEFF PROBST</a>
     </div>
   </div>
 </div>
