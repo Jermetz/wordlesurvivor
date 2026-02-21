@@ -535,7 +535,9 @@
 
     async function loadScores() {
         try {
-            const response = await fetch(SHEET_URL);
+            // CACHE-BUSTER ADDED HERE: Appends a unique timestamp so the browser never uses old data
+            const timestamp = new Date().getTime();
+            const response = await fetch(SHEET_URL + '&nocache=' + timestamp, { cache: 'no-store' });
             const data = await response.text();
             
             // We split into all rows to check the header row first
