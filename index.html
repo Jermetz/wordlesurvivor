@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Survivor Scoreboard</title>
     <link rel="manifest" href="manifest.json">
+    
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <style>
@@ -182,6 +186,14 @@
 
         .modal-body li {
             margin-bottom: 5px;
+        }
+
+        /* Update Rules text to be consistently bold, white, and same size */
+        #rulesModal .modal-body p,
+        #rulesModal .modal-body li {
+            font-weight: bold;
+            color: var(--text);
+            font-size: 1rem;
         }
         
         /* Daily Stakes Table */
