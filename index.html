@@ -169,7 +169,7 @@
             max-width: 450px;
         }
 
-        .action-btn, #bigr-btn {
+        .action-btn, #bigr-btn, #refresh-btn {
             flex: 1;
             background: var(--card-bg); /* Parchment background for buttons */
             border: 3px solid var(--accent); /* Thicker, high contrast border */
@@ -184,7 +184,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         
-        #bigr-btn {
+        #bigr-btn, #refresh-btn {
              margin-top: 20px;
              width: 100%;
              max-width: 450px;
@@ -298,6 +298,7 @@
     <button id="stakes-btn" class="action-btn">VIEW DAILY STAKES</button>
 </div>
 <button id="bigr-btn">BIG R</button>
+<button id="refresh-btn">REFRESH SCORES</button>
 
 <div id="rulesModal" class="modal">
   <div class="modal-content">
@@ -451,10 +452,16 @@
     const rulesBtn = document.getElementById("rules-btn");
     const stakesBtn = document.getElementById("stakes-btn");
     const bigrBtn = document.getElementById("bigr-btn");
+    const refreshBtn = document.getElementById("refresh-btn");
 
     rulesBtn.onclick = function() { rulesModal.style.display = "block"; }
     stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
     bigrBtn.onclick = function() { bigrModal.style.display = "block"; }
+    
+    refreshBtn.onclick = function() { 
+        document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
+        loadScores(); 
+    }
 
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = "none";
@@ -463,4 +470,8 @@
     window.onclick = function(event) {
         if (event.target == rulesModal) { rulesModal.style.display = "none"; }
         if (event.target == stakesModal) { stakesModal.style.display = "none"; }
-        if (event.target == bigrModal) { bigrModal
+        if (event.target == bigrModal) { bigrModal.style.display = "none"; }
+    }
+</script>
+</body>
+</html>
