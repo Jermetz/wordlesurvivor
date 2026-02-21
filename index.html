@@ -516,14 +516,14 @@
         if (countdownEl) {
             if (diff > 0 && diff < 1000 * 60 * 60 * 2) {
                  // Within 2 hours of air time
-                 countdownEl.innerText = "TRIBAL COUNCIL: TONIGHT!";
+                 countdownEl.innerText = "SURVIVOR WED. - DOUBLE PTS: TONIGHT!";
             } else if (diff > 0) {
                 const d = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                countdownEl.innerText = `TRIBAL COUNCIL IN: ${d}D ${h}H ${m}M`;
+                countdownEl.innerText = `SURVIVOR WED. - DOUBLE PTS IN: ${d}D ${h}H ${m}M`;
             } else {
-                countdownEl.innerText = "TRIBAL COUNCIL IS LIVE!";
+                countdownEl.innerText = "SURVIVOR WED. - DOUBLE PTS IS LIVE!";
             }
         }
     }
