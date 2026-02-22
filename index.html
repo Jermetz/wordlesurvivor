@@ -604,6 +604,8 @@
     
     <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
     <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
+    
+    <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
 </div>
 
 <div class="audio-wrapper">
@@ -675,6 +677,16 @@
     <div class="modal-header">BIG R</div>
     <div class="modal-body" style="text-align: center; margin-top: 15px;">
         <img src="bigr.jpg?v=1" alt="Big R Ultimate Survivor" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
+    </div>
+  </div>
+</div>
+
+<div id="quoteModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('quoteModal')">&times;</span>
+    <div class="modal-header">JEFF SAYS...</div>
+    <div class="modal-body" style="text-align: center; margin-top: 25px; margin-bottom: 15px;">
+        <p id="quote-text" style="font-size: 1.5rem; color: var(--accent); font-style: italic; line-height: 1.4;"></p>
     </div>
   </div>
 </div>
@@ -845,7 +857,7 @@
                         <div class="drawer-status">
                             <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
                             <div>📿 Immunity Idols Banked: ${player.idols}</div>
-                            <div>🎲 Shot in the Dark: ${player.shotInDark}</div>
+                            <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
                         </div>
                         <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
@@ -873,12 +885,59 @@
 
     loadScores();
 
-    const rulesModal = document.getElementById("rulesModal"), stakesModal = document.getElementById("stakesModal"), bigrModal = document.getElementById("bigrModal");
-    const rulesBtn = document.getElementById("rules-btn"), stakesBtn = document.getElementById("stakes-btn"), bigrBtn = document.getElementById("bigr-btn"), refreshBtn = document.getElementById("refresh-btn");
+    // MODAL AND BUTTON LOGIC
+    const rulesModal = document.getElementById("rulesModal"), 
+          stakesModal = document.getElementById("stakesModal"), 
+          bigrModal = document.getElementById("bigrModal"),
+          quoteModal = document.getElementById("quoteModal"); // New Modal Reference
+
+    const rulesBtn = document.getElementById("rules-btn"), 
+          stakesBtn = document.getElementById("stakes-btn"), 
+          bigrBtn = document.getElementById("bigr-btn"), 
+          refreshBtn = document.getElementById("refresh-btn"),
+          quoteBtn = document.getElementById("quote-btn"); // New Button Reference
+
+    const quoteText = document.getElementById("quote-text"); // New Text Reference
+
+    // Array of 25 random Jeff Probst Quotes
+    const jeffQuotes = [
+        "The tribe has spoken.",
+        "Got nothing for ya. Head back to camp.",
+        "Survivors ready? Go!",
+        "Dig deep!",
+        "Come on in, guys!",
+        "Fire represents your life. When your fire is gone, so are you.",
+        "You gotta earn it every day.",
+        "That is how you do it on Survivor!",
+        "In this game, fire is your life.",
+        "Wanna know what you're playing for?",
+        "Drop your buffs.",
+        "This is a hidden immunity idol.",
+        "Once the votes are read, the decision is final. The person voted out will be asked to leave the Tribal Council area immediately.",
+        "I'll go tally the votes.",
+        "If anybody has a hidden immunity idol and you want to play it, now would be the time to do so.",
+        "Worth playing for?",
+        "It is a huge advantage in this game.",
+        "A blindside!",
+        "Outwit, Outplay, Outlast.",
+        "You are playing for reward!",
+        "Immunity is back up for grabs.",
+        "You have to outwit, outplay, and outlast.",
+        "Does not count.",
+        "All the fixin's!",
+        "Grab your torches, head back to camp. Goodnight."
+    ];
 
     rulesBtn.onclick = function() { rulesModal.style.display = "block"; }
     stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
     bigrBtn.onclick = function() { bigrModal.style.display = "block"; }
+    
+    // Logic for Random Quote Button
+    quoteBtn.onclick = function() {
+        const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
+        quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
+        quoteModal.style.display = "block";
+    }
     
     refreshBtn.onclick = function() { 
         document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
@@ -889,8 +948,9 @@
         document.getElementById(modalId).style.display = "none";
     }
 
+    // Close Modals when clicking outside of them
     window.onclick = function(event) {
-        if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal) {
+        if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal || event.target == quoteModal) {
             event.target.style.display = "none";
         }
     }
