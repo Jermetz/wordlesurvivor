@@ -227,6 +227,30 @@
             letter-spacing: 1px;
         }
 
+        /* --- NEW LEADERBOARD HEADER --- */
+        .leaderboard-header {
+            color: var(--accent);
+            text-align: center;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 10px 0 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            width: 100%;
+            max-width: 450px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+        }
+
+        .leaderboard-header span {
+            color: var(--card-bg);
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 5px;
+            letter-spacing: 0.5px;
+            text-transform: none; /* Keeps exactly what you typed */
+        }
+
         /* --- LEADERBOARD & CARDS --- */
         #leaderboard {
             width: 100%;
@@ -539,6 +563,11 @@
     <div class="banner-content" id="best-wordle-text"></div>
 </div>
 
+<div class="leaderboard-header">
+    LEADERBOARD
+    <span>(Ranked by Total Life Pts)</span>
+</div>
+
 <div id="leaderboard">
     <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
 </div>
@@ -761,9 +790,7 @@
                     changeClass = 'change-negative';
                 }
 
-                // Check if the latest score (hist1) has a '*' indicating Hard Mode
                 const isHardMode = player.hist1.includes('*');
-                // Updated icon to a simple asterisk
                 const hardModeIcon = isHardMode ? `<span class="hard-mode-icon" title="Hard Mode">*</span>` : '';
 
                 card.innerHTML = `
