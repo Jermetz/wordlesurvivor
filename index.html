@@ -518,7 +518,7 @@
 
         <h3 style="text-align: center; font-size: 1.4rem;">THE SETUP (FINE PRINT)</h3>
         <p>Everyone starts with 50 Life Points. The "Sole Wordler" is whoever has the most points remaining after the Survivor 50 Finale night.</p>
-        <p>I will keep track of all points and post a weekly update (Tree Mail) by Wednesday morning.</p>
+        <p>I will keep track of all points and post daily updates via the Survivor Wordle web app.</p>
         
         <h3>HARD MODE BONUS</h3>
         <p>Hard Mode (*) players get +1 Point to offset any scoring penalty.</p>
@@ -596,14 +596,14 @@
         
         if (countdownEl) {
             if (diff > 0 && diff < 1000 * 60 * 60 * 2) {
-                 countdownEl.innerText = "Double Pts Wed. TONIGHT!";
+                 countdownEl.innerText = "SURVIVOR IS TONIGHT!";
             } else if (diff > 0) {
                 const d = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                countdownEl.innerText = `Double Pts Wed. IN: ${d}D ${h}H ${m}M`;
+                countdownEl.innerText = `DOUBLE PTS WED. IN: ${d}D ${h}H ${m}M`;
             } else {
-                countdownEl.innerText = "Double Pts Wed. IS LIVE!";
+                countdownEl.innerText = "SURVIVOR IS LIVE!";
             }
         }
     }
