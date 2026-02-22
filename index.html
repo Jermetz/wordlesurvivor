@@ -15,8 +15,8 @@
         :root {
             /* Updated Palette for High Contrast Parchment Look */
             --bg-color: #1a1a1a; /* Keep jungle background dark */
-            --card-bg: #f4e4bc; /* Light Parchment color */
-            --card-border: #c7b299; /* Slightly darker border for definition */
+            --card-bg: #f4e4bc; /* NEW: Light Parchment color */
+            --card-border: #c7b299; /* NEW: Slightly darker border for definition */
             --accent: #d95100; /* A deeper, burnt orange for better contrast on light bg */
             --text: #2b1d0e; /* Deep dark brown (almost black) for main text */
             --text-shadow: 1px 1px 1px rgba(0,0,0,0.2); /* Subtle rugged shadow */
@@ -103,10 +103,11 @@
             font-weight: bold;
         }
 
+        /* --- COUNTDOWN BANNER (SINGLE LINE) --- */
         #countdown-timer {
             background: var(--accent);
             color: white;
-            padding: 10px;
+            padding: 10px 5px;
             text-align: center;
             font-weight: 900;
             width: 100%;
@@ -114,9 +115,15 @@
             border-radius: 8px;
             margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            font-size: 1.1rem;
-            letter-spacing: 1px;
+            font-size: 0.85rem; 
+            letter-spacing: 0.5px;
             border: 2px solid #fff;
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #best-wordle-banner {
@@ -523,8 +530,10 @@
         const now = new Date();
         const target = new Date();
         
+        // Find next Wednesday (0 = Sun, 1 = Mon, ..., 3 = Wed)
         let daysUntilWed = (3 - now.getDay() + 7) % 7;
         
+        // If today is Wed but past 8 PM (20:00), aim for next Wed
         if (daysUntilWed === 0 && now.getHours() >= 20) {
             daysUntilWed = 7;
         }
@@ -571,6 +580,7 @@
             }
 
             const rows = allRows.slice(1);
+
             const players = rows.map(row => {
                 const [name, score, change, idols, hist1, hist2, hist3] = row.split(',');
                 return { 
@@ -594,29 +604,55 @@
                 if(!player.name) return;
                 const card = document.createElement('div');
                 card.className = 'player-card';
-                card.addEventListener('click', () => card.classList.toggle('expanded'));
+                card.addEventListener('click', () => {
+                    card.classList.toggle('expanded');
+                });
                 if (player.score < 40) card.classList.add('extinguished');
-                if (previousScore !== null && player.score < previousScore) currentRank++;
+                if (previousScore !== null && player.score < previousScore) {
+                    currentRank++;
+                }
                 previousScore = player.score;
                 const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
-                let changeDisplay = '-', changeClass = 'change-neutral';
-                if (player.change > 0) { changeDisplay = `+${player.change}`; changeClass = 'change-positive'; }
-                else if (player.change < 0) { changeDisplay = `${player.change}`; changeClass = 'change-negative'; }
+                let changeDisplay = '-';
+                let changeClass = 'change-neutral';
+                if (player.change > 0) {
+                    changeDisplay = `+${player.change}`;
+                    changeClass = 'change-positive';
+                } else if (player.change < 0) {
+                    changeDisplay = `${player.change}`;
+                    changeClass = 'change-negative';
+                }
                 const idolString = player.idols > 0 ? '📿'.repeat(player.idols) : '';
 
                 card.innerHTML = `
                     <div class="card-main">
                         <div class="rank">${rankDisplay}</div>
-                        <div class="name">${player.name} ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''} <span class="idols">${idolString}</span></div>
-                        <div class="change-container"><span class="change-label">Change</span><span class="${changeClass}">${changeDisplay}</span></div>
+                        <div class="name">
+                            ${player.name}
+                            ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
+                            <span class="idols">${idolString}</span>
+                        </div>
+                        <div class="change-container">
+                            <span class="change-label">Change</span>
+                            <span class="${changeClass}">${changeDisplay}</span>
+                        </div>
                         <div class="score">${player.score}</div>
                     </div>
                     <div class="history-drawer">
                         <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
-                            <div class="history-day"><span class="history-label">YESTERDAY</span><span class="history-value">${player.hist1}</span></div>
-                            <div class="history-day"><span class="history-label">2 DAYS AGO</span><span class="history-value">${player.hist2}</span></div>
-                            <div class="history-day"><span class="history-label">3 DAYS AGO</span><span class="history-value">${player.hist3}</span></div>
+                            <div class="history-day">
+                                <span class="history-label">YESTERDAY</span>
+                                <span class="history-value">${player.hist1}</span>
+                            </div>
+                            <div class="history-day">
+                                <span class="history-label">2 DAYS AGO</span>
+                                <span class="history-value">${player.hist2}</span>
+                            </div>
+                            <div class="history-day">
+                                <span class="history-label">3 DAYS AGO</span>
+                                <span class="history-value">${player.hist3}</span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -630,14 +666,29 @@
     loadScores();
 
     const rulesModal = document.getElementById("rulesModal"), stakesModal = document.getElementById("stakesModal"), bigrModal = document.getElementById("bigrModal");
-    document.getElementById("rules-btn").onclick = () => rulesModal.style.display = "block";
-    document.getElementById("stakes-btn").onclick = () => stakesModal.style.display = "block";
-    document.getElementById("bigr-btn").onclick = () => bigrModal.style.display = "block";
-    document.getElementById("refresh-btn").onclick = () => { loadScores(); };
-    function closeModal(id) { document.getElementById(id).style.display = "none"; }
-    window.onclick = (e) => { if (e.target == rulesModal || e.target == stakesModal || e.target == bigrModal) e.target.style.display = "none"; }
+    const rulesBtn = document.getElementById("rules-btn"), stakesBtn = document.getElementById("stakes-btn"), bigrBtn = document.getElementById("bigr-btn"), refreshBtn = document.getElementById("refresh-btn");
+
+    rulesBtn.onclick = function() { rulesModal.style.display = "block"; }
+    stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
+    bigrBtn.onclick = function() { bigrModal.style.display = "block"; }
+    
+    refreshBtn.onclick = function() { 
+        document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
+        loadScores(); 
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal) {
+            event.target.style.display = "none";
+        }
+    }
 
     function createEmbers() {
+        const body = document.body;
         for(let i = 0; i < 80; i++) {
             let ember = document.createElement('div');
             ember.className = 'ember';
@@ -645,8 +696,9 @@
             ember.style.animationDuration = (Math.random() * 6 + 2) + 's'; 
             ember.style.animationDelay = Math.random() * 10 + 's';
             let size = Math.random() * 7 + 1; 
-            ember.style.width = size + 'px'; ember.style.height = size + 'px';
-            document.body.appendChild(ember);
+            ember.style.width = size + 'px';
+            ember.style.height = size + 'px';
+            body.appendChild(ember);
         }
     }
     createEmbers();
@@ -655,7 +707,7 @@
     const fireAudio = document.getElementById('fireSound');
     const themeAudio = document.getElementById('themeSound');
     fireAudio.volume = 0.5; 
-    themeAudio.volume = 0.3; // Theme is act as a background melody
+    themeAudio.volume = 0.05; // UPDATED: Lower volume for the theme
     
     function startAudio() {
         fireAudio.play().catch(() => {});
@@ -663,6 +715,7 @@
         document.removeEventListener('click', startAudio);
         document.removeEventListener('touchstart', startAudio);
     }
+
     document.addEventListener('click', startAudio);
     document.addEventListener('touchstart', startAudio);
 
