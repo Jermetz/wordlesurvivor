@@ -103,7 +103,7 @@
             font-weight: bold;
         }
 
-        /* --- FLAWLESS INFINITE SCROLLING MARQUEE --- */
+        /* --- BULLETPROOF INFINITE SCROLLING MARQUEE --- */
         .marquee-wrapper {
             background: var(--accent);
             color: white;
@@ -114,29 +114,31 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             border: 2px solid #fff;
             overflow: hidden;
-            display: flex;
-            align-items: center;
             height: 40px; 
-            box-sizing: border-box;
+            position: relative;
         }
 
         .marquee-track {
             display: flex;
             width: max-content;
-            animation: marquee-scroll 20s linear infinite;
-            will-change: transform; /* Hardware acceleration for buttery smoothness */
+            height: 100%;
+            will-change: transform; 
+            animation: marquee-scroll linear infinite;
         }
 
         .marquee-content {
-            padding-right: 40px; /* Space between the repeating text */
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            padding-right: 50px; /* Space between the repeating phrases */
             font-weight: 900;
             font-size: 0.9rem;
             letter-spacing: 0.5px;
             white-space: nowrap;
-            text-transform: uppercase;
+            text-transform: uppercase; 
         }
 
-        /* Shifts the track exactly halfway, then flawlessly snaps back to 0 */
+        /* Shifts the track exactly halfway, snapping perfectly seamlessly */
         @keyframes marquee-scroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
@@ -514,7 +516,7 @@
     <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image">
 </header>
 
-<div class="marquee-wrapper">
+<div class="marquee-wrapper" id="marquee-wrapper">
     <div class="marquee-track" id="marquee-track">
         <div class="marquee-content" id="marquee-1">CALCULATING NEXT TRIBAL...</div>
         <div class="marquee-content" id="marquee-2">CALCULATING NEXT TRIBAL...</div>
@@ -647,18 +649,33 @@
 
         const m1 = document.getElementById('marquee-1');
         const m2 = document.getElementById('marquee-2');
+        const track = document.getElementById('marquee-track');
+        const wrapper = document.getElementById('marquee-wrapper');
         
-        if (m1 && m2) {
+        if (m1 && m2 && track && wrapper) {
             baseText = baseText.toUpperCase();
             let finalText = `🌴 ${baseText} 🌴`;
+            
             if (customTreeMail) {
                 finalText += ` TREE MAIL: ${customTreeMail.toUpperCase()} 🌴`;
             }
             
-            // Updates text without destroying the DOM node so animation doesn't skip
+            // Only update DOM if text changed to avoid interrupting the animation
             if (m1.innerText !== finalText) {
                 m1.innerText = finalText;
                 m2.innerText = finalText;
+                
+                // Smart Speed Control: 0.18 seconds per character, minimum of 12 seconds
+                const animDuration = Math.max(12, finalText.length * 0.18);
+                track.style.animationDuration = `${animDuration}s`;
+            }
+            
+            // Bulletproof sizing: Ensures elements are ALWAYS at least the width of the screen
+            // so the -50% CSS animation NEVER snaps abruptly.
+            const wWidth = wrapper.offsetWidth;
+            if (wWidth > 0) {
+                m1.style.minWidth = `${wWidth}px`;
+                m2.style.minWidth = `${wWidth}px`;
             }
         }
     }
