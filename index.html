@@ -1006,8 +1006,25 @@
     if (groupChatBtn) {
         groupChatBtn.addEventListener('click', function(event) {
             event.preventDefault(); 
-            const protocol = "sms:";
-            window.location.href = protocol + groupMembers.join(",");
+            
+            // Basic OS detection logic
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            let smsUrl = "";
+
+            // iOS detection
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                smsUrl = "sms://open?addresses=" + groupMembers.join(",");
+            } 
+            // Android detection
+            else if (/android/i.test(userAgent)) {
+                smsUrl = "sms:" + groupMembers.join(";"); 
+            } 
+            // Default fallback
+            else {
+                smsUrl = "sms:" + groupMembers.join(",");
+            }
+
+            window.location.href = smsUrl;
         });
     }
 
