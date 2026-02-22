@@ -103,7 +103,7 @@
             font-weight: bold;
         }
 
-        /* --- NEW TREE MAIL SCROLLING MARQUEE --- */
+        /* --- FIXED SMOOTH SCROLLING MARQUEE --- */
         .marquee-wrapper {
             background: var(--accent);
             color: white;
@@ -114,24 +114,27 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             border: 2px solid #fff;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            height: 40px; /* Keeps the banner height stable */
+            display: block; /* Removed flexbox constraint */
+            height: 40px; 
+            line-height: 36px; /* Vertically centers the text perfectly */
+            box-sizing: border-box;
         }
 
         .marquee-text {
+            display: inline-block; /* Allows perfect width calculation */
             font-weight: 900;
             font-size: 0.9rem;
             letter-spacing: 0.5px;
             white-space: nowrap;
-            padding-left: 100%; /* Pushes text to start off-screen right */
-            animation: scroll-left 18s linear infinite; /* Adjust '18s' to change scroll speed */
-            text-transform: uppercase; /* FORCES ALL CAPS IN CSS TOO */
+            padding-left: 100%; /* Start exactly off-screen right */
+            animation: scroll-left 15s linear infinite; /* Smooth continuous speed */
+            text-transform: uppercase;
+            will-change: transform; /* Forces GPU hardware acceleration for smooth iOS scroll */
         }
 
         @keyframes scroll-left {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
         }
 
         /* --- STYLED AUDIO INTERFACE --- */
@@ -313,7 +316,6 @@
             display: block;
         }
 
-        /* --- NEW IDOL KEY IN DRAWER --- */
         .idol-key {
             text-align: center;
             font-size: 0.85rem;
@@ -725,7 +727,6 @@
 
                 // Check if the latest score (hist1) has a '*' indicating Hard Mode
                 const isHardMode = player.hist1.includes('*');
-                // Updated icon to the Brain emoji
                 const hardModeIcon = isHardMode ? `<span class="hard-mode-icon" title="Hard Mode">🧠</span>` : '';
 
                 card.innerHTML = `
