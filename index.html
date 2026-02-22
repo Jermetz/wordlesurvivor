@@ -558,6 +558,39 @@
             line-height: 1.5;
         }
 
+        /* --- DASHBOARD WRAPPER FOR RESPONSIVENESS --- */
+        .dashboard-layout {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* --- IPAD / DESKTOP TWO-COLUMN LAYOUT --- */
+        @media (min-width: 820px) {
+            .dashboard-layout {
+                display: grid;
+                grid-template-columns: 350px 1fr;
+                grid-template-areas: 
+                    "header l-head"
+                    "marquee l-body"
+                    "banner l-body"
+                    "actions l-body";
+                grid-template-rows: auto auto auto 1fr;
+                gap: 25px 45px;
+                max-width: 1050px;
+                align-items: start;
+            }
+
+            header { grid-area: header; margin-bottom: 0; }
+            .banner-image { width: 100%; max-width: 350px; }
+            .marquee-wrapper { grid-area: marquee; max-width: 100%; margin-bottom: 0; }
+            #best-wordle-banner { grid-area: banner; max-width: 100%; margin-bottom: 0; }
+            .leaderboard-header { grid-area: l-head; max-width: 100%; margin-top: 0; }
+            #leaderboard { grid-area: l-body; max-width: 100%; }
+            .action-grid { grid-area: actions; max-width: 100%; margin-top: 0; }
+        }
+
     </style>
 </head>
 <body>
@@ -571,41 +604,42 @@
 
 <div class="fire-glow"></div>
 
-<header>
-    <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image">
-</header>
+<div class="dashboard-layout">
+    <header>
+        <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image">
+    </header>
 
-<div class="marquee-wrapper" id="marquee-wrapper">
-    <div class="marquee-track" id="marquee-track">
-        <div class="marquee-content" id="marquee-1">CALCULATING NEXT TRIBAL...</div>
-        <div class="marquee-content" id="marquee-2">CALCULATING NEXT TRIBAL...</div>
+    <div class="marquee-wrapper" id="marquee-wrapper">
+        <div class="marquee-track" id="marquee-track">
+            <div class="marquee-content" id="marquee-1">CALCULATING NEXT TRIBAL...</div>
+            <div class="marquee-content" id="marquee-2">CALCULATING NEXT TRIBAL...</div>
+        </div>
     </div>
-</div>
 
-<div id="best-wordle-banner">
-    <div class="banner-title">👑 BEST WORDLE OF THE WEEK 👑</div>
-    <div class="banner-content" id="best-wordle-text"></div>
-</div>
+    <div id="best-wordle-banner">
+        <div class="banner-title">👑 BEST WORDLE OF THE WEEK 👑</div>
+        <div class="banner-content" id="best-wordle-text"></div>
+    </div>
 
-<div class="leaderboard-header">
-    LEADERBOARD
-    <span>(Ranked by Total Life Pts)</span>
-</div>
+    <div class="leaderboard-header">
+        LEADERBOARD
+        <span>(Ranked by Total Life Pts)</span>
+    </div>
 
-<div id="leaderboard">
-    <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
-</div>
+    <div id="leaderboard">
+        <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
+    </div>
 
-<div class="action-grid">
-    <button id="rules-btn" class="action-btn">VIEW RULES</button>
-    <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
-    
-    <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn">PLAY WORDLE</a>
-    
-    <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
-    <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
-    
-    <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
+    <div class="action-grid">
+        <button id="rules-btn" class="action-btn">VIEW RULES</button>
+        <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
+        
+        <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn">PLAY WORDLE</a>
+        
+        <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
+        <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
+        <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
+    </div>
 </div>
 
 <div class="audio-wrapper">
@@ -889,15 +923,15 @@
     const rulesModal = document.getElementById("rulesModal"), 
           stakesModal = document.getElementById("stakesModal"), 
           bigrModal = document.getElementById("bigrModal"),
-          quoteModal = document.getElementById("quoteModal"); // New Modal Reference
+          quoteModal = document.getElementById("quoteModal");
 
     const rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
           bigrBtn = document.getElementById("bigr-btn"), 
           refreshBtn = document.getElementById("refresh-btn"),
-          quoteBtn = document.getElementById("quote-btn"); // New Button Reference
+          quoteBtn = document.getElementById("quote-btn");
 
-    const quoteText = document.getElementById("quote-text"); // New Text Reference
+    const quoteText = document.getElementById("quote-text");
 
     // Array of 25 random Jeff Probst Quotes
     const jeffQuotes = [
