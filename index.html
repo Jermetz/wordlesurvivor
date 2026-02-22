@@ -1,10 +1,3 @@
-That makes complete sense! Because of how CSS Grid row heights calculate, the left column's giant logo was dictating where the "second row" started across the entire screen, pushing your leaderboard list way down.
-To fix this perfectly while keeping the iPhone view 100% identical, I grouped the leaderboard-header and #leaderboard into a new <div class="right-panel">. This tells the iPad to let the right side flow independently of whatever is happening on the left side, keeping your header and list perfectly flush.
-I also made the following adjustments:
- * iPad Action Buttons: Forced .action-grid into a single column (1fr) only on screens 820px or wider.
- * iPad Width: Removed the strict 450px width limit on the leaderboard only for iPad/desktop so it beautifully stretches to fill the rest of the available screen.
- * Modal Transparency: You were right! Every modal shared the exact same rgba(0,0,0, 0.85) background, but because the Rules modal had so much solid content, it felt like a total blackout. I lowered the darkness to 0.65 and added a slick -webkit-backdrop-filter: blur(3px); so you can still see the game subtly blurred behind it.
-Here is the complete, updated code to copy and paste:
 <!DOCTYPE html>
 <html lang="en">
 <head>
