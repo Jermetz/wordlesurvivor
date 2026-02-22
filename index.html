@@ -339,6 +339,14 @@
             text-align: right;
         }
 
+        .hard-mode-icon {
+            font-size: 1.6rem;
+            color: var(--accent);
+            font-weight: 900;
+            text-shadow: var(--text-shadow);
+            line-height: 1;
+        }
+
         .history-drawer {
             display: none;
             background: rgba(0,0,0,0.06);
@@ -738,8 +746,8 @@
             const allRows = data.split('\n');
             const headerRow = allRows[0].split(',');
 
-            // Updated Column Indices based on inserting the new Hard Mode column
-            const bannerText = headerRow[8] ? headerRow[8].trim() : '';
+            // Updated Column Indices based on inserting the new columns
+            const bannerText = headerRow[9] ? headerRow[9].trim() : '';
             const bannerContainer = document.getElementById('best-wordle-banner');
             const bannerTextEl = document.getElementById('best-wordle-text');
             
@@ -751,15 +759,15 @@
             }
 
             // Updated Column Index for Tree Mail
-            const treeMailText = headerRow[9] ? headerRow[9].trim() : '';
+            const treeMailText = headerRow[10] ? headerRow[10].trim() : '';
             customTreeMail = treeMailText;
             updateCountdown(); 
 
             const rows = allRows.slice(1);
 
             const players = rows.map(row => {
-                // Now fetching the 8th column (index 7) for Hard Mode
-                const [name, score, change, idols, hist1, hist2, hist3, hardModeCol] = row.split(',');
+                // Now fetching the 8th (index 7) for Hard Mode, and 9th (index 8) for Shot in the Dark
+                const [name, score, change, idols, hist1, hist2, hist3, hardModeCol, shotInDarkCol] = row.split(',');
                 return { 
                     name: name ? name.trim() : '', 
                     score: parseInt(score) || 0,
@@ -768,7 +776,8 @@
                     hist1: hist1 ? hist1.trim() : '-',
                     hist2: hist2 ? hist2.trim() : '-',
                     hist3: hist3 ? hist3.trim() : '-',
-                    hardMode: hardModeCol ? hardModeCol.trim() : ''
+                    hardMode: hardModeCol ? hardModeCol.trim() : '',
+                    shotInDark: shotInDarkCol ? shotInDarkCol.trim() : '0'
                 };
             }).sort((a, b) => b.score - a.score);
 
@@ -822,8 +831,9 @@
                     </div>
                     <div class="history-drawer">
                         <div class="drawer-status">
-                            <div>📿 Immunity Idols Banked: ${player.idols}</div>
                             <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
+                            <div>📿 Immunity Idols Banked: ${player.idols}</div>
+                            <div>🎲 Shot in the Dark: ${player.shotInDark}</div>
                         </div>
                         <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
@@ -959,7 +969,7 @@
     // Fallback logic to start audio context on first screen tap
     document.addEventListener('touchstart', () => {
         if(!audioInitialized) { initAudioContext(); }
-    }, {true:true});
+    }, {once:true});
 
 </script>
 </body>
