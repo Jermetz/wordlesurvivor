@@ -623,11 +623,11 @@
         const diff = target.getTime() - now.getTime();
         const countdownEl = document.getElementById('countdown-timer');
         if (countdownEl) {
-            if (diff > 0 && diff < 7200000) countdownEl.innerText = "Double Pts Wed. TONIGHT!";
+            if (diff > 0 && diff < 7200000) countdownEl.innerText = "SURVIVOR IS TONIGHT!";
             else if (diff > 0) {
                 const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000);
-                countdownEl.innerText = `Double Pts Wed. IN: ${d}D ${h}H ${m}M`;
-            } else countdownEl.innerText = "Double Pts Wed. IS LIVE!";
+                countdownEl.innerText = `DOUBLE PTs WED. IN: ${d}D ${h}H ${m}M`;
+            } else countdownEl.innerText = "SURVIVOR IS LIVE!";
         }
     }
     updateCountdown(); setInterval(updateCountdown, 60000); 
