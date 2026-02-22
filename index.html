@@ -601,7 +601,7 @@
     <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
     
     <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn">PLAY WORDLE</a>
-    <a href="https://www.icloud.com/shortcuts/f1b3eae9a5ff4561ad63a35ac9d67219" target="_blank" class="action-btn">GROUP CHAT</a>
+    <button id="group-chat-btn" class="action-btn">OPEN WORDLE GROUP CHAT</button>
     
     <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
     <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
@@ -983,6 +983,22 @@
     document.addEventListener('touchstart', () => {
         if(!audioInitialized) { initAudioContext(); }
     }, {once:true});
+
+    // --- SECURE iMESSAGE GROUP CHAT LINK ---
+    const groupMembers = [
+        "+15551234567", // Replace these with your actual group numbers
+        "+15559876543",
+        "+15555555555"
+    ];
+
+    const groupChatBtn = document.getElementById('group-chat-btn');
+    if (groupChatBtn) {
+        groupChatBtn.addEventListener('click', function(event) {
+            event.preventDefault(); 
+            const protocol = "sms:";
+            window.location.href = protocol + groupMembers.join(",");
+        });
+    }
 
 </script>
 </body>
