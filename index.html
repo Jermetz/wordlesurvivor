@@ -324,12 +324,6 @@
         .change-negative { color: #d32f2f; font-weight: 900; font-size: 1.1rem; text-shadow: var(--text-shadow); }
         .change-neutral { color: #666; font-weight: bold; font-size: 1.1rem; }
 
-        .score-container {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
         .score { 
             font-size: 1.6rem;
             font-weight: 900;
@@ -337,14 +331,6 @@
             color: var(--accent);
             min-width: 45px;
             text-align: right;
-        }
-
-        .hard-mode-icon {
-            font-size: 1.6rem;
-            color: var(--accent);
-            font-weight: 900;
-            text-shadow: var(--text-shadow);
-            line-height: 1;
         }
 
         .history-drawer {
@@ -358,16 +344,20 @@
             display: block;
         }
 
-        .idol-key {
+        /* --- UNIFIED DRAWER STATUS PANEL --- */
+        .drawer-status {
             text-align: center;
             font-size: 0.85rem;
             color: var(--accent);
             margin-bottom: 12px;
             font-weight: bold;
             background: rgba(217, 81, 0, 0.1); 
-            padding: 6px;
+            padding: 8px;
             border-radius: 6px;
             border: 1px dashed var(--accent);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         .history-title {
@@ -791,7 +781,7 @@
                 }
 
                 const isHardMode = player.hist1.includes('*');
-                const hardModeIcon = isHardMode ? `<span class="hard-mode-icon" title="Hard Mode">*</span>` : '';
+                const hardModeText = isHardMode ? '✅' : '❌';
 
                 card.innerHTML = `
                     <div class="card-main">
@@ -804,13 +794,13 @@
                             <span class="change-label">Change</span>
                             <span class="${changeClass}">${changeDisplay}</span>
                         </div>
-                        <div class="score-container">
-                            <div class="score">${player.score}</div>
-                            ${hardModeIcon}
-                        </div>
+                        <div class="score">${player.score}</div>
                     </div>
                     <div class="history-drawer">
-                        <div class="idol-key">📿 Immunity Idols Banked: ${player.idols}</div>
+                        <div class="drawer-status">
+                            <div>📿 Immunity Idols Banked: ${player.idols}</div>
+                            <div>⭐ Hard Mode: ${hardModeText}</div>
+                        </div>
                         <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
                             <div class="history-day">
