@@ -103,30 +103,37 @@
             font-weight: bold;
         }
 
-        /* --- COUNTDOWN BANNER (SINGLE LINE) --- */
-        #countdown-timer {
+        /* --- NEW TREE MAIL SCROLLING MARQUEE --- */
+        .marquee-wrapper {
             background: var(--accent);
             color: white;
-            padding: 10px 5px;
-            text-align: center;
-            font-weight: 900;
             width: 100%;
             max-width: 450px;
             border-radius: 8px;
             margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            font-size: 0.85rem; 
-            letter-spacing: 0.5px;
             border: 2px solid #fff;
-            white-space: nowrap; 
             overflow: hidden;
-            text-overflow: ellipsis; 
             display: flex;
-            justify-content: center;
             align-items: center;
+            height: 40px; /* Keeps the banner height stable */
         }
 
-        /* --- NEW MULTI-BUTTON AUDIO INTERFACE --- */
+        .marquee-text {
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            padding-left: 100%; /* Pushes text to start off-screen right */
+            animation: scroll-left 18s linear infinite; /* Adjust '18s' to change scroll speed */
+        }
+
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* --- STYLED AUDIO INTERFACE --- */
         .audio-wrapper {
             position: fixed;
             bottom: 20px;
@@ -149,7 +156,7 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            font-size: 1.2rem; /* Size for emojis */
+            font-size: 1.2rem;
         }
 
         .toggle-btn svg {
@@ -493,7 +500,9 @@
     <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image">
 </header>
 
-<div id="countdown-timer">CALCULATING NEXT TRIBAL...</div>
+<div class="marquee-wrapper">
+    <div id="countdown-timer" class="marquee-text">CALCULATING NEXT TRIBAL...</div>
+</div>
 
 <div id="best-wordle-banner">
     <div class="banner-title">🌟 Best Wordle of the Week 🌟</div>
@@ -588,7 +597,9 @@
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
-    // --- COUNTDOWN TIMER LOGIC ---
+    let customTreeMail = ""; // Global variable to store sheet text
+
+    // --- COUNTDOWN TIMER & MARQUEE LOGIC ---
     function updateCountdown() {
         const now = new Date();
         const target = new Date();
@@ -608,16 +619,25 @@
         const countdownEl = document.getElementById('countdown-timer');
         
         if (countdownEl) {
+            let baseText = "";
             if (diff > 0 && diff < 1000 * 60 * 60 * 2) {
-                 countdownEl.innerText = "Double Pts Wed. TONIGHT!";
+                 baseText = "Double Pts Wed. TONIGHT!";
             } else if (diff > 0) {
                 const d = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                countdownEl.innerText = `Double Pts Wed. IN: ${d}D ${h}H ${m}M`;
+                baseText = `Double Pts Wed. IN: ${d}D ${h}H ${m}M`;
             } else {
-                countdownEl.innerText = "Double Pts Wed. IS LIVE!";
+                baseText = "Double Pts Wed. IS LIVE!";
             }
+
+            // Combine the timer with the custom Tree Mail if it exists
+            let finalText = `🌴 ${baseText} 🌴`;
+            if (customTreeMail) {
+                finalText += ` TREE MAIL: ${customTreeMail} 🌴`;
+            }
+            
+            countdownEl.innerText = finalText;
         }
     }
     
@@ -631,6 +651,8 @@
             const data = await response.text();
             const allRows = data.split('\n');
             const headerRow = allRows[0].split(',');
+
+            // --- Best Wordle Banner (Column 8 / Index 7) ---
             const bannerText = headerRow[7] ? headerRow[7].trim() : '';
             const bannerContainer = document.getElementById('best-wordle-banner');
             const bannerTextEl = document.getElementById('best-wordle-text');
@@ -641,6 +663,11 @@
             } else {
                 bannerContainer.classList.remove('visible');
             }
+
+            // --- Custom Tree Mail (Column 9 / Index 8) ---
+            const treeMailText = headerRow[8] ? headerRow[8].trim() : '';
+            customTreeMail = treeMailText;
+            updateCountdown(); // Refresh to inject immediately
 
             const rows = allRows.slice(1);
 
@@ -685,7 +712,6 @@
                     changeDisplay = `${player.change}`;
                     changeClass = 'change-negative';
                 }
-                const idolString = player.idols > 0 ? '📿'.repeat(player.idols) : '';
 
                 card.innerHTML = `
                     <div class="card-main">
@@ -693,7 +719,6 @@
                         <div class="name">
                             ${player.name}
                             ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
-                            <span class="idols">${idolString}</span>
                         </div>
                         <div class="change-container">
                             <span class="change-label">Change</span>
