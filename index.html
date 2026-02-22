@@ -14,14 +14,14 @@
     <style>
         :root {
             /* Updated Palette for High Contrast Parchment Look */
-            --bg-color: #1a1a1a; /* Keep jungle background dark */
-            --card-bg: #f4e4bc; /* NEW: Light Parchment color */
-            --card-border: #c7b299; /* NEW: Slightly darker border for definition */
-            --accent: #d95100; /* A deeper, burnt orange for better contrast on light bg */
-            --text: #2b1d0e; /* Deep dark brown (almost black) for main text */
-            --text-shadow: 1px 1px 1px rgba(0,0,0,0.2); /* Subtle rugged shadow */
+            --bg-color: #1a1a1a; 
+            --card-bg: #f4e4bc; 
+            --card-border: #c7b299; 
+            --accent: #d95100; 
+            --text: #2b1d0e; 
+            --text-shadow: 1px 1px 1px rgba(0,0,0,0.2); 
             --low-score: #eb4034;
-            --leaf-green: #2e7d32; /* New green for the banner border */
+            --leaf-green: #2e7d32; 
         }
 
         body {
@@ -126,7 +126,7 @@
             align-items: center;
         }
 
-        /* --- STYLED AUDIO INTERFACE --- */
+        /* --- NEW MULTI-BUTTON AUDIO INTERFACE --- */
         .audio-wrapper {
             position: fixed;
             bottom: 20px;
@@ -137,11 +137,11 @@
             z-index: 1000;
         }
 
-        #theme-toggle-btn {
+        .toggle-btn {
             background: var(--card-bg);
             border: 2px solid var(--accent);
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
@@ -149,45 +149,22 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            font-size: 1.2rem; /* Size for emojis */
         }
 
-        #theme-toggle-btn svg {
+        .toggle-btn svg {
             fill: var(--accent);
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
         }
 
-        #theme-toggle-btn.playing {
+        .toggle-btn.playing {
             background: var(--accent);
             transform: scale(1.1);
         }
 
-        #theme-toggle-btn.playing svg {
+        .toggle-btn.playing svg {
             fill: white;
-        }
-
-        #volume-slider-container {
-            background: var(--card-bg);
-            padding: 10px 20px; /* Increased padding for better touch target */
-            border-radius: 20px;
-            border: 2px solid var(--card-border);
-            display: none; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            align-items: center;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        /* ENLARGED SLIDER FIX */
-        #masterVolume {
-            cursor: pointer;
-            accent-color: var(--accent);
-            width: 150px; /* Made much wider */
-            height: 12px; /* Made thicker */
         }
 
         #best-wordle-banner {
@@ -490,10 +467,10 @@
 </head>
 <body>
 
-<audio id="fireSound" loop preload="auto">
+<audio id="fireSound" loop preload="auto" crossorigin="anonymous">
     <source src="fire.mp3" type="audio/mpeg">
 </audio>
-<audio id="themeSound" loop preload="auto">
+<audio id="themeSound" loop preload="auto" crossorigin="anonymous">
     <source src="theme.mp3" type="audio/mpeg">
 </audio>
 
@@ -522,10 +499,9 @@
 <button id="refresh-btn">REFRESH SCORES</button>
 
 <div class="audio-wrapper">
-    <div id="volume-slider-container">
-        <input type="range" id="masterVolume" min="0" max="1" step="0.01" value="0.3">
-    </div>
-    <button id="theme-toggle-btn" title="Toggle Theme Music">
+    <button id="fire-toggle-btn" class="toggle-btn" title="Toggle Fire Sounds">🔥</button>
+    
+    <button id="theme-toggle-btn" class="toggle-btn" title="Toggle Theme Music">
         <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
     </button>
 </div>
@@ -777,51 +753,79 @@
     }
     createEmbers();
 
-    // --- REBUILT AUDIO LOGIC ---
+    // --- iOS BYPASS AUDIO LOGIC ---
     const fireAudio = document.getElementById('fireSound');
     const themeAudio = document.getElementById('themeSound');
-    const toggleBtn = document.getElementById('theme-toggle-btn');
-    const volContainer = document.getElementById('volume-slider-container');
-    const volSlider = document.getElementById('masterVolume');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const fireToggleBtn = document.getElementById('fire-toggle-btn');
 
-    // Muted theme to start, Fire matches slider default (0.3)
-    themeAudio.volume = 0; 
-    fireAudio.volume = 0.3; 
+    let audioCtx;
+    let themeSource;
+    let themeGainNode;
+    let audioInitialized = false;
 
-    // Pure mapping function: reads the slider (0 to 1) and scales it down.
-    function applyVolume() {
-        const val = parseFloat(volSlider.value);
-        fireAudio.volume = val; // Max 1.0
-        themeAudio.volume = val * 0.2; // Max 0.2 (Keeps theme quiet)
+    // Sets up the Web Audio API to bypass iOS volume restrictions
+    function initAudioContext() {
+        if (audioInitialized) return;
+        
+        // Create context
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+
+        // Route Theme Audio through a Gain Node (Virtual Mixer)
+        themeSource = audioCtx.createMediaElementSource(themeAudio);
+        themeGainNode = audioCtx.createGain();
+        
+        // HARDCODE THEME VOLUME HERE (0.1 = 10% volume)
+        themeGainNode.gain.value = 0.1; 
+        
+        themeSource.connect(themeGainNode);
+        themeGainNode.connect(audioCtx.destination);
+
+        audioInitialized = true;
     }
 
-    function initFire() {
-        fireAudio.play().catch(() => {});
-        document.removeEventListener('click', initFire);
-        document.removeEventListener('touchstart', initFire);
-    }
-    document.addEventListener('click', initFire);
-    document.addEventListener('touchstart', initFire);
+    // Try to auto-play fire on load
+    fireAudio.play().then(() => {
+        fireToggleBtn.classList.add('playing');
+    }).catch(() => {
+        console.log("Autoplay blocked. Waiting for interaction.");
+    });
 
-    toggleBtn.addEventListener('click', () => {
-        if (themeAudio.paused || themeAudio.volume === 0) {
-            applyVolume(); // Apply math immediately
-            themeAudio.play();
-            toggleBtn.classList.add('playing');
-            volContainer.style.display = 'flex';
+    // Fire Toggle Button Logic
+    fireToggleBtn.addEventListener('click', () => {
+        if (fireAudio.paused) {
+            fireAudio.play();
+            fireToggleBtn.classList.add('playing');
         } else {
-            themeAudio.pause();
-            themeAudio.currentTime = 0;
-            themeAudio.volume = 0; // Hard reset to mute
-            toggleBtn.classList.remove('playing');
-            volContainer.style.display = 'none';
+            fireAudio.pause();
+            fireToggleBtn.classList.remove('playing');
         }
     });
 
-    // Slider updates volume in real time
-    volSlider.addEventListener('input', () => {
-        applyVolume(); 
+    // Theme Toggle Button Logic
+    themeToggleBtn.addEventListener('click', () => {
+        initAudioContext(); // Ensure virtual mixer is ready
+        
+        // Resume context if suspended by iOS
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        if (themeAudio.paused) {
+            themeAudio.play();
+            themeToggleBtn.classList.add('playing');
+        } else {
+            themeAudio.pause();
+            themeAudio.currentTime = 0;
+            themeToggleBtn.classList.remove('playing');
+        }
     });
+
+    // Fallback logic to start audio context on first screen tap
+    document.addEventListener('touchstart', () => {
+        if(!audioInitialized) { initAudioContext(); }
+    }, {once:true});
 
 </script>
 </body>
