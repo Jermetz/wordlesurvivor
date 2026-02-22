@@ -427,7 +427,6 @@
             color: var(--text);
             font-size: 1.1rem; /* Larger body text */
             line-height: 1.5; /* More space between lines for readability */
-            color: var(--text); /* Ensure text is dark */
         }
 
     </style>
@@ -532,7 +531,7 @@
     // PASTE YOUR GOOGLE SHEET CSV URL HERE
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
-    // --- NEW: COUNTDOWN TIMER LOGIC ---
+    // --- COUNTDOWN TIMER LOGIC ---
     function updateCountdown() {
         const now = new Date();
         const target = new Date();
@@ -554,14 +553,14 @@
         if (countdownEl) {
             if (diff > 0 && diff < 1000 * 60 * 60 * 2) {
                  // Within 2 hours of air time
-                 countdownEl.innerText = "SURVIVOR WED. (DOUBLE PTS) TONIGHT!";
+                 countdownEl.innerText = "Double Pts Wed. TONIGHT!";
             } else if (diff > 0) {
                 const d = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                countdownEl.innerText = `SURVIVOR WED. (DOUBLE PTS) IN: ${d}D ${h}H ${m}M`;
+                countdownEl.innerText = `Double Pts Wed. IN: ${d}D ${h}H ${m}M`;
             } else {
-                countdownEl.innerText = "SURVIVOR WED. (DOUBLE PTS) IS LIVE!";
+                countdownEl.innerText = "Double Pts Wed. IS LIVE!";
             }
         }
     }
@@ -573,7 +572,7 @@
 
     async function loadScores() {
         try {
-            // CACHE-BUSTER ADDED HERE: Appends a unique timestamp so the browser never uses old data
+            // CACHE-BUSTER Appends a unique timestamp so the browser never uses old data
             const timestamp = new Date().getTime();
             const response = await fetch(SHEET_URL + '&nocache=' + timestamp, { cache: 'no-store' });
             const data = await response.text();
@@ -582,7 +581,7 @@
             const allRows = data.split('\n');
             const headerRow = allRows[0].split(',');
             
-            // --- NEW: BEST WORDLE BANNER LOGIC ---
+            // --- BEST WORDLE BANNER LOGIC ---
             // Check the 8th column (index 7) of the very first row for banner text
             const bannerText = headerRow[7] ? headerRow[7].trim() : '';
             const bannerContainer = document.getElementById('best-wordle-banner');
@@ -599,8 +598,6 @@
             const rows = allRows.slice(1); // Skip header row for player data
 
             const players = rows.map(row => {
-                // EXTREMELY IMPORTANT: Your CSV must now have exactly 7 columns for these features to work:
-                // Column 1: Name, Column 2: Score, Column 3: Change, Column 4: Idols, Column 5: Yday History, Column 6: Day-2 History, Column 7: Day-3 History
                 const [name, score, change, idols, hist1, hist2, hist3] = row.split(',');
                 return { 
                     name: name ? name.trim() : '', 
@@ -731,15 +728,12 @@
     // --- FIRE EMBERS EFFECT ---
     function createEmbers() {
         const body = document.body;
-        // INCREASED COUNT FROM 35 TO 80
         for(let i = 0; i < 80; i++) {
             let ember = document.createElement('div');
             ember.className = 'ember';
             ember.style.left = Math.random() * 100 + 'vw';
-            // WIDER SPEED RANGE: Now 2s (fast) to 8s (slow)
             ember.style.animationDuration = (Math.random() * 6 + 2) + 's'; 
             ember.style.animationDelay = Math.random() * 10 + 's';
-            // Slight tweak to size for more variance
             let size = Math.random() * 7 + 1; 
             ember.style.width = size + 'px';
             ember.style.height = size + 'px';
@@ -751,24 +745,18 @@
 
     // --- AUDIO AUTOPLAY WORKAROUND ---
     const fireAudio = document.getElementById('fireSound');
-    // Set a very low starting volume just in case it is too loud
     fireAudio.volume = 0.5; 
     
     function startAudio() {
-        // Try to play the audio
         fireAudio.play().catch(e => {
             console.log("Autoplay blocked by browser. Waiting for user tap.");
         });
-        
-        // Remove the event listeners after the first successful interaction
         document.removeEventListener('click', startAudio);
         document.removeEventListener('touchstart', startAudio);
     }
 
-    // Attempt to play on load (will work in some environments, fail in others)
     startAudio();
 
-    // Fallback: wait for the first tap/click anywhere on the screen
     document.addEventListener('click', startAudio);
     document.addEventListener('touchstart', startAudio);
     // --------------------------------------
