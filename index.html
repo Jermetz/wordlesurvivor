@@ -103,7 +103,7 @@
             font-weight: bold;
         }
 
-        /* --- FIXED SMOOTH SCROLLING MARQUEE --- */
+        /* --- FLAWLESS INFINITE SCROLLING MARQUEE --- */
         .marquee-wrapper {
             background: var(--accent);
             color: white;
@@ -114,27 +114,32 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             border: 2px solid #fff;
             overflow: hidden;
-            display: block; /* Removed flexbox constraint */
+            display: flex;
+            align-items: center;
             height: 40px; 
-            line-height: 36px; /* Vertically centers the text perfectly */
             box-sizing: border-box;
         }
 
-        .marquee-text {
-            display: inline-block; /* Allows perfect width calculation */
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marquee-scroll 20s linear infinite;
+            will-change: transform; /* Hardware acceleration for buttery smoothness */
+        }
+
+        .marquee-content {
+            padding-right: 40px; /* Space between the repeating text */
             font-weight: 900;
             font-size: 0.9rem;
             letter-spacing: 0.5px;
             white-space: nowrap;
-            padding-left: 100%; /* Start exactly off-screen right */
-            animation: scroll-left 15s linear infinite; /* Smooth continuous speed */
             text-transform: uppercase;
-            will-change: transform; /* Forces GPU hardware acceleration for smooth iOS scroll */
         }
 
-        @keyframes scroll-left {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
+        /* Shifts the track exactly halfway, then flawlessly snaps back to 0 */
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
         /* --- STYLED AUDIO INTERFACE --- */
@@ -510,7 +515,10 @@
 </header>
 
 <div class="marquee-wrapper">
-    <div id="countdown-timer" class="marquee-text">CALCULATING NEXT TRIBAL...</div>
+    <div class="marquee-track" id="marquee-track">
+        <div class="marquee-content" id="marquee-1">CALCULATING NEXT TRIBAL...</div>
+        <div class="marquee-content" id="marquee-2">CALCULATING NEXT TRIBAL...</div>
+    </div>
 </div>
 
 <div id="best-wordle-banner">
@@ -531,7 +539,6 @@
 
 <div class="audio-wrapper">
     <button id="fire-toggle-btn" class="toggle-btn" title="Toggle Fire Sounds">🔥</button>
-    
     <button id="theme-toggle-btn" class="toggle-btn" title="Toggle Theme Music">
         <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
     </button>
@@ -608,7 +615,6 @@
 
     let customTreeMail = ""; 
 
-    // --- TWO-PHASE COUNTDOWN TIMER LOGIC ---
     function updateCountdown() {
         const now = new Date();
         const target = new Date();
@@ -617,24 +623,20 @@
         // Find days until next Wednesday (0=Sun, 3=Wed)
         let daysUntilWed = (3 - now.getDay() + 7) % 7;
         
-        // If it is Wednesday
         if (daysUntilWed === 0) {
             target.setHours(20, 0, 0, 0); // 8:00 PM EST target
             const diff = target.getTime() - now.getTime();
             
             if (diff > 0) {
-                // It is Wednesday, but before 8 PM
                 const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 baseText = `SURVIVOR IS TONIGHT IN: ${h}H ${m}M`;
             } else {
-                // It is Wednesday, and 8 PM has passed
                 baseText = "SURVIVOR IS LIVE!";
             }
         } else {
-            // It is not Wednesday. Countdown to Wednesday at midnight.
             target.setDate(now.getDate() + daysUntilWed);
-            target.setHours(0, 0, 0, 0); // Midnight of that Wednesday
+            target.setHours(0, 0, 0, 0); 
             const diff = target.getTime() - now.getTime();
             
             const d = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -643,15 +645,21 @@
             baseText = `DAYS UNTIL WEDNESDAY (DOUBLE PTS): ${d}D ${h}H ${m}M`;
         }
 
-        const countdownEl = document.getElementById('countdown-timer');
-        if (countdownEl) {
-            // Force upper case in JavaScript, just to be safe
+        const m1 = document.getElementById('marquee-1');
+        const m2 = document.getElementById('marquee-2');
+        
+        if (m1 && m2) {
             baseText = baseText.toUpperCase();
             let finalText = `🌴 ${baseText} 🌴`;
             if (customTreeMail) {
                 finalText += ` TREE MAIL: ${customTreeMail.toUpperCase()} 🌴`;
             }
-            countdownEl.innerText = finalText;
+            
+            // Updates text without destroying the DOM node so animation doesn't skip
+            if (m1.innerText !== finalText) {
+                m1.innerText = finalText;
+                m2.innerText = finalText;
+            }
         }
     }
     
@@ -725,7 +733,6 @@
                     changeClass = 'change-negative';
                 }
 
-                // Check if the latest score (hist1) has a '*' indicating Hard Mode
                 const isHardMode = player.hist1.includes('*');
                 const hardModeIcon = isHardMode ? `<span class="hard-mode-icon" title="Hard Mode">🧠</span>` : '';
 
@@ -822,19 +829,15 @@
     let themeGainNode;
     let audioInitialized = false;
 
-    // Sets up the Web Audio API to bypass iOS volume restrictions
     function initAudioContext() {
         if (audioInitialized) return;
         
-        // Create context
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         audioCtx = new AudioContext();
 
-        // Route Theme Audio through a Gain Node (Virtual Mixer)
         themeSource = audioCtx.createMediaElementSource(themeAudio);
         themeGainNode = audioCtx.createGain();
         
-        // HARDCODE THEME VOLUME HERE (0.1 = 10% volume)
         themeGainNode.gain.value = 0.1; 
         
         themeSource.connect(themeGainNode);
@@ -843,14 +846,12 @@
         audioInitialized = true;
     }
 
-    // Try to auto-play fire on load
     fireAudio.play().then(() => {
         fireToggleBtn.classList.add('playing');
     }).catch(() => {
         console.log("Autoplay blocked. Waiting for interaction.");
     });
 
-    // Fire Toggle Button Logic
     fireToggleBtn.addEventListener('click', () => {
         if (fireAudio.paused) {
             fireAudio.play();
@@ -861,11 +862,9 @@
         }
     });
 
-    // Theme Toggle Button Logic
     themeToggleBtn.addEventListener('click', () => {
-        initAudioContext(); // Ensure virtual mixer is ready
+        initAudioContext(); 
         
-        // Resume context if suspended by iOS
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
@@ -880,7 +879,6 @@
         }
     });
 
-    // Fallback logic to start audio context on first screen tap
     document.addEventListener('touchstart', () => {
         if(!audioInitialized) { initAudioContext(); }
     }, {once:true});
