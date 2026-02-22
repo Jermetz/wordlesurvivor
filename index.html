@@ -777,22 +777,22 @@
     }
     createEmbers();
 
-    // --- FIXED AUDIO LOGIC ---
+    // --- REBUILT AUDIO LOGIC ---
     const fireAudio = document.getElementById('fireSound');
     const themeAudio = document.getElementById('themeSound');
     const toggleBtn = document.getElementById('theme-toggle-btn');
     const volContainer = document.getElementById('volume-slider-container');
     const volSlider = document.getElementById('masterVolume');
 
-    // Muted theme to start, Fire matches slider default
+    // Muted theme to start, Fire matches slider default (0.3)
     themeAudio.volume = 0; 
-    fireAudio.volume = parseFloat(volSlider.value) * 0.8; 
+    fireAudio.volume = 0.3; 
 
-    // Function strictly ties audio to the slider position
-    function syncVolume() {
+    // Pure mapping function: reads the slider (0 to 1) and scales it down.
+    function applyVolume() {
         const val = parseFloat(volSlider.value);
-        fireAudio.volume = val * 0.8; 
-        themeAudio.volume = val * 0.02; // SEVERELY REDUCED THEME MULTIPLIER
+        fireAudio.volume = val; // Max 1.0
+        themeAudio.volume = val * 0.2; // Max 0.2 (Keeps theme quiet)
     }
 
     function initFire() {
@@ -805,13 +805,14 @@
 
     toggleBtn.addEventListener('click', () => {
         if (themeAudio.paused || themeAudio.volume === 0) {
-            syncVolume(); 
+            applyVolume(); // Apply math immediately
             themeAudio.play();
             toggleBtn.classList.add('playing');
             volContainer.style.display = 'flex';
         } else {
             themeAudio.pause();
             themeAudio.currentTime = 0;
+            themeAudio.volume = 0; // Hard reset to mute
             toggleBtn.classList.remove('playing');
             volContainer.style.display = 'none';
         }
@@ -819,7 +820,7 @@
 
     // Slider updates volume in real time
     volSlider.addEventListener('input', () => {
-        syncVolume(); 
+        applyVolume(); 
     });
 
 </script>
