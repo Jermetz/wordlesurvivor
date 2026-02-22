@@ -168,7 +168,7 @@
 
         #volume-slider-container {
             background: var(--card-bg);
-            padding: 8px 15px;
+            padding: 10px 20px; /* Increased padding for better touch target */
             border-radius: 20px;
             border: 2px solid var(--card-border);
             display: none; 
@@ -182,11 +182,12 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
+        /* ENLARGED SLIDER FIX */
         #masterVolume {
             cursor: pointer;
             accent-color: var(--accent);
-            width: 100px;
-            height: 6px;
+            width: 150px; /* Made much wider */
+            height: 12px; /* Made thicker */
         }
 
         #best-wordle-banner {
@@ -522,7 +523,7 @@
 
 <div class="audio-wrapper">
     <div id="volume-slider-container">
-        <input type="range" id="masterVolume" min="0" max="1" step="0.01" value="0.5">
+        <input type="range" id="masterVolume" min="0" max="1" step="0.01" value="0.3">
     </div>
     <button id="theme-toggle-btn" title="Toggle Theme Music">
         <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
@@ -783,16 +784,16 @@
     const volContainer = document.getElementById('volume-slider-container');
     const volSlider = document.getElementById('masterVolume');
 
-    // Sync function forces the volumes to strictly follow the slider math
+    // Muted theme to start, Fire matches slider default
+    themeAudio.volume = 0; 
+    fireAudio.volume = parseFloat(volSlider.value) * 0.8; 
+
+    // Function strictly ties audio to the slider position
     function syncVolume() {
         const val = parseFloat(volSlider.value);
-        fireAudio.volume = val * 0.8; // Fire follows slider closely
-        themeAudio.volume = val * 0.1; // Theme stays extremely subtle
+        fireAudio.volume = val * 0.8; 
+        themeAudio.volume = val * 0.02; // SEVERELY REDUCED THEME MULTIPLIER
     }
-
-    // Default Fire Settings
-    fireAudio.volume = parseFloat(volSlider.value) * 0.8;
-    themeAudio.volume = 0; // Starts muted
 
     function initFire() {
         fireAudio.play().catch(() => {});
@@ -804,7 +805,7 @@
 
     toggleBtn.addEventListener('click', () => {
         if (themeAudio.paused || themeAudio.volume === 0) {
-            syncVolume(); // Ensure math is applied before playing
+            syncVolume(); 
             themeAudio.play();
             toggleBtn.classList.add('playing');
             volContainer.style.display = 'flex';
@@ -816,8 +817,9 @@
         }
     });
 
+    // Slider updates volume in real time
     volSlider.addEventListener('input', () => {
-        syncVolume(); // Slider strictly controls math for both
+        syncVolume(); 
     });
 
 </script>
