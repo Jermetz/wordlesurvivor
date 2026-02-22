@@ -437,22 +437,24 @@
             box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        .button-container {
-            display: flex;
+        /* --- CONTROL PANEL ACTION GRID --- */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-top: 35px;
+            margin-top: 30px;
+            margin-bottom: 80px; /* Space for the floating audio controls */
             width: 100%;
             max-width: 450px;
         }
 
-        .action-btn, #bigr-btn, #refresh-btn, #play-wordle-btn {
-            flex: 1;
+        .action-btn {
             background: var(--card-bg);
             border: 3px solid var(--accent);
             color: var(--accent);
-            padding: 14px 20px;
-            border-radius: 25px;
-            font-size: 1.1rem;
+            padding: 14px 8px;
+            border-radius: 12px; /* Slightly squarer to look like an app dashboard */
+            font-size: 0.95rem; /* Scaled perfectly to prevent text wrapping */
             cursor: pointer;
             font-family: 'Arial Black', sans-serif;
             text-transform: uppercase;
@@ -461,15 +463,18 @@
             text-decoration: none;
             text-align: center;
             box-sizing: border-box;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
+            transition: transform 0.1s ease;
         }
         
-        #bigr-btn, #refresh-btn, #play-wordle-btn {
-             margin-top: 20px;
-             width: 100%;
-             max-width: 450px;
+        .action-btn:active {
+            transform: scale(0.96);
         }
 
+        /* Rules modal standalone button */
         .text-btn {
             display: block;
             background: var(--card-bg);
@@ -591,15 +596,16 @@
     <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
 </div>
 
-<div class="button-container">
+<div class="action-grid">
     <button id="rules-btn" class="action-btn">VIEW RULES</button>
-    <button id="stakes-btn" class="action-btn">VIEW DAILY STAKES</button>
+    <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
+    
+    <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn">PLAY WORDLE</a>
+    <a href="https://www.icloud.com/shortcuts/f1b3eae9a5ff4561ad63a35ac9d67219" target="_blank" class="action-btn">GROUP CHAT</a>
+    
+    <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
+    <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
 </div>
-
-<a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" id="play-wordle-btn">PLAY NYT WORDLE</a>
-
-<button id="bigr-btn">ULTIMATE SURVIVOR</button>
-<button id="refresh-btn">REFRESH SCORES</button>
 
 <div class="audio-wrapper">
     <button id="fire-toggle-btn" class="toggle-btn" title="Toggle Fire Sounds">🔥</button>
