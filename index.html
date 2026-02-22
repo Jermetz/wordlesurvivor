@@ -303,7 +303,7 @@
         .score-container {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 2px;
         }
 
         .score { 
@@ -316,8 +316,11 @@
         }
 
         .hard-mode-icon {
-            font-size: 1.2rem;
-            filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3));
+            font-size: 1.6rem;
+            color: var(--accent);
+            font-weight: 900;
+            text-shadow: var(--text-shadow);
+            line-height: 1;
         }
 
         .history-drawer {
@@ -758,8 +761,10 @@
                     changeClass = 'change-negative';
                 }
 
+                // Check if the latest score (hist1) has a '*' indicating Hard Mode
                 const isHardMode = player.hist1.includes('*');
-                const hardModeIcon = isHardMode ? `<span class="hard-mode-icon" title="Hard Mode">🧠</span>` : '';
+                // Updated icon to a simple asterisk
+                const hardModeIcon = isHardMode ? `<span class="hard-mode-icon" title="Hard Mode">*</span>` : '';
 
                 card.innerHTML = `
                     <div class="card-main">
