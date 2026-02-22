@@ -13,14 +13,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <style>
         :root {
-            --bg-color: #1a1a1a;
-            --card-bg: #f4e4bc;
-            --card-border: #c7b299;
-            --accent: #d95100;
-            --text: #2b1d0e;
-            --text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+            /* Updated Palette for High Contrast Parchment Look */
+            --bg-color: #1a1a1a; /* Keep jungle background dark */
+            --card-bg: #f4e4bc; /* NEW: Light Parchment color */
+            --card-border: #c7b299; /* NEW: Slightly darker border for definition */
+            --accent: #d95100; /* A deeper, burnt orange for better contrast on light bg */
+            --text: #2b1d0e; /* Deep dark brown (almost black) for main text */
+            --text-shadow: 1px 1px 1px rgba(0,0,0,0.2); /* Subtle rugged shadow */
             --low-score: #eb4034;
-            --leaf-green: #2e7d32;
+            --leaf-green: #2e7d32; /* New green for the banner border */
         }
 
         body {
@@ -76,6 +77,7 @@
             100% { transform: translateY(-100vh) scale(0) translateX(-20px); opacity: 0; }
         }
 
+        /* HEADER STYLES FOR IMAGE BANNER */
         header {
             text-align: center;
             margin-bottom: 25px;
@@ -101,6 +103,7 @@
             font-weight: bold;
         }
 
+        /* --- COUNTDOWN BANNER (SINGLE LINE) --- */
         #countdown-timer {
             background: var(--accent);
             color: white;
@@ -112,7 +115,7 @@
             border-radius: 8px;
             margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            font-size: 0.82rem; 
+            font-size: 0.85rem; 
             letter-spacing: 0.5px;
             border: 2px solid #fff;
             white-space: nowrap; 
@@ -486,8 +489,12 @@
 </head>
 <body>
 
-<audio id="fireSound" loop preload="auto"><source src="fire.mp3" type="audio/mpeg"></audio>
-<audio id="themeSound" loop preload="auto"><source src="theme.mp3" type="audio/mpeg"></audio>
+<audio id="fireSound" loop preload="auto">
+    <source src="fire.mp3" type="audio/mpeg">
+</audio>
+<audio id="themeSound" loop preload="auto">
+    <source src="theme.mp3" type="audio/mpeg">
+</audio>
 
 <div class="fire-glow"></div>
 
@@ -534,19 +541,36 @@
 
         <h3 style="text-align: center; font-size: 1.4rem;">THE SETUP (FINE PRINT)</h3>
         <p>Everyone starts with 50 Life Points. The "Sole Wordler" is whoever has the most points remaining after the Survivor 50 Finale night.</p>
+        <p>I will keep track of all points and post a weekly update (Tree Mail) by Wednesday morning.</p>
         
+        <h3>HARD MODE BONUS</h3>
+        <p>Hard Mode (*) players get +1 Point to offset any scoring penalty.</p>
+        <p><em>Note: This only applies to negative scores (it doesn't boost a 4/6 or better).</em></p>
+
+        <h3>HONOR SYSTEM</h3>
+        <p>No cheating. No using free hints or multiple devices. We play fair or your torch gets snuffed.</p>
+
+        <h3>THE DEADLINE</h3>
+        <p>Post by 11:59 PM ET. Miss a day? -5 Point Penalty (unless you use a Shot in the Dark, or an advantage saves you).</p>
+
+        <h3>SHOT IN THE DARK</h3>
+        <p>You have the power to erase your 5 worst scores. Reply "Playing my Shot in the Dark!" to wipe a terrible score (or a missed day) from your record.</p>
+
         <h3>IDOLS & ADVANTAGES</h3>
         <ul>
-            <li><strong>2/6 (Hidden Immunity Idol):</strong> Bank an idol to negate a future penalty.</li>
-            <li><strong>1/6 (Legacy Advantage):</strong> Permanent, Automatic Idol protection.</li>
+            <li><strong>2/6 (Hidden Immunity Idol):</strong> You immediately score +2 points AND bank an idol. To use it, shout "PLAYING MY IDOL!" on a future bad day. It will negate that day's penalty, bringing your score to a safe 0.</li>
+            <li><strong>1/6 (Legacy Advantage):</strong> Did you guess it on the first try?! You earn +3 points and a Permanent, Automatic Idol. You don't even have to declare it—this advantage permanently sits in your inventory and will automatically deploy to save you from your next fatal penalty (like an X/6 or a missed day).</li>
+            <li><strong>Bank Rule:</strong> You can only hold 2 standard Idols at a time. All standard idols expire 1 week before the finale.</li>
         </ul>
 
         <h3>EDGE OF EXTINCTION</h3>
-        <p>Hit 0 Points? score 4/6 or better for 3 days in a row to return.</p>
+        <p>Hit 0 Points? You're out. To return to the game, you must score 4/6 or better for 3 days in a row.</p>
 
         <h3>SURVIVOR WEDNESDAYS</h3>
-        <p>On episode nights, all gains and losses are DOUBLED.</p>
+        <p>On episode nights, all gains and losses are DOUBLED. Hard mode bonus (+1 pt) still applies to negative scores only.</p>
         
+        <p style="text-align:center; margin-top: 20px;"><strong>Outwit, Outplay, Outwordle! Who will be the Sole Wordler?</strong></p>
+
         <a href="sms:2676002525" class="text-btn">RULE QUESTION? TEXT JEFF PROBST</a>
     </div>
   </div>
@@ -574,15 +598,201 @@
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
+    // --- COUNTDOWN TIMER LOGIC ---
+    function updateCountdown() {
+        const now = new Date();
+        const target = new Date();
+        
+        // Find next Wednesday (0 = Sun, 1 = Mon, ..., 3 = Wed)
+        let daysUntilWed = (3 - now.getDay() + 7) % 7;
+        
+        // If today is Wed but past 8 PM (20:00), aim for next Wed
+        if (daysUntilWed === 0 && now.getHours() >= 20) {
+            daysUntilWed = 7;
+        }
+        
+        target.setDate(now.getDate() + daysUntilWed);
+        target.setHours(20, 0, 0, 0); 
+
+        const diff = target.getTime() - now.getTime();
+        const countdownEl = document.getElementById('countdown-timer');
+        
+        if (countdownEl) {
+            if (diff > 0 && diff < 1000 * 60 * 60 * 2) {
+                 countdownEl.innerText = "Double Pts Wed. TONIGHT!";
+            } else if (diff > 0) {
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                countdownEl.innerText = `Double Pts Wed. IN: ${d}D ${h}H ${m}M`;
+            } else {
+                countdownEl.innerText = "Double Pts Wed. IS LIVE!";
+            }
+        }
+    }
+    
+    updateCountdown();
+    setInterval(updateCountdown, 60000); 
+
+    async function loadScores() {
+        try {
+            const timestamp = new Date().getTime();
+            const response = await fetch(SHEET_URL + '&nocache=' + timestamp, { cache: 'no-store' });
+            const data = await response.text();
+            const allRows = data.split('\n');
+            const headerRow = allRows[0].split(',');
+            const bannerText = headerRow[7] ? headerRow[7].trim() : '';
+            const bannerContainer = document.getElementById('best-wordle-banner');
+            const bannerTextEl = document.getElementById('best-wordle-text');
+            
+            if (bannerText && bannerText.length > 0) {
+                bannerTextEl.innerText = bannerText;
+                bannerContainer.classList.add('visible');
+            } else {
+                bannerContainer.classList.remove('visible');
+            }
+
+            const rows = allRows.slice(1);
+
+            const players = rows.map(row => {
+                const [name, score, change, idols, hist1, hist2, hist3] = row.split(',');
+                return { 
+                    name: name ? name.trim() : '', 
+                    score: parseInt(score) || 0,
+                    change: parseInt(change) || 0,
+                    idols: parseInt(idols) || 0,
+                    hist1: hist1 ? hist1.trim() : '-',
+                    hist2: hist2 ? hist2.trim() : '-',
+                    hist3: hist3 ? hist3.trim() : '-'
+                };
+            }).sort((a, b) => b.score - a.score);
+
+            const container = document.getElementById('leaderboard');
+            container.innerHTML = '';
+            const allUnranked = players.every(p => p.score === 50);
+            let currentRank = 1;
+            let previousScore = null;
+
+            players.forEach((player, index) => {
+                if(!player.name) return;
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.addEventListener('click', () => {
+                    card.classList.toggle('expanded');
+                });
+                if (player.score < 40) card.classList.add('extinguished');
+                if (previousScore !== null && player.score < previousScore) {
+                    currentRank++;
+                }
+                previousScore = player.score;
+                const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
+                let changeDisplay = '-';
+                let changeClass = 'change-neutral';
+                if (player.change > 0) {
+                    changeDisplay = `+${player.change}`;
+                    changeClass = 'change-positive';
+                } else if (player.change < 0) {
+                    changeDisplay = `${player.change}`;
+                    changeClass = 'change-negative';
+                }
+                const idolString = player.idols > 0 ? '📿'.repeat(player.idols) : '';
+
+                card.innerHTML = `
+                    <div class="card-main">
+                        <div class="rank">${rankDisplay}</div>
+                        <div class="name">
+                            ${player.name}
+                            ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
+                            <span class="idols">${idolString}</span>
+                        </div>
+                        <div class="change-container">
+                            <span class="change-label">Change</span>
+                            <span class="${changeClass}">${changeDisplay}</span>
+                        </div>
+                        <div class="score">${player.score}</div>
+                    </div>
+                    <div class="history-drawer">
+                        <div class="history-title"><strong>Wordle History</strong></div>
+                        <div class="history-grid">
+                            <div class="history-day">
+                                <span class="history-label">YESTERDAY</span>
+                                <span class="history-value">${player.hist1}</span>
+                            </div>
+                            <div class="history-day">
+                                <span class="history-label">2 DAYS AGO</span>
+                                <span class="history-value">${player.hist2}</span>
+                            </div>
+                            <div class="history-day">
+                                <span class="history-label">3 DAYS AGO</span>
+                                <span class="history-value">${player.hist3}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (e) {
+            document.getElementById('leaderboard').innerHTML = '<p style="color:white; font-size:1.2rem;">The tribe has spoken (Error loading data).</p>';
+        }
+    }
+
+    loadScores();
+
+    const rulesModal = document.getElementById("rulesModal"), stakesModal = document.getElementById("stakesModal"), bigrModal = document.getElementById("bigrModal");
+    const rulesBtn = document.getElementById("rules-btn"), stakesBtn = document.getElementById("stakes-btn"), bigrBtn = document.getElementById("bigr-btn"), refreshBtn = document.getElementById("refresh-btn");
+
+    rulesBtn.onclick = function() { rulesModal.style.display = "block"; }
+    stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
+    bigrBtn.onclick = function() { bigrModal.style.display = "block"; }
+    
+    refreshBtn.onclick = function() { 
+        document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
+        loadScores(); 
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal) {
+            event.target.style.display = "none";
+        }
+    }
+
+    function createEmbers() {
+        const body = document.body;
+        for(let i = 0; i < 80; i++) {
+            let ember = document.createElement('div');
+            ember.className = 'ember';
+            ember.style.left = Math.random() * 100 + 'vw';
+            ember.style.animationDuration = (Math.random() * 6 + 2) + 's'; 
+            ember.style.animationDelay = Math.random() * 10 + 's';
+            let size = Math.random() * 7 + 1; 
+            ember.style.width = size + 'px';
+            ember.style.height = size + 'px';
+            body.appendChild(ember);
+        }
+    }
+    createEmbers();
+
+    // --- FIXED AUDIO LOGIC ---
     const fireAudio = document.getElementById('fireSound');
     const themeAudio = document.getElementById('themeSound');
     const toggleBtn = document.getElementById('theme-toggle-btn');
     const volContainer = document.getElementById('volume-slider-container');
     const volSlider = document.getElementById('masterVolume');
 
+    // Sync function forces the volumes to strictly follow the slider math
+    function syncVolume() {
+        const val = parseFloat(volSlider.value);
+        fireAudio.volume = val * 0.8; // Fire follows slider closely
+        themeAudio.volume = val * 0.1; // Theme stays extremely subtle
+    }
+
     // Default Fire Settings
-    fireAudio.volume = 0.5;
-    themeAudio.volume = 0;
+    fireAudio.volume = parseFloat(volSlider.value) * 0.8;
+    themeAudio.volume = 0; // Starts muted
 
     function initFire() {
         fireAudio.play().catch(() => {});
@@ -594,7 +804,7 @@
 
     toggleBtn.addEventListener('click', () => {
         if (themeAudio.paused || themeAudio.volume === 0) {
-            themeAudio.volume = volSlider.value * 0.15; // Muffled relative to slider
+            syncVolume(); // Ensure math is applied before playing
             themeAudio.play();
             toggleBtn.classList.add('playing');
             volContainer.style.display = 'flex';
@@ -606,110 +816,10 @@
         }
     });
 
-    volSlider.addEventListener('input', (e) => {
-        const val = e.target.value;
-        fireAudio.volume = val * 0.8;
-        if (!themeAudio.paused) themeAudio.volume = val * 0.20;
+    volSlider.addEventListener('input', () => {
+        syncVolume(); // Slider strictly controls math for both
     });
 
-    // --- COUNTDOWN TIMER LOGIC ---
-    function updateCountdown() {
-        const now = new Date();
-        const target = new Date();
-        let daysUntilWed = (3 - now.getDay() + 7) % 7;
-        if (daysUntilWed === 0 && now.getHours() >= 20) daysUntilWed = 7;
-        target.setDate(now.getDate() + daysUntilWed);
-        target.setHours(20, 0, 0, 0); 
-        const diff = target.getTime() - now.getTime();
-        const countdownEl = document.getElementById('countdown-timer');
-        if (countdownEl) {
-            if (diff > 0 && diff < 7200000) countdownEl.innerText = "SURVIVOR IS TONIGHT!";
-            else if (diff > 0) {
-                const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000);
-                countdownEl.innerText = `DOUBLE PTs WED. IN: ${d}D ${h}H ${m}M`;
-            } else countdownEl.innerText = "SURVIVOR IS LIVE!";
-        }
-    }
-    updateCountdown(); setInterval(updateCountdown, 60000); 
-
-    async function loadScores() {
-        try {
-            const timestamp = new Date().getTime();
-            const response = await fetch(SHEET_URL + '&nocache=' + timestamp, { cache: 'no-store' });
-            const data = await response.text();
-            const allRows = data.split('\n');
-            const headerRow = allRows[0].split(',');
-            
-            // Best Wordle Banner (Column 8)
-            const bannerText = headerRow[7]?.trim();
-            if (bannerText) { 
-                document.getElementById('best-wordle-text').innerText = bannerText; 
-                document.getElementById('best-wordle-banner').classList.add('visible'); 
-            }
-
-            const players = allRows.slice(1).map(row => {
-                const [name, score, change, idols, h1, h2, h3] = row.split(',');
-                return { 
-                    name: name?.trim(), 
-                    score: parseInt(score) || 0, 
-                    change: parseInt(change) || 0, 
-                    idols: parseInt(idols) || 0, 
-                    h1: h1?.trim() || '-', 
-                    h2: h2?.trim() || '-', 
-                    h3: h3?.trim() || '-' 
-                };
-            }).sort((a, b) => b.score - a.score);
-
-            const container = document.getElementById('leaderboard'); 
-            container.innerHTML = '';
-            const allUnranked = players.every(p => p.score === 50);
-            let currentRank = 1, prevScore = null;
-
-            players.forEach(p => {
-                if(!p.name) return;
-                const card = document.createElement('div');
-                card.className = 'player-card';
-                card.onclick = () => card.classList.toggle('expanded');
-                if (prevScore !== null && p.score < prevScore) currentRank++;
-                prevScore = p.score;
-                const rankDisp = allUnranked ? '-' : `#${currentRank}`;
-                let chgClass = p.change > 0 ? 'change-positive' : (p.change < 0 ? 'change-negative' : 'change-neutral');
-                let chgDisp = p.change > 0 ? `+${p.change}` : (p.change < 0 ? p.change : '-');
-                const idolStr = p.idols > 0 ? '📿'.repeat(p.idols) : '';
-
-                card.innerHTML = `
-                    <div class="card-main">
-                        <div class="rank">${rankDisp}</div>
-                        <div class="name">${p.name} ${p.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''} <span>${idolStr}</span></div>
-                        <div class="change-container"><span class="change-label">Change</span><span class="${chgClass}">${chgDisp}</span></div>
-                        <div class="score">${p.score}</div>
-                    </div>
-                    <div class="history-drawer"><div class="history-grid">
-                        <div class="history-day"><span class="history-label">YESTERDAY</span><span class="history-value">${p.h1}</span></div>
-                        <div class="history-day"><span class="history-label">2 DAYS AGO</span><span class="history-value">${p.h2}</span></div>
-                        <div class="history-day"><span class="history-label">3 DAYS AGO</span><span class="history-value">${p.h3}</span></div>
-                    </div></div>`;
-                container.appendChild(card);
-            });
-        } catch (e) { console.error(e); }
-    }
-    loadScores();
-
-    document.getElementById("rules-btn").onclick = () => document.getElementById("rulesModal").style.display = "block";
-    document.getElementById("stakes-btn").onclick = () => document.getElementById("stakesModal").style.display = "block";
-    document.getElementById("bigr-btn").onclick = () => document.getElementById("bigrModal").style.display = "block";
-    document.getElementById("refresh-btn").onclick = () => loadScores();
-    function closeModal(id) { document.getElementById(id).style.display = "none"; }
-    window.onclick = (e) => { if(e.target.className === 'modal') e.target.style.display = "none"; }
-
-    for(let i = 0; i < 80; i++) {
-        let e = document.createElement('div'); e.className = 'ember';
-        e.style.left = Math.random() * 100 + 'vw';
-        e.style.animationDuration = (Math.random() * 6 + 2) + 's'; 
-        e.style.animationDelay = Math.random() * 10 + 's';
-        let s = Math.random() * 7 + 1; e.style.width = s + 'px'; e.style.height = s + 'px';
-        document.body.appendChild(e);
-    }
 </script>
 </body>
 </html>
