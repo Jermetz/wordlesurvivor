@@ -434,6 +434,10 @@
 </head>
 <body>
 
+<audio id="fireSound" loop preload="auto">
+    <source src="fire.mp3" type="audio/mpeg">
+</audio>
+
 <div class="fire-glow"></div>
 
 <header>
@@ -724,7 +728,7 @@
         if (event.target == bigrModal) { bigrModal.style.display = "none"; }
     }
 
-    // --- NEW: FIRE EMBERS EFFECT ---
+    // --- FIRE EMBERS EFFECT ---
     function createEmbers() {
         const body = document.body;
         // INCREASED COUNT FROM 35 TO 80
@@ -744,6 +748,30 @@
     }
     createEmbers();
     // --------------------------------
+
+    // --- AUDIO AUTOPLAY WORKAROUND ---
+    const fireAudio = document.getElementById('fireSound');
+    // Set a very low starting volume just in case it is too loud
+    fireAudio.volume = 0.5; 
+    
+    function startAudio() {
+        // Try to play the audio
+        fireAudio.play().catch(e => {
+            console.log("Autoplay blocked by browser. Waiting for user tap.");
+        });
+        
+        // Remove the event listeners after the first successful interaction
+        document.removeEventListener('click', startAudio);
+        document.removeEventListener('touchstart', startAudio);
+    }
+
+    // Attempt to play on load (will work in some environments, fail in others)
+    startAudio();
+
+    // Fallback: wait for the first tap/click anywhere on the screen
+    document.addEventListener('click', startAudio);
+    document.addEventListener('touchstart', startAudio);
+    // --------------------------------------
 
 </script>
 </body>
