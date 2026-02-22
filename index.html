@@ -324,6 +324,12 @@
         .change-negative { color: #d32f2f; font-weight: 900; font-size: 1.1rem; text-shadow: var(--text-shadow); }
         .change-neutral { color: #666; font-weight: bold; font-size: 1.1rem; }
 
+        .score-container {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
         .score { 
             font-size: 1.6rem;
             font-weight: 900;
@@ -358,6 +364,17 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
+        }
+
+        /* Customized large orange asterisk for the drawer */
+        .drawer-asterisk {
+            color: var(--accent);
+            font-size: 1.6rem;
+            font-weight: 900;
+            line-height: 0.5;
+            vertical-align: middle;
+            display: inline-block;
+            transform: translateY(2px);
         }
 
         .history-title {
@@ -721,7 +738,8 @@
             const allRows = data.split('\n');
             const headerRow = allRows[0].split(',');
 
-            const bannerText = headerRow[7] ? headerRow[7].trim() : '';
+            // Updated Column Indices based on inserting the new Hard Mode column
+            const bannerText = headerRow[8] ? headerRow[8].trim() : '';
             const bannerContainer = document.getElementById('best-wordle-banner');
             const bannerTextEl = document.getElementById('best-wordle-text');
             
@@ -732,14 +750,16 @@
                 bannerContainer.classList.remove('visible');
             }
 
-            const treeMailText = headerRow[8] ? headerRow[8].trim() : '';
+            // Updated Column Index for Tree Mail
+            const treeMailText = headerRow[9] ? headerRow[9].trim() : '';
             customTreeMail = treeMailText;
             updateCountdown(); 
 
             const rows = allRows.slice(1);
 
             const players = rows.map(row => {
-                const [name, score, change, idols, hist1, hist2, hist3] = row.split(',');
+                // Now fetching the 8th column (index 7) for Hard Mode
+                const [name, score, change, idols, hist1, hist2, hist3, hardModeCol] = row.split(',');
                 return { 
                     name: name ? name.trim() : '', 
                     score: parseInt(score) || 0,
@@ -747,7 +767,8 @@
                     idols: parseInt(idols) || 0,
                     hist1: hist1 ? hist1.trim() : '-',
                     hist2: hist2 ? hist2.trim() : '-',
-                    hist3: hist3 ? hist3.trim() : '-'
+                    hist3: hist3 ? hist3.trim() : '-',
+                    hardMode: hardModeCol ? hardModeCol.trim() : ''
                 };
             }).sort((a, b) => b.score - a.score);
 
@@ -780,7 +801,8 @@
                     changeClass = 'change-negative';
                 }
 
-                const isHardMode = player.hist1.includes('*');
+                // Check the dedicated Hard Mode column for an asterisk
+                const isHardMode = player.hardMode.includes('*');
                 const hardModeText = isHardMode ? '✅' : '❌';
 
                 card.innerHTML = `
@@ -794,12 +816,14 @@
                             <span class="change-label">Change</span>
                             <span class="${changeClass}">${changeDisplay}</span>
                         </div>
-                        <div class="score">${player.score}</div>
+                        <div class="score-container">
+                            <div class="score">${player.score}</div>
+                        </div>
                     </div>
                     <div class="history-drawer">
                         <div class="drawer-status">
                             <div>📿 Immunity Idols Banked: ${player.idols}</div>
-                            <div>⭐ Hard Mode: ${hardModeText}</div>
+                            <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
                         </div>
                         <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
@@ -935,7 +959,7 @@
     // Fallback logic to start audio context on first screen tap
     document.addEventListener('touchstart', () => {
         if(!audioInitialized) { initAudioContext(); }
-    }, {once:true});
+    }, {true:true});
 
 </script>
 </body>
