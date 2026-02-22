@@ -103,7 +103,7 @@
             font-weight: bold;
         }
 
-        /* --- BULLETPROOF INFINITE SCROLLING MARQUEE --- */
+        /* --- FLAWLESS INFINITE SCROLLING MARQUEE --- */
         .marquee-wrapper {
             background: var(--accent);
             color: white;
@@ -114,31 +114,28 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             border: 2px solid #fff;
             overflow: hidden;
+            display: flex;
+            align-items: center;
             height: 40px; 
-            position: relative;
+            box-sizing: border-box;
         }
 
         .marquee-track {
             display: flex;
             width: max-content;
-            height: 100%;
+            animation: marquee-scroll 20s linear infinite;
             will-change: transform; 
-            animation: marquee-scroll linear infinite;
         }
 
         .marquee-content {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            padding-right: 50px; /* Space between the repeating phrases */
+            padding-right: 40px; 
             font-weight: 900;
             font-size: 0.9rem;
             letter-spacing: 0.5px;
             white-space: nowrap;
-            text-transform: uppercase; 
+            text-transform: uppercase;
         }
 
-        /* Shifts the track exactly halfway, snapping perfectly seamlessly */
         @keyframes marquee-scroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
@@ -185,18 +182,26 @@
             fill: white;
         }
 
+        /* --- BEST WORDLE BANNER MAKEOVER --- */
         #best-wordle-banner {
             display: none;
-            background: var(--card-bg);
-            border: 3px dashed var(--accent);
-            color: var(--text);
-            padding: 15px;
+            background: linear-gradient(135deg, #2b1d0e 0%, #4a2e15 100%);
+            border: 3px solid #ffd700;
+            color: #ffd700;
+            padding: 18px 15px;
             text-align: center;
             width: 100%;
             max-width: 450px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            animation: gold-pulse 2s infinite alternate;
+            box-sizing: border-box;
+        }
+
+        @keyframes gold-pulse {
+            0% { box-shadow: 0 0 8px rgba(217, 81, 0, 0.6); border-color: #d95100; }
+            100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.9); border-color: #ffd700; }
         }
 
         #best-wordle-banner.visible {
@@ -204,22 +209,25 @@
         }
 
         .banner-title {
-            color: var(--accent);
+            color: #f4e4bc;
             text-transform: uppercase;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
             font-weight: 900;
-            text-decoration: underline;
+            opacity: 0.9;
         }
 
         .banner-content {
-            font-size: 1.1rem;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            font-weight: bold;
-            font-style: italic;
+            font-size: 1.6rem;
+            font-family: 'Arial Black', sans-serif;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            color: #ffd700;
+            letter-spacing: 1px;
         }
 
+        /* --- LEADERBOARD & CARDS --- */
         #leaderboard {
             width: 100%;
             max-width: 450px;
@@ -524,7 +532,7 @@
 </div>
 
 <div id="best-wordle-banner">
-    <div class="banner-title">🌟 Best Wordle of the Week 🌟</div>
+    <div class="banner-title">👑 BEST WORDLE OF THE WEEK 👑</div>
     <div class="banner-content" id="best-wordle-text"></div>
 </div>
 
@@ -852,9 +860,11 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         audioCtx = new AudioContext();
 
+        // Route Theme Audio through a Gain Node (Virtual Mixer)
         themeSource = audioCtx.createMediaElementSource(themeAudio);
         themeGainNode = audioCtx.createGain();
         
+        // HARDCODE THEME VOLUME HERE (0.1 = 10% volume)
         themeGainNode.gain.value = 0.1; 
         
         themeSource.connect(themeGainNode);
@@ -863,12 +873,14 @@
         audioInitialized = true;
     }
 
+    // Try to auto-play fire on load
     fireAudio.play().then(() => {
         fireToggleBtn.classList.add('playing');
     }).catch(() => {
         console.log("Autoplay blocked. Waiting for interaction.");
     });
 
+    // Fire Toggle Button Logic
     fireToggleBtn.addEventListener('click', () => {
         if (fireAudio.paused) {
             fireAudio.play();
@@ -879,9 +891,11 @@
         }
     });
 
+    // Theme Toggle Button Logic
     themeToggleBtn.addEventListener('click', () => {
-        initAudioContext(); 
+        initAudioContext(); // Ensure virtual mixer is ready
         
+        // Resume context if suspended by iOS
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
@@ -896,6 +910,7 @@
         }
     });
 
+    // Fallback logic to start audio context on first screen tap
     document.addEventListener('touchstart', () => {
         if(!audioInitialized) { initAudioContext(); }
     }, {once:true});
