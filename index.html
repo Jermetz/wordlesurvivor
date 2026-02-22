@@ -15,31 +15,29 @@
         :root {
             /* Updated Palette for High Contrast Parchment Look */
             --bg-color: #1a1a1a; /* Keep jungle background dark */
-            --card-bg: #f4e4bc; /* NEW: Light Parchment color */
-            --card-border: #c7b299; /* NEW: Slightly darker border for definition */
-            --accent: #d95100; /* NEW: A deeper, burnt orange for better contrast on light bg */
-            --text: #2b1d0e; /* NEW: Deep dark brown (almost black) for main text */
-            --text-shadow: 1px 1px 1px rgba(0,0,0,0.2); /* NEW: Subtle rugged shadow */
+            --card-bg: #f4e4bc; /* Light Parchment color */
+            --card-border: #c7b299; /* Slightly darker border for definition */
+            --accent: #d95100; /* A deeper, burnt orange for better contrast on light bg */
+            --text: #2b1d0e; /* Deep dark brown (almost black) for main text */
+            --text-shadow: 1px 1px 1px rgba(0,0,0,0.2); /* Subtle rugged shadow */
             --low-score: #eb4034;
             --leaf-green: #2e7d32; /* New green for the banner border */
         }
 
         body {
             background-color: var(--bg-color);
-            /* Restored background image with a lighter dimming overlay (0.5 opacity instead of 0.85) */
             background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('bg-pattern.jpg');
             background-repeat: repeat;
             background-size: 200px; 
             background-attachment: fixed;
             color: var(--text);
-            font-family: 'Arial Black', 'Helvetica Neue', sans-serif; /* Added fallback */
+            font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            /* Allow native pull-to-refresh behavior */
             overscroll-behavior-y: contain; 
         }
 
@@ -78,9 +76,8 @@
             50% { transform: translateY(-50vh) scale(0.8) translateX(20px); opacity: 0.8; }
             100% { transform: translateY(-100vh) scale(0) translateX(-20px); opacity: 0; }
         }
-        /* ----------------------------------- */
 
-        /* UPDATED HEADER STYLES FOR IMAGE BANNER */
+        /* HEADER STYLES FOR IMAGE BANNER */
         header {
             text-align: center;
             margin-bottom: 25px;
@@ -91,15 +88,14 @@
         }
 
         .banner-image {
-            max-width: 90%; /* Ensure it doesn't touch the edges on small screens */
-            width: 380px; /* Ideal width for desktop/tablets so the square isn't too huge */
-            height: auto; /* Maintain square aspect ratio */
-            border-radius: 12px; /* Soften the corners */
-            box-shadow: 0 8px 20px rgba(0,0,0,0.7); /* Deep shadow to make it pop off the leaves */
-            border: 3px solid var(--card-border); /* Rugged border to match the theme */
+            max-width: 90%;
+            width: 380px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+            border: 3px solid var(--card-border);
         }
 
-        /* General paragraph style (used in modals) */
         p { 
             font-size: 1rem;
             margin: 5px 0; 
@@ -107,7 +103,6 @@
             font-weight: bold;
         }
 
-        /* NEW COUNTDOWN BANNER STYLES */
         #countdown-timer {
             background: var(--accent);
             color: white;
@@ -124,9 +119,8 @@
             border: 2px solid #fff;
         }
 
-        /* NEW BEST WORDLE BANNER STYLES */
         #best-wordle-banner {
-            display: none; /* Hidden by default until we check the sheet */
+            display: none;
             background: var(--card-bg);
             border: 3px dashed var(--accent);
             color: var(--text);
@@ -140,7 +134,7 @@
         }
 
         #best-wordle-banner.visible {
-            display: block; /* Shown if there is text in the sheet */
+            display: block;
         }
 
         .banner-title {
@@ -162,29 +156,27 @@
 
         #leaderboard {
             width: 100%;
-            max-width: 450px; /* Slightly wider to accommodate larger text */
+            max-width: 450px;
             display: flex;
             flex-direction: column;
-            gap: 15px; /* More space between cards */
+            gap: 15px;
             flex-grow: 1;
         }
 
-        /* THE NEW PARCHMENT CARD STYLE */
         .player-card {
             background: var(--card-bg);
-            border: 2px solid var(--card-border); /* Defines the edges clearly */
+            border: 2px solid var(--card-border);
             border-radius: 12px;
             display: flex;
-            flex-direction: column; /* Changed to allow drawer stacking */
-            border-left: 8px solid var(--accent); /* Thicker accent bar */
-            box-shadow: 0 6px 10px rgba(0,0,0,0.4); /* Deeper shadow for "pop" */
-            color: var(--text); /* Dark text on light background */
-            cursor: pointer; /* Indicates card is tap-able */
+            flex-direction: column;
+            border-left: 8px solid var(--accent);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.4);
+            color: var(--text);
+            cursor: pointer;
             transition: all 0.2s ease-in-out;
-            overflow: hidden; /* Keeps drawer contained within border radius */
+            overflow: hidden;
         }
 
-        /* Wraps the main card info to preserve original layout */
         .card-main {
             padding: 18px; 
             display: flex;
@@ -193,7 +185,7 @@
         }
 
         .rank { 
-            font-size: 1.4rem; /* Larger */
+            font-size: 1.4rem;
             margin-right: 15px; 
             color: var(--accent); 
             width: 35px;
@@ -203,7 +195,7 @@
         
         .name { 
             flex-grow: 1; 
-            font-size: 1.3rem; /* Significantly larger name font */
+            font-size: 1.3rem;
             text-shadow: var(--text-shadow);
             letter-spacing: 0.5px;
             display: flex;
@@ -212,13 +204,11 @@
             gap: 5px;
         }
 
-        /* NEW IDOL STYLES */
         .idols {
             font-size: 1.2rem;
             filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3));
         }
 
-        /* NEW RECENT CHANGE COLUMN STYLES */
         .change-container {
             text-align: right;
             margin-right: 15px;
@@ -242,7 +232,7 @@
         .change-neutral { color: #666; font-weight: bold; font-size: 1.1rem; }
 
         .score { 
-            font-size: 1.6rem; /* Large, clear scores */
+            font-size: 1.6rem;
             font-weight: 900;
             text-shadow: var(--text-shadow);
             color: var(--accent);
@@ -250,7 +240,6 @@
             text-align: right;
         }
 
-        /* NEW HISTORY DRAWER STYLES */
         .history-drawer {
             display: none;
             background: rgba(0,0,0,0.06);
@@ -259,7 +248,7 @@
         }
 
         .player-card.expanded .history-drawer {
-            display: block; /* Shows drawer when expanded class is added */
+            display: block;
         }
 
         .history-title {
@@ -297,15 +286,15 @@
         }
 
         .extinguished {
-            opacity: 0.7; /* Less transparent so it's still readable */
+            opacity: 0.7;
             border-left: 8px solid #555;
             filter: grayscale(0.8);
-            background-color: #dcd0b2; /* Slightly darker/dirtier parchment for eliminated players */
+            background-color: #dcd0b2;
         }
 
         .legacy-tag {
-            font-size: 0.8rem; /* Larger tag */
-            background: var(--accent); /* Use accent color */
+            font-size: 0.8rem;
+            background: var(--accent);
             color: white;
             padding: 4px 8px;
             border-radius: 4px;
@@ -324,12 +313,12 @@
 
         .action-btn, #bigr-btn, #refresh-btn {
             flex: 1;
-            background: var(--card-bg); /* Parchment background for buttons */
-            border: 3px solid var(--accent); /* Thicker, high contrast border */
+            background: var(--card-bg);
+            border: 3px solid var(--accent);
             color: var(--accent);
-            padding: 14px 20px; /* Larger touch targets */
+            padding: 14px 20px;
             border-radius: 25px;
-            font-size: 1.1rem; /* Larger button text */
+            font-size: 1.1rem;
             cursor: pointer;
             font-family: 'Arial Black', sans-serif;
             text-transform: uppercase;
@@ -343,7 +332,6 @@
              max-width: 450px;
         }
 
-        /* Button style for the SMS link inside the modal */
         .text-btn {
             display: block;
             background: var(--card-bg);
@@ -363,7 +351,6 @@
             max-width: 90%;
         }
 
-        /* Modal Styles Updated for Parchment Theme */
         .modal {
             display: none; 
             position: fixed; 
@@ -373,20 +360,19 @@
             width: 100%; 
             height: 100%; 
             overflow: auto; 
-            background-color: rgba(0,0,0,0.85); /* Darker background overlay */
+            background-color: rgba(0,0,0,0.85);
             padding-top: 60px;
         }
 
         .modal-content {
-            background-color: var(--card-bg); /* Parchment modal */
+            background-color: var(--card-bg);
             margin: 5% auto; 
             padding: 25px;
             border: 3px solid var(--accent);
             width: 90%; 
             max-width: 550px;
             border-radius: 12px;
-            color: var(--text); /* Dark text */
-            /* Switched modal font to Arial Black for consistency and ruggedness */
+            color: var(--text);
             font-family: 'Arial Black', sans-serif; 
             font-weight: normal;
             max-height: 80vh;
@@ -397,7 +383,7 @@
         .close {
             color: var(--accent);
             float: right;
-            font-size: 32px; /* Larger close button */
+            font-size: 32px;
             font-weight: bold;
         }
 
@@ -407,7 +393,7 @@
             text-transform: uppercase;
             text-align: center;
             margin-bottom: 20px;
-            font-size: 1.5rem; /* Larger modal headers */
+            font-size: 1.5rem;
             text-shadow: var(--text-shadow);
             text-decoration: underline;
         }
@@ -420,13 +406,12 @@
              text-shadow: var(--text-shadow);
         }
 
-        /* Update Rules text for high readability */
         #rulesModal .modal-body p,
         #rulesModal .modal-body li {
             font-weight: bold;
             color: var(--text);
-            font-size: 1.1rem; /* Larger body text */
-            line-height: 1.5; /* More space between lines for readability */
+            font-size: 1.1rem;
+            line-height: 1.5;
         }
 
     </style>
@@ -435,6 +420,9 @@
 
 <audio id="fireSound" loop preload="auto">
     <source src="fire.mp3" type="audio/mpeg">
+</audio>
+<audio id="themeSound" loop preload="auto">
+    <source src="theme.mp3" type="audio/mpeg">
 </audio>
 
 <div class="fire-glow"></div>
@@ -528,7 +516,6 @@
 </div>
 
 <script>
-    // PASTE YOUR GOOGLE SHEET CSV URL HERE
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
     // --- COUNTDOWN TIMER LOGIC ---
@@ -536,23 +523,20 @@
         const now = new Date();
         const target = new Date();
         
-        // Find next Wednesday (0 = Sun, 1 = Mon, ..., 3 = Wed)
         let daysUntilWed = (3 - now.getDay() + 7) % 7;
         
-        // If today is Wed but past 8 PM (20:00), aim for next Wed
         if (daysUntilWed === 0 && now.getHours() >= 20) {
             daysUntilWed = 7;
         }
         
         target.setDate(now.getDate() + daysUntilWed);
-        target.setHours(20, 0, 0, 0); // 8:00 PM local time
+        target.setHours(20, 0, 0, 0); 
 
         const diff = target.getTime() - now.getTime();
         const countdownEl = document.getElementById('countdown-timer');
         
         if (countdownEl) {
             if (diff > 0 && diff < 1000 * 60 * 60 * 2) {
-                 // Within 2 hours of air time
                  countdownEl.innerText = "Double Pts Wed. TONIGHT!";
             } else if (diff > 0) {
                 const d = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -565,24 +549,16 @@
         }
     }
     
-    // Start countdown and update every minute
     updateCountdown();
     setInterval(updateCountdown, 60000); 
-    // ----------------------------------
 
     async function loadScores() {
         try {
-            // CACHE-BUSTER Appends a unique timestamp so the browser never uses old data
             const timestamp = new Date().getTime();
             const response = await fetch(SHEET_URL + '&nocache=' + timestamp, { cache: 'no-store' });
             const data = await response.text();
-            
-            // We split into all rows to check the header row first
             const allRows = data.split('\n');
             const headerRow = allRows[0].split(',');
-            
-            // --- BEST WORDLE BANNER LOGIC ---
-            // Check the 8th column (index 7) of the very first row for banner text
             const bannerText = headerRow[7] ? headerRow[7].trim() : '';
             const bannerContainer = document.getElementById('best-wordle-banner');
             const bannerTextEl = document.getElementById('best-wordle-text');
@@ -593,10 +569,8 @@
             } else {
                 bannerContainer.classList.remove('visible');
             }
-            // --------------------------------------
 
-            const rows = allRows.slice(1); // Skip header row for player data
-
+            const rows = allRows.slice(1);
             const players = rows.map(row => {
                 const [name, score, change, idols, hist1, hist2, hist3] = row.split(',');
                 return { 
@@ -612,79 +586,37 @@
 
             const container = document.getElementById('leaderboard');
             container.innerHTML = '';
-            
-            // Check if everyone is still at the starting score of 50
             const allUnranked = players.every(p => p.score === 50);
-
             let currentRank = 1;
             let previousScore = null;
 
             players.forEach((player, index) => {
                 if(!player.name) return;
-                
                 const card = document.createElement('div');
                 card.className = 'player-card';
-                
-                // Add click listener for the expandable drawer
-                card.addEventListener('click', () => {
-                    card.classList.toggle('expanded');
-                });
-                
-                // Example: If score is below 40, they are "Extinguished"
+                card.addEventListener('click', () => card.classList.toggle('expanded'));
                 if (player.score < 40) card.classList.add('extinguished');
-                
-                // Update rank based on tie logic (Dense Ranking)
-                if (previousScore !== null && player.score < previousScore) {
-                    currentRank++;
-                }
+                if (previousScore !== null && player.score < previousScore) currentRank++;
                 previousScore = player.score;
-
-                // Determine rank display: show "-" if game hasn't started changing yet
                 const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
-
-                // Determine change column styling
-                let changeDisplay = '-';
-                let changeClass = 'change-neutral';
-                if (player.change > 0) {
-                    changeDisplay = `+${player.change}`;
-                    changeClass = 'change-positive';
-                } else if (player.change < 0) {
-                    changeDisplay = `${player.change}`;
-                    changeClass = 'change-negative';
-                }
-
-                // Generate Idol String
+                let changeDisplay = '-', changeClass = 'change-neutral';
+                if (player.change > 0) { changeDisplay = `+${player.change}`; changeClass = 'change-positive'; }
+                else if (player.change < 0) { changeDisplay = `${player.change}`; changeClass = 'change-negative'; }
                 const idolString = player.idols > 0 ? '📿'.repeat(player.idols) : '';
 
                 card.innerHTML = `
                     <div class="card-main">
                         <div class="rank">${rankDisplay}</div>
-                        <div class="name">
-                            ${player.name}
-                            ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
-                            <span class="idols">${idolString}</span>
-                        </div>
-                        <div class="change-container">
-                            <span class="change-label">Change</span>
-                            <span class="${changeClass}">${changeDisplay}</span>
-                        </div>
+                        <div class="name">${player.name} ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''} <span class="idols">${idolString}</span></div>
+                        <div class="change-container"><span class="change-label">Change</span><span class="${changeClass}">${changeDisplay}</span></div>
                         <div class="score">${player.score}</div>
                     </div>
                     <div class="history-drawer">
                         <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
-                            <div class="history-day">
-                                <span class="history-label">YESTERDAY</span>
-                                <span class="history-value">${player.hist1}</span>
-                            </div>
-                            <div class="history-day">
-                                <span class="history-label">2 DAYS AGO</span>
-                                <span class="history-value">${player.hist2}</span>
-                            </div>
-                            <div class="history-day">
-                                <span class="history-label">3 DAYS AGO</span>
-                                <span class="history-value">${player.hist3}</span>
-                            </div>
+                            <div class="history-day"><span class="history-label">YESTERDAY</span><span class="history-value">${player.hist1}</span></div>
+                            <div class="history-day"><span class="history-label">2 DAYS AGO</span><span class="history-value">${player.hist2}</span></div>
+                            <div class="history-day"><span class="history-label">3 DAYS AGO</span><span class="history-value">${player.hist3}</span></div>
                         </div>
                     </div>
                 `;
@@ -697,37 +629,15 @@
 
     loadScores();
 
-    // Modal Logic
-    const rulesModal = document.getElementById("rulesModal");
-    const stakesModal = document.getElementById("stakesModal");
-    const bigrModal = document.getElementById("bigrModal");
-    const rulesBtn = document.getElementById("rules-btn");
-    const stakesBtn = document.getElementById("stakes-btn");
-    const bigrBtn = document.getElementById("bigr-btn");
-    const refreshBtn = document.getElementById("refresh-btn");
+    const rulesModal = document.getElementById("rulesModal"), stakesModal = document.getElementById("stakesModal"), bigrModal = document.getElementById("bigrModal");
+    document.getElementById("rules-btn").onclick = () => rulesModal.style.display = "block";
+    document.getElementById("stakes-btn").onclick = () => stakesModal.style.display = "block";
+    document.getElementById("bigr-btn").onclick = () => bigrModal.style.display = "block";
+    document.getElementById("refresh-btn").onclick = () => { loadScores(); };
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
+    window.onclick = (e) => { if (e.target == rulesModal || e.target == stakesModal || e.target == bigrModal) e.target.style.display = "none"; }
 
-    rulesBtn.onclick = function() { rulesModal.style.display = "block"; }
-    stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
-    bigrBtn.onclick = function() { bigrModal.style.display = "block"; }
-    
-    refreshBtn.onclick = function() { 
-        document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
-        loadScores(); 
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).style.display = "none";
-    }
-
-    window.onclick = function(event) {
-        if (event.target == rulesModal) { rulesModal.style.display = "none"; }
-        if (event.target == stakesModal) { stakesModal.style.display = "none"; }
-        if (event.target == bigrModal) { bigrModal.style.display = "none"; }
-    }
-
-    // --- FIRE EMBERS EFFECT ---
     function createEmbers() {
-        const body = document.body;
         for(let i = 0; i < 80; i++) {
             let ember = document.createElement('div');
             ember.className = 'ember';
@@ -735,31 +645,26 @@
             ember.style.animationDuration = (Math.random() * 6 + 2) + 's'; 
             ember.style.animationDelay = Math.random() * 10 + 's';
             let size = Math.random() * 7 + 1; 
-            ember.style.width = size + 'px';
-            ember.style.height = size + 'px';
-            body.appendChild(ember);
+            ember.style.width = size + 'px'; ember.style.height = size + 'px';
+            document.body.appendChild(ember);
         }
     }
     createEmbers();
-    // --------------------------------
 
     // --- AUDIO AUTOPLAY WORKAROUND ---
     const fireAudio = document.getElementById('fireSound');
+    const themeAudio = document.getElementById('themeSound');
     fireAudio.volume = 0.5; 
+    themeAudio.volume = 0.3; // Theme is act as a background melody
     
     function startAudio() {
-        fireAudio.play().catch(e => {
-            console.log("Autoplay blocked by browser. Waiting for user tap.");
-        });
+        fireAudio.play().catch(() => {});
+        themeAudio.play().catch(() => {});
         document.removeEventListener('click', startAudio);
         document.removeEventListener('touchstart', startAudio);
     }
-
-    startAudio();
-
     document.addEventListener('click', startAudio);
     document.addEventListener('touchstart', startAudio);
-    // --------------------------------------
 
 </script>
 </body>
