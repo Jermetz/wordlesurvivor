@@ -1,3 +1,10 @@
+That makes complete sense! Because of how CSS Grid row heights calculate, the left column's giant logo was dictating where the "second row" started across the entire screen, pushing your leaderboard list way down.
+To fix this perfectly while keeping the iPhone view 100% identical, I grouped the leaderboard-header and #leaderboard into a new <div class="right-panel">. This tells the iPad to let the right side flow independently of whatever is happening on the left side, keeping your header and list perfectly flush.
+I also made the following adjustments:
+ * iPad Action Buttons: Forced .action-grid into a single column (1fr) only on screens 820px or wider.
+ * iPad Width: Removed the strict 450px width limit on the leaderboard only for iPad/desktop so it beautifully stretches to fill the rest of the available screen.
+ * Modal Transparency: You were right! Every modal shared the exact same rgba(0,0,0, 0.85) background, but because the Rules modal had so much solid content, it felt like a total blackout. I lowered the darkness to 0.65 and added a slick -webkit-backdrop-filter: blur(3px); so you can still see the game subtly blurred behind it.
+Here is the complete, updated code to copy and paste:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -503,7 +510,9 @@
             width: 100%; 
             height: 100%; 
             overflow: auto; 
-            background-color: rgba(0,0,0,0.85);
+            background-color: rgba(0,0,0,0.65); /* Increased Transparency */
+            backdrop-filter: blur(3px); /* Modern blur effect behind the modal */
+            -webkit-backdrop-filter: blur(3px);
             padding-top: 60px;
         }
 
@@ -566,29 +575,46 @@
             align-items: center;
         }
 
+        .right-panel {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         /* --- IPAD / DESKTOP TWO-COLUMN LAYOUT --- */
         @media (min-width: 820px) {
             .dashboard-layout {
                 display: grid;
                 grid-template-columns: 350px 1fr;
-                grid-template-areas: 
-                    "header l-head"
-                    "marquee l-body"
-                    "banner l-body"
-                    "actions l-body";
                 grid-template-rows: auto auto auto 1fr;
-                gap: 25px 45px;
+                gap: 20px 45px;
                 max-width: 1050px;
                 align-items: start;
             }
 
-            header { grid-area: header; margin-bottom: 0; }
-            .banner-image { width: 100%; max-width: 350px; }
-            .marquee-wrapper { grid-area: marquee; max-width: 100%; margin-bottom: 0; }
-            #best-wordle-banner { grid-area: banner; max-width: 100%; margin-bottom: 0; }
-            .leaderboard-header { grid-area: l-head; max-width: 100%; margin-top: 0; }
-            #leaderboard { grid-area: l-body; max-width: 100%; }
-            .action-grid { grid-area: actions; max-width: 100%; margin-top: 0; }
+            header { grid-column: 1; grid-row: 1; margin-bottom: 0; }
+            .marquee-wrapper { grid-column: 1; grid-row: 2; margin-bottom: 0; }
+            #best-wordle-banner { grid-column: 1; grid-row: 3; margin-bottom: 0; }
+            
+            .action-grid { 
+                grid-column: 1; 
+                grid-row: 4; 
+                grid-template-columns: 1fr; /* Expand buttons to a single column */
+                margin-top: 10px; 
+            }
+
+            .right-panel {
+                grid-column: 2;
+                grid-row: 1 / span 4; /* Spans all rows perfectly flush to the top */
+                max-width: 100%;
+                height: 100%;
+            }
+
+            .leaderboard-header, #leaderboard {
+                max-width: 100%; /* Lets it stretch completely on iPad */
+                margin-top: 0;
+            }
         }
 
     </style>
@@ -621,13 +647,15 @@
         <div class="banner-content" id="best-wordle-text"></div>
     </div>
 
-    <div class="leaderboard-header">
-        LEADERBOARD
-        <span>(Ranked by Total Life Pts)</span>
-    </div>
+    <div class="right-panel">
+        <div class="leaderboard-header">
+            LEADERBOARD
+            <span>(Ranked by Total Life Pts)</span>
+        </div>
 
-    <div id="leaderboard">
-        <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
+        <div id="leaderboard">
+            <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
+        </div>
     </div>
 
     <div class="action-grid">
@@ -1080,3 +1108,4 @@
 </script>
 </body>
 </html>
+
