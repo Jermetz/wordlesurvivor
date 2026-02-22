@@ -126,6 +126,7 @@
             white-space: nowrap;
             padding-left: 100%; /* Pushes text to start off-screen right */
             animation: scroll-left 18s linear infinite; /* Adjust '18s' to change scroll speed */
+            text-transform: uppercase; /* FORCES ALL CAPS IN CSS TOO */
         }
 
         @keyframes scroll-left {
@@ -259,11 +260,6 @@
             gap: 5px;
         }
 
-        .idols {
-            font-size: 1.2rem;
-            filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3));
-        }
-
         .change-container {
             text-align: right;
             margin-right: 15px;
@@ -286,6 +282,12 @@
         .change-negative { color: #d32f2f; font-weight: 900; font-size: 1.1rem; text-shadow: var(--text-shadow); }
         .change-neutral { color: #666; font-weight: bold; font-size: 1.1rem; }
 
+        .score-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         .score { 
             font-size: 1.6rem;
             font-weight: 900;
@@ -293,6 +295,11 @@
             color: var(--accent);
             min-width: 45px;
             text-align: right;
+        }
+
+        .hard-mode-icon {
+            font-size: 1.2rem;
+            filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3));
         }
 
         .history-drawer {
@@ -597,46 +604,51 @@
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
-    let customTreeMail = ""; // Global variable to store sheet text
+    let customTreeMail = ""; 
 
-    // --- COUNTDOWN TIMER & MARQUEE LOGIC ---
+    // --- TWO-PHASE COUNTDOWN TIMER LOGIC ---
     function updateCountdown() {
         const now = new Date();
         const target = new Date();
+        let baseText = "";
         
-        // Find next Wednesday (0 = Sun, 1 = Mon, ..., 3 = Wed)
+        // Find days until next Wednesday (0=Sun, 3=Wed)
         let daysUntilWed = (3 - now.getDay() + 7) % 7;
         
-        // If today is Wed but past 8 PM (20:00), aim for next Wed
-        if (daysUntilWed === 0 && now.getHours() >= 20) {
-            daysUntilWed = 7;
-        }
-        
-        target.setDate(now.getDate() + daysUntilWed);
-        target.setHours(20, 0, 0, 0); 
-
-        const diff = target.getTime() - now.getTime();
-        const countdownEl = document.getElementById('countdown-timer');
-        
-        if (countdownEl) {
-            let baseText = "";
-            if (diff > 0 && diff < 1000 * 60 * 60 * 2) {
-                 baseText = "Double Pts Wed. TONIGHT!";
-            } else if (diff > 0) {
-                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        // If it is Wednesday
+        if (daysUntilWed === 0) {
+            target.setHours(20, 0, 0, 0); // 8:00 PM EST target
+            const diff = target.getTime() - now.getTime();
+            
+            if (diff > 0) {
+                // It is Wednesday, but before 8 PM
                 const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                baseText = `Double Pts Wed. IN: ${d}D ${h}H ${m}M`;
+                baseText = `SURVIVOR IS TONIGHT IN: ${h}H ${m}M`;
             } else {
-                baseText = "Double Pts Wed. IS LIVE!";
+                // It is Wednesday, and 8 PM has passed
+                baseText = "SURVIVOR IS LIVE!";
             }
+        } else {
+            // It is not Wednesday. Countdown to Wednesday at midnight.
+            target.setDate(now.getDate() + daysUntilWed);
+            target.setHours(0, 0, 0, 0); // Midnight of that Wednesday
+            const diff = target.getTime() - now.getTime();
+            
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            baseText = `DAYS UNTIL WEDNESDAY (DOUBLE PTS): ${d}D ${h}H ${m}M`;
+        }
 
-            // Combine the timer with the custom Tree Mail if it exists
+        const countdownEl = document.getElementById('countdown-timer');
+        if (countdownEl) {
+            // Force upper case in JavaScript, just to be safe
+            baseText = baseText.toUpperCase();
             let finalText = `🌴 ${baseText} 🌴`;
             if (customTreeMail) {
-                finalText += ` TREE MAIL: ${customTreeMail} 🌴`;
+                finalText += ` TREE MAIL: ${customTreeMail.toUpperCase()} 🌴`;
             }
-            
             countdownEl.innerText = finalText;
         }
     }
@@ -652,7 +664,6 @@
             const allRows = data.split('\n');
             const headerRow = allRows[0].split(',');
 
-            // --- Best Wordle Banner (Column 8 / Index 7) ---
             const bannerText = headerRow[7] ? headerRow[7].trim() : '';
             const bannerContainer = document.getElementById('best-wordle-banner');
             const bannerTextEl = document.getElementById('best-wordle-text');
@@ -664,10 +675,9 @@
                 bannerContainer.classList.remove('visible');
             }
 
-            // --- Custom Tree Mail (Column 9 / Index 8) ---
             const treeMailText = headerRow[8] ? headerRow[8].trim() : '';
             customTreeMail = treeMailText;
-            updateCountdown(); // Refresh to inject immediately
+            updateCountdown(); 
 
             const rows = allRows.slice(1);
 
@@ -713,6 +723,11 @@
                     changeClass = 'change-negative';
                 }
 
+                // Check if the latest score (hist1) has a '*' indicating Hard Mode
+                const isHardMode = player.hist1.includes('*');
+                // Updated icon to the Brain emoji
+                const hardModeIcon = isHardMode ? `<span class="hard-mode-icon" title="Hard Mode">🧠</span>` : '';
+
                 card.innerHTML = `
                     <div class="card-main">
                         <div class="rank">${rankDisplay}</div>
@@ -724,7 +739,10 @@
                             <span class="change-label">Change</span>
                             <span class="${changeClass}">${changeDisplay}</span>
                         </div>
-                        <div class="score">${player.score}</div>
+                        <div class="score-container">
+                            <div class="score">${player.score}</div>
+                            ${hardModeIcon}
+                        </div>
                     </div>
                     <div class="history-drawer">
                         <div class="idol-key">📿 Immunity Idols Banked: ${player.idols}</div>
