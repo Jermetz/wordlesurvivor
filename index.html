@@ -11,6 +11,10 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         :root {
             /* Tagi Orange is the default accent, but this can now be overridden by the user! */
@@ -1109,6 +1113,9 @@
 
         <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none;">
             <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem;">🔥 FASTEST FIRE MAKERS</h3>
+            
+            <p id="local-only-warning" style="color: var(--low-score); text-align: center; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">(Scores saved to your local device only. Database offline.)</p>
+
             <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: var(--text); font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px;">
                 </ol>
         </div>
@@ -1118,6 +1125,28 @@
     </div>
   </div>
 </div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    let fireDb = null;
+    let usingGlobalLeaderboard = false;
+
+    // Check if the user has added their Firebase API key yet
+    if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        firebase.initializeApp(firebaseConfig);
+        fireDb = firebase.database();
+        usingGlobalLeaderboard = true;
+    }
+</script>
 
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
@@ -1606,10 +1635,12 @@
     const finalTimeDisplay = document.getElementById('final-time-display');
     const playerInitials = document.getElementById('player-initials');
     const saveScoreBtn = document.getElementById('save-score-btn');
+    
     const leaderboardSection = document.getElementById('fire-leaderboard-section');
     const leaderboardList = document.getElementById('fire-leaderboard-list');
+    const localOnlyWarning = document.getElementById('local-only-warning');
     
-    // NEW: Reaction elements
+    // Reaction elements
     const endGameReaction = document.getElementById('end-game-reaction');
     const reactionBubble = document.getElementById('reaction-bubble');
 
@@ -1628,6 +1659,7 @@
     let fireInterval;
     let fireGameActive = false;
     let fireStartTime = 0;
+    let isLeaderboardListening = false; // Prevents duplicate Firebase listeners
 
     fireGameBtn.onclick = function() {
         resetFireGame();
@@ -1705,7 +1737,7 @@
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimeLeft = 10.00 - elapsed;
             
-            // Increased Wind! Fire decays fast
+            // Increased Wind! Fire decays 40 heat per second (requires >7 taps a sec to win)
             fireHeat -= 0.8; 
 
             if (fireHeat < 0) fireHeat = 0;
@@ -1750,13 +1782,19 @@
 
         // Determine if it's a high score to trigger special reaction text
         let isHighScore = false;
-        let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
-        if (won && board.length > 0) {
-            if (winningTime < board[0].time) {
-                isHighScore = true;
+        
+        // Peek at the DOM to see the current #1 score without needing an async database query
+        let firstScoreElement = leaderboardList.querySelector('li');
+        if (won && firstScoreElement) {
+            let match = firstScoreElement.innerText.match(/-\s*([0-9.]+)/);
+            if (match) {
+                let currentBestTime = parseFloat(match[1]);
+                if (winningTime < currentBestTime) {
+                    isHighScore = true;
+                }
             }
-        } else if (won && board.length === 0) {
-            isHighScore = true;
+        } else if (won && !firstScoreElement) {
+            isHighScore = true; // First time playing!
         }
 
         if (won) {
@@ -1799,39 +1837,72 @@
     saveScoreBtn.onclick = function() {
         let initials = playerInitials.value.trim().toUpperCase();
         if(initials === "") initials = "???";
-        
         let timeTaken = parseFloat(finalTimeDisplay.innerText);
-        
-        // Retrieve existing local leaderboard or start fresh
-        let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
-        board.push({ name: initials, time: timeTaken });
-        
-        // Sort lowest time to the top
-        board.sort((a, b) => a.time - b.time);
-        
-        // Keep top 10 scores
-        board = board.slice(0, 10); 
-        
-        localStorage.setItem('fireLeaderboard', JSON.stringify(board));
-        
-        saveScoreSection.style.display = "none";
-        renderFireLeaderboard();
+
+        if (usingGlobalLeaderboard) {
+            // Save to Cloud (Firebase)
+            fireDb.ref('fireLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            saveScoreSection.style.display = "none";
+            // The real-time listener will automatically update the UI list!
+        } else {
+            // Save Local (Offline mode fallback)
+            let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10); 
+            localStorage.setItem('fireLeaderboard', JSON.stringify(board));
+            saveScoreSection.style.display = "none";
+            renderFireLeaderboard();
+        }
     }
 
     function renderFireLeaderboard() {
-        let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
-        
-        if(board.length > 0) {
-            leaderboardSection.style.display = "block";
-            leaderboardList.innerHTML = "";
-            board.forEach(entry => {
-                let li = document.createElement('li');
-                li.style.marginBottom = "8px";
-                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
-                leaderboardList.appendChild(li);
-            });
+        if (usingGlobalLeaderboard) {
+            localOnlyWarning.style.display = "none";
+            
+            // Only attach the live listener once to prevent duplicates
+            if (!isLeaderboardListening) {
+                isLeaderboardListening = true;
+                fireDb.ref('fireLeaderboard').orderByChild('time').limitToFirst(10).on('value', (snapshot) => {
+                    let board = [];
+                    snapshot.forEach((childSnapshot) => {
+                        board.push(childSnapshot.val());
+                    });
+                    
+                    if(board.length > 0) {
+                        leaderboardSection.style.display = "block";
+                        leaderboardList.innerHTML = "";
+                        board.forEach(entry => {
+                            let li = document.createElement('li');
+                            li.style.marginBottom = "8px";
+                            li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                            leaderboardList.appendChild(li);
+                        });
+                    } else {
+                        leaderboardSection.style.display = "none";
+                    }
+                });
+            }
         } else {
-            leaderboardSection.style.display = "none";
+            // Render from LocalStorage (Fallback)
+            localOnlyWarning.style.display = "block";
+            let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
+            if(board.length > 0) {
+                leaderboardSection.style.display = "block";
+                leaderboardList.innerHTML = "";
+                board.forEach(entry => {
+                    let li = document.createElement('li');
+                    li.style.marginBottom = "8px";
+                    li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                    leaderboardList.appendChild(li);
+                });
+            } else {
+                leaderboardSection.style.display = "none";
+            }
         }
     }
 
@@ -2047,4 +2118,3 @@
 </script>
 </body>
 </html>
-
