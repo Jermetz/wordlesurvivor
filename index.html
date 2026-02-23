@@ -539,28 +539,31 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        .close {
+        /* --- NEW ZERO-HEIGHT STICKY WRAPPER FOR CLOSE BUTTON --- */
+        /* This fixes the image offset bug by not floating the element in the document flow */
+        .sticky-close-wrapper {
             position: -webkit-sticky;
             position: sticky;
-            top: 5px; /* Sits higher up */
-            float: right;
+            top: 10px;
+            z-index: 1000;
+            display: flex;
+            justify-content: flex-end; /* Aligns to the right */
+            height: 0; /* Takes zero space vertically */
+        }
+
+        .close {
             color: var(--card-bg);
             background-color: var(--accent);
-            /* Reduced size from 40px to 32px */
             width: 32px;
             height: 32px;
             border-radius: 50%;
             text-align: center;
-            line-height: 28px; /* Adjusted for new height */
-            font-size: 24px; /* Smaller font size */
+            line-height: 28px;
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
-            z-index: 1000;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            /* Adjusted margins for smaller size */
-            margin-top: -5px;
-            margin-right: -5px;
-            margin-bottom: -32px; 
+            transform: translate(10px, -15px); /* Perfectly bumps it into the top right corner */
         }
 
         /* --- CENTERED JEFF QUOTE MODAL FIX --- */
@@ -723,7 +726,7 @@
 
 <div id="rulesModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal('rulesModal')">&times;</span>
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('rulesModal')">&times;</span></div>
     <div class="modal-header">ATTENTION CASTAWAYS!</div>
     <div class="modal-body">
         <p>In honor of Survivor Season 50, we are officially kicking off: <strong>WORDLE: EDGE OF EXTINCTION</strong>.</p>
@@ -770,11 +773,11 @@
 
 <div id="stakesModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal('stakesModal')">&times;</span>
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('stakesModal')">&times;</span></div>
     <div class="modal-header">THE DAILY STAKES</div>
     <div class="modal-body" style="text-align: center;">
         
-        <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
+        <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="display: block; margin: 0 auto; max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
         
         <button id="stakes-zoom-btn" class="text-btn">ZOOM</button>
         
@@ -784,17 +787,17 @@
 
 <div id="bigrModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal('bigrModal')">&times;</span>
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('bigrModal')">&times;</span></div>
     <div class="modal-header">BIG R</div>
     <div class="modal-body" style="text-align: center; margin-top: 15px;">
-        <img src="bigr.jpg?v=1" alt="Big R Ultimate Survivor" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
+        <img src="bigr.jpg?v=1" alt="Big R Ultimate Survivor" style="display: block; margin: 0 auto; max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
     </div>
   </div>
 </div>
 
 <div id="quoteModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal('quoteModal')">&times;</span>
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('quoteModal')">&times;</span></div>
     <div class="modal-header">JEFF SAYS...</div>
     <div class="modal-body" style="text-align: center; margin-top: 25px; margin-bottom: 15px;">
         <p id="quote-text" style="font-size: 1.5rem; color: var(--accent); font-style: italic; line-height: 1.4;"></p>
