@@ -540,35 +540,32 @@
         }
 
         .close {
-            /* Makes the button "stick" to the top right of the screen as you scroll down the rules */
             position: -webkit-sticky;
             position: sticky;
-            top: 10px;
+            top: 5px; /* Sits higher up */
             float: right;
-            
-            /* Styled as a solid circle floating action button so it's readable over scrolling text */
             color: var(--card-bg);
             background-color: var(--accent);
-            width: 40px;
-            height: 40px;
+            /* Reduced size from 40px to 32px */
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             text-align: center;
-            line-height: 36px; /* Vertically centers the X */
-            font-size: 32px;
+            line-height: 28px; /* Adjusted for new height */
+            font-size: 24px; /* Smaller font size */
             font-weight: bold;
             cursor: pointer;
             z-index: 1000;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            
-            /* Offset margins to prevent it from pushing the header out of alignment */
-            margin-top: -10px;
-            margin-right: -10px;
-            margin-bottom: -40px; 
+            /* Adjusted margins for smaller size */
+            margin-top: -5px;
+            margin-right: -5px;
+            margin-bottom: -32px; 
         }
 
         /* --- CENTERED JEFF QUOTE MODAL FIX --- */
         #quoteModal {
-            padding-top: 0; /* Remove default top padding */
+            padding-top: 0; 
         }
 
         #quoteModal .modal-content {
@@ -611,7 +608,34 @@
             line-height: 1.5;
         }
 
-        /* --- DAILY STAKES TABLE --- */
+        /* --- DAILY STAKES STYLES --- */
+        .zoom-controls {
+            margin-bottom: 10px;
+        }
+
+        .zoom-btn {
+            background: var(--card-bg);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 0 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .image-zoom-container {
+            overflow: auto; /* Allows scrolling if zoomed in */
+            max-height: 60vh;
+            border-radius: 8px;
+            border: 3px solid var(--text);
+            /* Smooth scrolling on iOS */
+            -webkit-overflow-scrolling: touch;
+        }
+
         .stakes-table {
             width: 100%;
             border-collapse: collapse;
@@ -812,25 +836,39 @@
   <div class="modal-content">
     <span class="close" onclick="closeModal('stakesModal')">&times;</span>
     <div class="modal-header">THE DAILY STAKES</div>
-    <div class="modal-body">
-        <table class="stakes-table">
-            <thead>
-                <tr>
-                    <th>SCORE</th>
-                    <th>OUTCOME</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="adv-row"><td>1/6</td><td>+3 Pts + Legacy Adv. (Auto-Idol)</td></tr>
-                <tr class="adv-row"><td>2/6</td><td>+2 Pts + Bank an Idol</td></tr>
-                <tr class="pos-row"><td>3/6</td><td>+1 Pt</td></tr>
-                <tr class="safe-row"><td>4/6</td><td>0 Pts (Safe)</td></tr>
-                <tr class="neg-row"><td>5/6</td><td>-1 Pt</td></tr>
-                <tr class="neg-row"><td>6/6</td><td>-2 Pts</td></tr>
-                <tr class="penalty-row"><td>X/6</td><td>-5 Pts</td></tr>
-                <tr class="penalty-row"><td>Missed Day</td><td>-5 Pts</td></tr>
-            </tbody>
-        </table>
+    <div class="modal-body" style="text-align: center;">
+
+        <div class="zoom-controls">
+            <button id="zoom-out-btn" class="zoom-btn">-</button>
+            <button id="zoom-in-btn" class="zoom-btn">+</button>
+        </div>
+
+        <div class="image-zoom-container">
+             <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="width: 100%; transition: transform 0.3s ease; transform-origin: top center;">
+        </div>
+
+        <p id="stakes-drawer-toggle" style="cursor: pointer; text-decoration: underline; color: var(--accent); margin-top: 15px; font-weight: bold;">Can't read? View Table</p>
+
+        <div id="stakes-drawer" style="display: none;">
+            <table class="stakes-table">
+                <thead>
+                    <tr>
+                        <th>SCORE</th>
+                        <th>OUTCOME</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="adv-row"><td>1/6</td><td>+3 Pts + Legacy Adv. (Auto-Idol)</td></tr>
+                    <tr class="adv-row"><td>2/6</td><td>+2 Pts + Bank an Idol</td></tr>
+                    <tr class="pos-row"><td>3/6</td><td>+1 Pt</td></tr>
+                    <tr class="safe-row"><td>4/6</td><td>0 Pts (Safe)</td></tr>
+                    <tr class="neg-row"><td>5/6</td><td>-1 Pt</td></tr>
+                    <tr class="neg-row"><td>6/6</td><td>-2 Pts</td></tr>
+                    <tr class="penalty-row"><td>X/6</td><td>-3 Pts</td></tr>
+                    <tr class="penalty-row"><td>Missed Day</td><td>-5 Pts</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
   </div>
 </div>
@@ -1110,7 +1148,6 @@
                 console.log("Share sheet dismissed or failed, attempting fallback.");
             }
         } else {
-            // Fallback Method: ONLY for browsers that do not support navigator.share at all.
             const otherMembers = "12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,jwalsh1015@gmail.com";
             window.location.href = `sms://open?addresses=${otherMembers}`;
         }
@@ -1129,10 +1166,48 @@
         loadScores(); 
     }
 
-    // JS Update: Removes 'modal-open' class when closed
+    // --- DAILY STAKES IMAGE ZOOM & DRAWER LOGIC ---
+    let currentZoom = 1;
+    const stakesImg = document.getElementById('stakes-img');
+    const zoomInBtn = document.getElementById('zoom-in-btn');
+    const zoomOutBtn = document.getElementById('zoom-out-btn');
+    const drawerToggle = document.getElementById('stakes-drawer-toggle');
+    const drawer = document.getElementById('stakes-drawer');
+
+    zoomInBtn.onclick = () => {
+        currentZoom += 0.25;
+        if (currentZoom > 3) currentZoom = 3; // Max zoom 3x
+        stakesImg.style.transform = `scale(${currentZoom})`;
+    };
+
+    zoomOutBtn.onclick = () => {
+        currentZoom -= 0.25;
+        if (currentZoom < 1) currentZoom = 1; // Min zoom 1x
+        stakesImg.style.transform = `scale(${currentZoom})`;
+    };
+
+    drawerToggle.onclick = () => {
+        if (drawer.style.display === "none") {
+            drawer.style.display = "block";
+            drawerToggle.innerText = "Hide Table";
+        } else {
+            drawer.style.display = "none";
+            drawerToggle.innerText = "Can't read? View Table";
+        }
+    };
+
+    // JS Update: Removes 'modal-open' class and resets Stakes modal state when closed
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = "none";
         document.body.classList.remove('modal-open'); 
+        
+        // Reset Daily Stakes modal state on close
+        if (modalId === 'stakesModal') {
+             currentZoom = 1;
+             stakesImg.style.transform = `scale(1)`;
+             drawer.style.display = "none";
+             drawerToggle.innerText = "Can't read? View Table";
+        }
     }
 
     // Close Modals when clicking outside of them
@@ -1140,6 +1215,14 @@
         if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal || event.target == quoteModal) {
             event.target.style.display = "none";
             document.body.classList.remove('modal-open'); 
+            
+            // Reset Daily Stakes modal state on outside click close
+            if (event.target == stakesModal) {
+                 currentZoom = 1;
+                 stakesImg.style.transform = `scale(1)`;
+                 drawer.style.display = "none";
+                 drawerToggle.innerText = "Can't read? View Table";
+            }
         }
     }
 
