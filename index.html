@@ -1,3 +1,6 @@
+Ah, I see exactly what happened! I accidentally left a line of CSS from a previous version that forced the "Refresh Scores" button to stretch all the way across the bottom row. Because there are exactly 8 buttons, this forced it onto its own 5th row and left an awkward blank space next to the "Tribe Colors" button.
+I have removed that line of CSS. Now, all 8 buttons will snap perfectly into a symmetrical 2-column by 4-row grid on mobile devices.
+Here is your complete, updated code to copy and paste:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -529,10 +532,6 @@
         
         .action-btn:active {
             transform: scale(0.96);
-        }
-
-        #refresh-btn {
-            grid-column: 1 / -1; /* Forces the button to span across all columns */
         }
 
         /* Rules modal standalone button */
