@@ -539,16 +539,15 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* --- NEW ZERO-HEIGHT STICKY WRAPPER FOR CLOSE BUTTON --- */
-        /* This fixes the image offset bug by not floating the element in the document flow */
+        /* --- ZERO-HEIGHT STICKY WRAPPER FOR CLOSE BUTTON --- */
         .sticky-close-wrapper {
             position: -webkit-sticky;
             position: sticky;
             top: 10px;
             z-index: 1000;
             display: flex;
-            justify-content: flex-end; /* Aligns to the right */
-            height: 0; /* Takes zero space vertically */
+            justify-content: flex-end; 
+            height: 0; /* Takes zero space vertically so it doesn't affect image centering */
         }
 
         .close {
@@ -563,7 +562,7 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            transform: translate(10px, -15px); /* Perfectly bumps it into the top right corner */
+            transform: translate(10px, -15px); /* Bumps it into the top right corner */
         }
 
         /* --- CENTERED JEFF QUOTE MODAL FIX --- */
@@ -609,6 +608,23 @@
             color: var(--text);
             font-size: 1.1rem;
             line-height: 1.5;
+        }
+
+        /* --- DAILY STAKES VIEWER --- */
+        /* Fixed container that ensures the button below never moves when swapping images */
+        .stakes-viewer {
+            height: 400px; /* Locked height */
+            max-height: 55vh; /* Adapts slightly to smaller screens */
+            width: 100%;
+            border-radius: 8px;
+            border: 3px solid var(--text);
+            overflow: auto; /* Allows panning when zoomed in */
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 15px;
+            background-color: rgba(0,0,0,0.05); /* Slight tint behind image */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* --- DASHBOARD WRAPPER FOR RESPONSIVENESS --- */
@@ -777,7 +793,9 @@
     <div class="modal-header">THE DAILY STAKES</div>
     <div class="modal-body" style="text-align: center;">
         
-        <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="display: block; margin: 0 auto; max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
+        <div id="stakes-viewer" class="stakes-viewer">
+            <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        </div>
         
         <button id="stakes-zoom-btn" class="text-btn">ZOOM</button>
         
@@ -1070,7 +1088,7 @@
         const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
         quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
         quoteModal.style.display = "block";
-        document.body.classList.add('modal-open'); // Locks background scroll
+        document.body.classList.add('modal-open'); 
     }
     
     refreshBtn.onclick = function() { 
@@ -1079,6 +1097,7 @@
     }
 
     // --- DAILY STAKES IMAGE TOGGLE LOGIC ---
+    const stakesViewer = document.getElementById('stakes-viewer');
     const stakesImg = document.getElementById('stakes-img');
     const stakesZoomBtn = document.getElementById('stakes-zoom-btn');
     let isStakesZoomed = false;
@@ -1088,22 +1107,50 @@
         if (isStakesZoomed) {
             stakesImg.src = 'IMG_0879.jpeg';
             stakesZoomBtn.innerText = 'BACK';
+            
+            // Allow image to overflow its fixed container to enable massive zooming and panning
+            stakesImg.style.maxWidth = 'none';
+            stakesImg.style.maxHeight = 'none';
+            stakesImg.style.width = '200%'; // Pushes the image to 2x size inside the scrolling box
+            
+            // Switch to block display so native iOS 2D scrolling works perfectly
+            stakesViewer.style.display = 'block'; 
+            stakesViewer.scrollTop = 0; 
+            stakesViewer.scrollLeft = 0;
         } else {
             stakesImg.src = 'dailystakes.png';
             stakesZoomBtn.innerText = 'ZOOM';
+            
+            // Reset image constraints to fit perfectly inside the fixed container
+            stakesImg.style.maxWidth = '100%';
+            stakesImg.style.maxHeight = '100%';
+            stakesImg.style.width = 'auto';
+            
+            // Restore flexbox to center the zoomed-out image
+            stakesViewer.style.display = 'flex'; 
         }
     };
+
+    // Helper function to cleanly reset stakes modal back to default
+    function resetStakesModal() {
+        isStakesZoomed = false;
+        stakesImg.src = "dailystakes.png";
+        stakesZoomBtn.innerText = "ZOOM";
+        stakesImg.style.maxWidth = '100%';
+        stakesImg.style.maxHeight = '100%';
+        stakesImg.style.width = 'auto';
+        stakesViewer.style.display = 'flex';
+        stakesViewer.scrollTop = 0;
+        stakesViewer.scrollLeft = 0;
+    }
 
     // JS Update: Removes 'modal-open' class and resets Stakes modal state when closed
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = "none";
         document.body.classList.remove('modal-open'); 
         
-        // Reset Daily Stakes modal state on close
         if (modalId === 'stakesModal') {
-             isStakesZoomed = false;
-             stakesImg.src = "dailystakes.png";
-             stakesZoomBtn.innerText = "ZOOM";
+             resetStakesModal();
         }
     }
 
@@ -1113,11 +1160,8 @@
             event.target.style.display = "none";
             document.body.classList.remove('modal-open'); 
             
-            // Reset Daily Stakes modal state on outside click close
             if (event.target == stakesModal) {
-                 isStakesZoomed = false;
-                 stakesImg.src = "dailystakes.png";
-                 stakesZoomBtn.innerText = "ZOOM";
+                 resetStakesModal();
             }
         }
     }
