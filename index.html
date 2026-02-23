@@ -11,6 +11,10 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+
     <style>
         :root {
             /* Updated Palette for High Contrast Parchment Look */
@@ -39,11 +43,6 @@
             align-items: center;
             min-height: 100vh;
             overscroll-behavior-y: contain; 
-        }
-
-        /* --- BACKGROUND SCROLL LOCK (Applied via JS) --- */
-        body.modal-open {
-            overflow: hidden; 
         }
 
         /* --- FIRE BACKGROUND EFFECTS --- */
@@ -230,6 +229,38 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
             color: #ffd700;
             letter-spacing: 1px;
+        }
+
+        /* --- NEW VIEW TOGGLE BUTTONS --- */
+        .view-toggle-container {
+            display: flex;
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 25px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .toggle-tab {
+            flex: 1;
+            padding: 12px 0;
+            text-align: center;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-tab.active {
+            background: var(--accent);
+            color: white;
         }
 
         /* --- NEW LEADERBOARD HEADER --- */
@@ -479,8 +510,11 @@
             transform: scale(0.96);
         }
 
-        #refresh-btn {
-            grid-column: 1 / -1; /* Forces the button to span across all columns */
+        /* Make the Chat button span both columns to stand out */
+        .chat-btn-span {
+            grid-column: 1 / -1;
+            background: var(--accent);
+            color: white;
         }
 
         /* Rules modal standalone button */
@@ -503,7 +537,6 @@
             max-width: 90%;
         }
 
-        /* --- MODAL UPDATES --- */
         .modal {
             display: none; 
             position: fixed; 
@@ -513,8 +546,8 @@
             width: 100%; 
             height: 100%; 
             overflow: auto; 
-            background-color: rgba(0,0,0,0.65); 
-            backdrop-filter: blur(3px); 
+            background-color: rgba(0,0,0,0.65); /* Increased Transparency */
+            backdrop-filter: blur(3px); /* Modern blur effect behind the modal */
             -webkit-backdrop-filter: blur(3px);
             padding-top: 60px;
         }
@@ -522,7 +555,7 @@
         .modal-content {
             background-color: var(--card-bg);
             margin: 5% auto; 
-            padding: 25px 20px;
+            padding: 25px;
             border: 3px solid var(--accent);
             width: 90%; 
             max-width: 550px;
@@ -533,51 +566,14 @@
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            box-sizing: border-box;
-            position: relative;
-            overscroll-behavior-y: contain;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* --- ZERO-HEIGHT STICKY WRAPPER FOR CLOSE BUTTON --- */
-        .sticky-close-wrapper {
-            position: -webkit-sticky;
-            position: sticky;
-            top: 10px;
-            z-index: 1000;
-            display: flex;
-            justify-content: flex-end; 
-            height: 0; 
         }
 
         .close {
-            color: var(--card-bg);
-            background-color: var(--accent);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 28px;
-            font-size: 24px;
+            color: var(--accent);
+            float: right;
+            font-size: 32px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            transform: translate(10px, -15px); 
-        }
-
-        /* --- CENTERED JEFF QUOTE MODAL FIX --- */
-        #quoteModal {
-            padding-top: 0; 
-        }
-
-        #quoteModal .modal-content {
-            margin: 0; 
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 550px;
         }
 
         .modal-header {
@@ -589,9 +585,6 @@
             font-size: 1.5rem;
             text-shadow: var(--text-shadow);
             text-decoration: underline;
-            padding-top: 5px;
-            padding-left: 20px;
-            padding-right: 20px;
         }
 
         .modal-body h3 {
@@ -610,21 +603,108 @@
             line-height: 1.5;
         }
 
-        /* --- DAILY STAKES VIEWER --- */
-        .stakes-viewer {
-            height: 400px; 
-            max-height: 55vh; 
-            width: 100%;
-            border-radius: 8px;
-            border: 3px solid var(--text);
-            overflow: auto; 
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 15px;
-            background-color: rgba(0,0,0,0.05); 
+        /* --- CHAT MODAL SPECIFIC STYLES --- */
+        .chat-container {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-profile {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background: rgba(217, 81, 0, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed var(--accent);
+        }
+
+        .chat-profile label {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .chat-profile input {
+            padding: 8px;
+            border: 2px solid var(--card-border);
+            border-radius: 6px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 1rem;
+            color: var(--text);
+            background: white;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .chat-profile input:focus {
+            border-color: var(--accent);
+        }
+
+        .chat-messages {
+            height: 250px;
+            background: white;
+            border: 2px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chat-bubble {
+            background: #e0d5ba;
+            padding: 8px 12px;
+            border-radius: 12px;
+            max-width: 85%;
+            align-self: flex-start;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+
+        .chat-bubble strong {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--accent);
+            margin-bottom: 3px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-area input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 2px solid var(--card-border);
+            border-radius: 6px;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1rem;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--accent);
+        }
+
+        .chat-input-area button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-family: 'Arial Black', sans-serif;
+            cursor: pointer;
+            text-transform: uppercase;
         }
 
         /* --- DASHBOARD WRAPPER FOR RESPONSIVENESS --- */
@@ -671,6 +751,7 @@
                 height: 100%;
             }
 
+            .view-toggle-container { max-width: 100%; } /* Stretches nicely on iPad */
             .leaderboard-header, #leaderboard {
                 max-width: 100%; /* Lets it stretch completely on iPad */
                 margin-top: 0;
@@ -708,7 +789,13 @@
     </div>
 
     <div class="right-panel">
-        <div class="leaderboard-header">
+        
+        <div class="view-toggle-container">
+            <button id="view-total-btn" class="toggle-tab active">TOTAL POINTS</button>
+            <button id="view-hot-btn" class="toggle-tab">🔥 WHO'S HOT?</button>
+        </div>
+
+        <div class="leaderboard-header" id="dynamic-leaderboard-header">
             LEADERBOARD
             <span>(Ranked by Total Life Pts)</span>
         </div>
@@ -724,12 +811,11 @@
         
         <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn">PLAY WORDLE</a>
         
-        <button id="group-chat-btn" class="action-btn">GROUP CHAT</button>
-        
         <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
+        <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
         <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
         
-        <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
+        <button id="chat-btn" class="action-btn chat-btn-span">TRIBAL COUNCIL CHAT</button>
     </div>
 </div>
 
@@ -742,7 +828,7 @@
 
 <div id="rulesModal" class="modal">
   <div class="modal-content">
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('rulesModal')">&times;</span></div>
+    <span class="close" onclick="closeModal('rulesModal')">&times;</span>
     <div class="modal-header">ATTENTION CASTAWAYS!</div>
     <div class="modal-body">
         <p>In honor of Survivor Season 50, we are officially kicking off: <strong>WORDLE: EDGE OF EXTINCTION</strong>.</p>
@@ -789,36 +875,52 @@
 
 <div id="stakesModal" class="modal">
   <div class="modal-content">
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('stakesModal')">&times;</span></div>
-    <div class="modal-header">THE DAILY STAKES</div>
-    <div class="modal-body" style="text-align: center;">
-        
-        <div id="stakes-viewer" class="stakes-viewer">
-            <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-        </div>
-        
-        <button id="stakes-zoom-btn" class="text-btn">ZOOM</button>
-        
+    <span class="close" onclick="closeModal('stakesModal')">&times;</span>
+    <div class="modal-body" style="text-align: center; margin-top: 15px;">
+        <img src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
     </div>
   </div>
 </div>
 
 <div id="bigrModal" class="modal">
   <div class="modal-content">
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('bigrModal')">&times;</span></div>
+    <span class="close" onclick="closeModal('bigrModal')">&times;</span>
     <div class="modal-header">BIG R</div>
     <div class="modal-body" style="text-align: center; margin-top: 15px;">
-        <img src="bigr.jpg?v=1" alt="Big R Ultimate Survivor" style="display: block; margin: 0 auto; max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
+        <img src="bigr.jpg?v=1" alt="Big R Ultimate Survivor" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
     </div>
   </div>
 </div>
 
 <div id="quoteModal" class="modal">
   <div class="modal-content">
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('quoteModal')">&times;</span></div>
+    <span class="close" onclick="closeModal('quoteModal')">&times;</span>
     <div class="modal-header">JEFF SAYS...</div>
     <div class="modal-body" style="text-align: center; margin-top: 25px; margin-bottom: 15px;">
         <p id="quote-text" style="font-size: 1.5rem; color: var(--accent); font-style: italic; line-height: 1.4;"></p>
+    </div>
+  </div>
+</div>
+
+<div id="chatModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('chatModal')">&times;</span>
+    <div class="modal-header">TRIBAL CHAT</div>
+    <div class="modal-body chat-container">
+        
+        <div class="chat-profile">
+            <label for="chat-username">Your Chat Name:</label>
+            <input type="text" id="chat-username" placeholder="Enter your name..." />
+        </div>
+
+        <div class="chat-messages" id="chat-messages-box">
+            </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Type a message..." />
+            <button id="chat-send-btn">Send</button>
+        </div>
+
     </div>
   </div>
 </div>
@@ -827,6 +929,11 @@
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
     let customTreeMail = ""; 
+    
+    // Global variable to hold all players data so we can dynamically re-sort it without fetching
+    let allPlayersData = []; 
+    // State to track which view is currently selected ('total' or 'hot')
+    let currentSortView = 'total'; 
 
     function updateCountdown() {
         const now = new Date();
@@ -894,6 +1001,18 @@
     updateCountdown();
     setInterval(updateCountdown, 60000); 
 
+    // Helper function to extract a momentum value out of a Wordle string (e.g. "3/6" or "X/6")
+    function getWordleValue(scoreStr) {
+        if (!scoreStr || typeof scoreStr !== 'string') return 0;
+        const match = scoreStr.match(/([1-6X])\/6/i);
+        if (match) {
+            if (match[1].toUpperCase() === 'X') return 0;
+            // 1/6 gets 6 momentum points, 6/6 gets 1 momentum point
+            return 7 - parseInt(match[1], 10);
+        }
+        return 0; // Covers missed days "-"
+    }
+
     async function loadScores() {
         try {
             const timestamp = new Date().getTime();
@@ -921,114 +1040,173 @@
 
             const rows = allRows.slice(1);
 
-            const players = rows.map(row => {
+            allPlayersData = rows.map(row => {
                 // Now fetching the 8th (index 7) for Hard Mode, and 9th (index 8) for Shot in the Dark
                 const [name, score, change, idols, hist1, hist2, hist3, hardModeCol, shotInDarkCol] = row.split(',');
+                
+                // Parse strings safely
+                const safeHist1 = hist1 ? hist1.trim() : '-';
+                const safeHist2 = hist2 ? hist2.trim() : '-';
+                const safeHist3 = hist3 ? hist3.trim() : '-';
+
+                // Calculate momentum behind the scenes
+                const calculatedHotScore = getWordleValue(safeHist1) + getWordleValue(safeHist2) + getWordleValue(safeHist3);
+
                 return { 
                     name: name ? name.trim() : '', 
                     score: parseInt(score) || 0,
                     change: parseInt(change) || 0,
                     idols: parseInt(idols) || 0,
-                    hist1: hist1 ? hist1.trim() : '-',
-                    hist2: hist2 ? hist2.trim() : '-',
-                    hist3: hist3 ? hist3.trim() : '-',
+                    hist1: safeHist1,
+                    hist2: safeHist2,
+                    hist3: safeHist3,
                     hardMode: hardModeCol ? hardModeCol.trim() : '',
-                    shotInDark: shotInDarkCol ? shotInDarkCol.trim() : '0'
+                    shotInDark: shotInDarkCol ? shotInDarkCol.trim() : '0',
+                    hotScore: calculatedHotScore
                 };
-            }).sort((a, b) => b.score - a.score);
+            }).filter(player => player.name !== ''); // Filter out empty names
 
-            const container = document.getElementById('leaderboard');
-            container.innerHTML = '';
-            const allUnranked = players.every(p => p.score === 50);
-            let currentRank = 1;
-            let previousScore = null;
+            // Now that data is loaded and mapped, render the leaderboard
+            renderLeaderboard();
 
-            players.forEach((player, index) => {
-                if(!player.name) return;
-                const card = document.createElement('div');
-                card.className = 'player-card';
-                card.addEventListener('click', () => {
-                    card.classList.toggle('expanded');
-                });
-                if (player.score < 40) card.classList.add('extinguished');
-                if (previousScore !== null && player.score < previousScore) {
-                    currentRank++;
-                }
-                previousScore = player.score;
-                const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
-                let changeDisplay = '-';
-                let changeClass = 'change-neutral';
-                if (player.change > 0) {
-                    changeDisplay = `+${player.change}`;
-                    changeClass = 'change-positive';
-                } else if (player.change < 0) {
-                    changeDisplay = `${player.change}`;
-                    changeClass = 'change-negative';
-                }
-
-                // Check the dedicated Hard Mode column for an asterisk
-                const isHardMode = player.hardMode.includes('*');
-                const hardModeText = isHardMode ? '✅' : '❌';
-
-                card.innerHTML = `
-                    <div class="card-main">
-                        <div class="rank">${rankDisplay}</div>
-                        <div class="name">
-                            ${player.name}
-                            ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
-                        </div>
-                        <div class="change-container">
-                            <span class="change-label">Change</span>
-                            <span class="${changeClass}">${changeDisplay}</span>
-                        </div>
-                        <div class="score-container">
-                            <div class="score">${player.score}</div>
-                        </div>
-                    </div>
-                    <div class="history-drawer">
-                        <div class="drawer-status">
-                            <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
-                            <div>📿 Immunity Idols Banked: ${player.idols}</div>
-                            <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
-                        </div>
-                        <div class="history-title"><strong>Wordle History</strong></div>
-                        <div class="history-grid">
-                            <div class="history-day">
-                                <span class="history-label">YESTERDAY</span>
-                                <span class="history-value">${player.hist1}</span>
-                            </div>
-                            <div class="history-day">
-                                <span class="history-label">2 DAYS AGO</span>
-                                <span class="history-value">${player.hist2}</span>
-                            </div>
-                            <div class="history-day">
-                                <span class="history-label">3 DAYS AGO</span>
-                                <span class="history-value">${player.hist3}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
         } catch (e) {
             document.getElementById('leaderboard').innerHTML = '<p style="color:white; font-size:1.2rem;">The tribe has spoken (Error loading data).</p>';
         }
     }
 
+    function renderLeaderboard() {
+        const container = document.getElementById('leaderboard');
+        const headerEl = document.getElementById('dynamic-leaderboard-header');
+        container.innerHTML = '';
+        
+        let sortedPlayers = [...allPlayersData]; // Clone array to sort without destroying original data
+
+        // Sort based on the current toggle view
+        if (currentSortView === 'hot') {
+            // Sort by their 3-day momentum. Break ties with their total score.
+            sortedPlayers.sort((a, b) => b.hotScore - a.hotScore || b.score - a.score);
+            headerEl.innerHTML = '🔥 WHO\'S HOT? 🔥<span>(Ranked by 3-Day Momentum)</span>';
+        } else {
+            // Sort standard Total Life Points
+            sortedPlayers.sort((a, b) => b.score - a.score);
+            headerEl.innerHTML = 'LEADERBOARD<span>(Ranked by Total Life Pts)</span>';
+        }
+
+        const allUnranked = sortedPlayers.every(p => p.score === 50);
+        let currentRank = 1;
+        let previousScore = null;
+
+        sortedPlayers.forEach((player, index) => {
+            const card = document.createElement('div');
+            card.className = 'player-card';
+            card.addEventListener('click', () => {
+                card.classList.toggle('expanded');
+            });
+            
+            if (player.score < 40) card.classList.add('extinguished');
+            
+            // Rank Tie Logic matching the active view
+            const currentCompareVal = currentSortView === 'hot' ? player.hotScore : player.score;
+            if (previousScore !== null && currentCompareVal < previousScore) {
+                currentRank++;
+            }
+            previousScore = currentCompareVal;
+            
+            const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
+            
+            let changeDisplay = '-';
+            let changeClass = 'change-neutral';
+            if (player.change > 0) {
+                changeDisplay = `+${player.change}`;
+                changeClass = 'change-positive';
+            } else if (player.change < 0) {
+                changeDisplay = `${player.change}`;
+                changeClass = 'change-negative';
+            }
+
+            // Check the dedicated Hard Mode column for an asterisk
+            const isHardMode = player.hardMode.includes('*');
+            const hardModeText = isHardMode ? '✅' : '❌';
+
+            // When viewing "Who's Hot", dynamically swap out the main big score number 
+            // to show their Momentum points instead of Total Life points so users understand the rank.
+            const mainScoreDisplay = currentSortView === 'hot' ? player.hotScore : player.score;
+
+            card.innerHTML = `
+                <div class="card-main">
+                    <div class="rank">${rankDisplay}</div>
+                    <div class="name">
+                        ${player.name}
+                        ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
+                    </div>
+                    <div class="change-container">
+                        <span class="change-label">Change</span>
+                        <span class="${changeClass}">${changeDisplay}</span>
+                    </div>
+                    <div class="score-container">
+                        <div class="score">${mainScoreDisplay}</div>
+                    </div>
+                </div>
+                <div class="history-drawer">
+                    <div class="drawer-status">
+                        <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
+                        <div>📿 Immunity Idols Banked: ${player.idols}</div>
+                        <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
+                    </div>
+                    <div class="history-title"><strong>Wordle History</strong></div>
+                    <div class="history-grid">
+                        <div class="history-day">
+                            <span class="history-label">YESTERDAY</span>
+                            <span class="history-value">${player.hist1}</span>
+                        </div>
+                        <div class="history-day">
+                            <span class="history-label">2 DAYS AGO</span>
+                            <span class="history-value">${player.hist2}</span>
+                        </div>
+                        <div class="history-day">
+                            <span class="history-label">3 DAYS AGO</span>
+                            <span class="history-value">${player.hist3}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Toggle Button Listeners
+    document.getElementById('view-total-btn').addEventListener('click', function() {
+        if(currentSortView === 'total') return; // Prevent unnecessary re-renders
+        currentSortView = 'total';
+        this.classList.add('active');
+        document.getElementById('view-hot-btn').classList.remove('active');
+        renderLeaderboard();
+    });
+
+    document.getElementById('view-hot-btn').addEventListener('click', function() {
+        if(currentSortView === 'hot') return; 
+        currentSortView = 'hot';
+        this.classList.add('active');
+        document.getElementById('view-total-btn').classList.remove('active');
+        renderLeaderboard();
+    });
+
+    // Boot up the app by loading data
     loadScores();
 
     // MODAL AND BUTTON LOGIC
     const rulesModal = document.getElementById("rulesModal"), 
           stakesModal = document.getElementById("stakesModal"), 
           bigrModal = document.getElementById("bigrModal"),
-          quoteModal = document.getElementById("quoteModal");
+          quoteModal = document.getElementById("quoteModal"),
+          chatModal = document.getElementById("chatModal"); // Chat Modal Ref
 
     const rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
           bigrBtn = document.getElementById("bigr-btn"), 
           refreshBtn = document.getElementById("refresh-btn"),
           quoteBtn = document.getElementById("quote-btn"),
-          groupChatBtn = document.getElementById("group-chat-btn");
+          chatBtn = document.getElementById("chat-btn"); // Chat Button Ref
 
     const quoteText = document.getElementById("quote-text");
 
@@ -1061,36 +1239,16 @@
         "Grab your torches, head back to camp. Goodnight."
     ];
 
-    // JS Update: Adds 'modal-open' class to lock body scrolling
-    rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-    stakesBtn.onclick = function() { stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-    bigrBtn.onclick = function() { bigrModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    rulesBtn.onclick = function() { rulesModal.style.display = "block"; }
+    stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
+    bigrBtn.onclick = function() { bigrModal.style.display = "block"; }
+    chatBtn.onclick = function() { chatModal.style.display = "block"; } // Open Chat Modal
     
-    // Group Chat Button Logic: Reverted back to Share API with "SW" text override
-    groupChatBtn.onclick = async function() {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'SW',
-                    text: 'SW' // Providing text explicitly stops Safari from inserting the page title/URL
-                });
-                return; 
-            } catch (err) {
-                console.log("Share sheet dismissed or failed, attempting fallback.");
-            }
-        } else {
-            // Fallback Method: ONLY for browsers that do not support navigator.share at all.
-            const otherMembers = "12676002525,12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350";
-            window.location.href = `sms://open?addresses=${otherMembers}`;
-        }
-    }
-
     // Logic for Random Quote Button
     quoteBtn.onclick = function() {
         const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
         quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
         quoteModal.style.display = "block";
-        document.body.classList.add('modal-open'); 
     }
     
     refreshBtn.onclick = function() { 
@@ -1098,121 +1256,109 @@
         loadScores(); 
     }
 
-    // --- DAILY STAKES IMAGE TOGGLE & CUSTOM PINCH-ZOOM LOGIC ---
-    const stakesViewer = document.getElementById('stakes-viewer');
-    const stakesImg = document.getElementById('stakes-img');
-    const stakesZoomBtn = document.getElementById('stakes-zoom-btn');
-    
-    let isStakesZoomed = false;
-    let initialDistance = 0;
-    let initialWidth = 0;
-
-    stakesZoomBtn.onclick = function() {
-        isStakesZoomed = !isStakesZoomed;
-        if (isStakesZoomed) {
-            stakesImg.src = 'IMG_0879.jpeg';
-            stakesZoomBtn.innerText = 'BACK';
-            
-            stakesImg.style.maxWidth = '100%';
-            stakesImg.style.maxHeight = '100%';
-            stakesImg.style.width = '100%'; 
-            stakesImg.style.height = '100%'; 
-            stakesImg.style.objectFit = 'contain';
-            
-            stakesViewer.style.display = 'flex'; 
-            stakesViewer.scrollTop = 0; 
-            stakesViewer.scrollLeft = 0;
-        } else {
-            resetStakesModal();
-        }
-    };
-
-    // Custom Pinch-To-Zoom Gesture Listener for the Stakes Image
-    stakesViewer.addEventListener('touchstart', (e) => {
-        if (isStakesZoomed && e.touches.length === 2) {
-            // Calculate the distance between two fingers
-            initialDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-            );
-            // Record the current rendered width of the image to scale from
-            initialWidth = stakesImg.getBoundingClientRect().width;
-        }
-    });
-
-    stakesViewer.addEventListener('touchmove', (e) => {
-        if (isStakesZoomed && e.touches.length === 2 && initialDistance > 0) {
-            e.preventDefault(); // Prevents normal page scrolling while actively pinching
-            const currentDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-            );
-            
-            // Calculate how far fingers moved and dynamically scale image width
-            let scaleRatio = currentDistance / initialDistance;
-            let newWidth = initialWidth * scaleRatio;
-            
-            // Prevent the user from shrinking the image smaller than the container
-            if (newWidth < stakesViewer.clientWidth) {
-                newWidth = stakesViewer.clientWidth;
-            }
-            
-            // Apply new massive width and remove constraints to allow free scrolling
-            stakesImg.style.maxWidth = 'none';
-            stakesImg.style.maxHeight = 'none';
-            stakesImg.style.width = `${newWidth}px`;
-            stakesImg.style.height = 'auto'; // Lets the height scale naturally with width
-            
-            // CRITICAL: If the image gets larger than the container, we must switch to 'block'
-            // display so the browser allows native panning/scrolling to the top and left edges.
-            if (newWidth > stakesViewer.clientWidth) {
-                stakesViewer.style.display = 'block';
-            } else {
-                stakesViewer.style.display = 'flex';
-            }
-        }
-    }, { passive: false });
-
-    // Helper function to cleanly reset stakes modal back to default
-    function resetStakesModal() {
-        isStakesZoomed = false;
-        stakesImg.src = "dailystakes.png";
-        stakesZoomBtn.innerText = "ZOOM";
-        
-        // Re-lock the original image to fit perfectly inside the frame
-        stakesImg.style.maxWidth = '100%';
-        stakesImg.style.maxHeight = '100%';
-        stakesImg.style.width = 'auto';
-        stakesImg.style.height = 'auto';
-        stakesImg.style.objectFit = 'contain';
-        
-        stakesViewer.style.display = 'flex';
-        stakesViewer.scrollTop = 0;
-        stakesViewer.scrollLeft = 0;
-    }
-
-    // JS Update: Removes 'modal-open' class and resets Stakes modal state when closed
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = "none";
-        document.body.classList.remove('modal-open'); 
-        
-        if (modalId === 'stakesModal') {
-             resetStakesModal();
-        }
     }
 
     // Close Modals when clicking outside of them
     window.onclick = function(event) {
-        if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal || event.target == quoteModal) {
+        if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal || event.target == quoteModal || event.target == chatModal) {
             event.target.style.display = "none";
-            document.body.classList.remove('modal-open'); 
-            
-            if (event.target == stakesModal) {
-                 resetStakesModal();
+        }
+    }
+
+    // --- CHAT LOGIC & LOCAL STORAGE WITH FIREBASE ---
+    
+    // 🛑 🛑 🛑 PAST YOUR FIREBASE CONFIGURATION HERE 🛑 🛑 🛑
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN.firebaseapp.com",
+        databaseURL: "https://YOUR_DATABASE_NAME.firebaseio.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase ONLY if the config has been updated
+    let chatRef;
+    if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        chatRef = db.ref('messages');
+    }
+
+    const chatUsernameInput = document.getElementById('chat-username');
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatMessagesBox = document.getElementById('chat-messages-box');
+
+    // 1. Check for an existing saved name, or create a random Guest name
+    let savedName = localStorage.getItem('survivorUsername');
+    if (!savedName) {
+        savedName = 'Guest_' + Math.floor(Math.random() * 10000);
+        localStorage.setItem('survivorUsername', savedName);
+    }
+    chatUsernameInput.value = savedName;
+
+    // 2. Automatically save the name if they type a new one
+    chatUsernameInput.addEventListener('input', function() {
+        localStorage.setItem('survivorUsername', this.value.trim() || 'Guest');
+    });
+
+    // 3. Handle sending a message to Firebase
+    function sendMessage() {
+        const messageText = chatInput.value.trim();
+        const currentName = chatUsernameInput.value.trim() || 'Guest';
+
+        if (messageText !== "") {
+            if (chatRef) {
+                // Send to Firebase Database
+                chatRef.push({
+                    name: currentName,
+                    text: messageText,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                chatInput.value = "";
+            } else {
+                alert("Firebase is not connected yet! Please add your config keys to the code.");
             }
         }
     }
 
+    chatSendBtn.addEventListener('click', sendMessage);
+    
+    // Allow pressing "Enter" to send
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    // 4. Listen for incoming messages from Firebase in real-time
+    if (chatRef) {
+        // Clear the box before loading real data
+        chatMessagesBox.innerHTML = ''; 
+
+        chatRef.on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            
+            const newBubble = document.createElement('div');
+            newBubble.className = 'chat-bubble';
+            newBubble.innerHTML = `<strong>${data.name}</strong>${data.text}`;
+            
+            chatMessagesBox.appendChild(newBubble);
+            chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+        });
+    } else {
+        chatMessagesBox.innerHTML = `
+            <div class="chat-bubble" style="background: #ffcccb; color: #b71c1c;">
+                <strong>System Notice</strong>
+                Chat is offline. Waiting for Firebase configuration to be pasted into the code.
+            </div>`;
+    }
+
+    // --- BACKGROUND EFFECTS ---
     function createEmbers() {
         const body = document.body;
         for(let i = 0; i < 80; i++) {
