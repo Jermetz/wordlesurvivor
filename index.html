@@ -339,13 +339,6 @@
             gap: 5px;
         }
 
-        /* Torch Icon Styles */
-        .torch-icon {
-            height: 26px; 
-            width: auto;
-            object-fit: contain;
-        }
-
         .change-container {
             text-align: right;
             margin-right: 15px;
@@ -1067,14 +1060,10 @@
             // to show their Momentum points instead of Total Life points so users understand the rank.
             const mainScoreDisplay = currentSortView === 'hot' ? player.hotScore : player.score;
 
-            // Conditionally render the torch indicator only if their score is greater than 0
-            const torchHTML = player.score > 0 ? '<img src="torch.png" class="torch-icon" alt="Lit Torch">' : '';
-
             card.innerHTML = `
                 <div class="card-main">
                     <div class="rank">${rankDisplay}</div>
                     <div class="name">
-                        ${torchHTML}
                         ${player.name}
                         ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
                     </div>
