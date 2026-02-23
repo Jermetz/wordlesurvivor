@@ -1376,13 +1376,16 @@
         "Grab your torches, head back to camp. Goodnight."
     ];
 
-    // JS Update: Open Camp Menu Drawer and scroll into view
+    // JS Update: Open Camp Menu Drawer and scroll fully to the bottom
     menuBtn.onclick = function() { 
         const isOpen = campMenuDrawer.classList.toggle('open'); 
         if (isOpen) {
             // Slight delay allows the browser to render the new height before scrolling
             setTimeout(() => {
-                campMenuDrawer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
             }, 100);
         }
     }
