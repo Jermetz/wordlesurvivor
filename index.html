@@ -539,32 +539,46 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* --- CENTERED JEFF QUOTE MODAL --- */
+        .close {
+            /* Makes the button "stick" to the top right of the screen as you scroll down the rules */
+            position: -webkit-sticky;
+            position: sticky;
+            top: 10px;
+            float: right;
+            
+            /* Styled as a solid circle floating action button so it's readable over scrolling text */
+            color: var(--card-bg);
+            background-color: var(--accent);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 36px; /* Vertically centers the X */
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            
+            /* Offset margins to prevent it from pushing the header out of alignment */
+            margin-top: -10px;
+            margin-right: -10px;
+            margin-bottom: -40px; 
+        }
+
+        /* --- CENTERED JEFF QUOTE MODAL FIX --- */
         #quoteModal {
             padding-top: 0; /* Remove default top padding */
-            display: flex !important; /* Override JS display:block for centering */
-            align-items: center; /* Vertical center */
-            justify-content: center; /* Horizontal center */
         }
 
         #quoteModal .modal-content {
-            margin: 0; /* Remove default margin */
-            max-height: 90vh; /* Ensure it fits on screen */
-            width: auto; /* Allow it to shrink to fit content */
-            min-width: 300px; /* Give it a reasonable minimum width */
-            max-width: 90%; /* Keep max width constraint */
-        }
-
-        .close {
-            color: var(--accent);
+            margin: 0; 
             position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 36px;
-            font-weight: bold;
-            cursor: pointer;
-            line-height: 1;
-            z-index: 10;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 550px;
         }
 
         .modal-header {
@@ -1086,19 +1100,17 @@
     
     // Group Chat Button Logic: Share API + Fallback URL Scheme
     groupChatBtn.onclick = async function() {
-        // Primary Method: Native Share Sheet
         if (navigator.share) {
             try {
                 await navigator.share({
                     title: 'Survivor Wordle'
                 });
-                // Success or dismissed by user. Do nothing more to avoid Safari prompt.
+                return; 
             } catch (err) {
-                console.log('Share API interaction finished.');
+                console.log("Share sheet dismissed or failed, attempting fallback.");
             }
         } else {
             // Fallback Method: ONLY for browsers that do not support navigator.share at all.
-            // Your number is removed from this list.
             const otherMembers = "12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,jwalsh1015@gmail.com";
             window.location.href = `sms://open?addresses=${otherMembers}`;
         }
