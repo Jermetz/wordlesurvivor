@@ -1,6 +1,3 @@
-Ah, I see exactly what happened! I accidentally left a line of CSS from a previous version that forced the "Refresh Scores" button to stretch all the way across the bottom row. Because there are exactly 8 buttons, this forced it onto its own 5th row and left an awkward blank space next to the "Tribe Colors" button.
-I have removed that line of CSS. Now, all 8 buttons will snap perfectly into a symmetrical 2-column by 4-row grid on mobile devices.
-Here is your complete, updated code to copy and paste:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -513,8 +510,8 @@ Here is your complete, updated code to copy and paste:
             border: 3px solid var(--accent);
             color: var(--accent);
             padding: 14px 8px;
-            border-radius: 12px; /* Slightly squarer to look like an app dashboard */
-            font-size: 0.95rem; /* Scaled perfectly to prevent text wrapping */
+            border-radius: 12px; 
+            font-size: 0.95rem; 
             cursor: pointer;
             font-family: 'Arial Black', sans-serif;
             text-transform: uppercase;
@@ -534,17 +531,30 @@ Here is your complete, updated code to copy and paste:
             transform: scale(0.96);
         }
 
+        /* Ultimate Survivor Button spans the full bottom row */
+        #bigr-btn {
+            grid-column: 1 / -1; 
+        }
+
+        /* Sub-grid for the Camp Menu modal */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
         /* Rules modal standalone button */
         .text-btn {
             display: block;
             background: var(--card-bg);
             border: 3px solid var(--accent);
             color: var(--accent);
-            padding: 14px 10px; /* Decreased horizontal padding slightly */
+            padding: 14px 10px; 
             border-radius: 25px;
-            /* Clamp scales the font smoothly between small and large screens */
             font-size: clamp(0.75rem, 4vw, 1.1rem); 
-            white-space: nowrap; /* Forces text to stay on a single line */
+            white-space: nowrap; 
             cursor: pointer;
             font-family: 'Arial Black', sans-serif;
             text-transform: uppercase;
@@ -553,7 +563,7 @@ Here is your complete, updated code to copy and paste:
             text-decoration: none;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             margin: 25px auto 10px auto;
-            width: 100%; /* Uses max available width to ensure text fits */
+            width: 100%; 
             box-sizing: border-box;
             transition: all 0.3s ease;
         }
@@ -821,18 +831,13 @@ Here is your complete, updated code to copy and paste:
     </div>
 
     <div class="action-grid">
-        <button id="rules-btn" class="action-btn">VIEW RULES</button>
-        <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
-        
-        <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn">PLAY WORDLE</a>
-        
+        <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn" style="background: var(--leaf-green); color: white; border-color: var(--leaf-green);">PLAY WORDLE</a>
         <button id="group-chat-btn" class="action-btn">GROUP CHAT</button>
         
-        <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
-        <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
-        
-        <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
         <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
+        <button id="menu-btn" class="action-btn" style="background: var(--text); color: var(--card-bg); border-color: var(--text);">⛺ CAMP MENU</button>
+        
+        <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
     </div>
 </div>
 
@@ -841,6 +846,21 @@ Here is your complete, updated code to copy and paste:
     <button id="theme-toggle-btn" class="toggle-btn" title="Toggle Theme Music">
         <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
     </button>
+</div>
+
+<div id="menuModal" class="modal">
+  <div class="modal-content">
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('menuModal')">&times;</span></div>
+    <div class="modal-header">⛺ CAMP MENU</div>
+    <div class="modal-body">
+        <div class="menu-grid">
+            <button id="rules-btn" class="action-btn">VIEW RULES</button>
+            <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
+            <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
+            <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
+        </div>
+    </div>
+  </div>
 </div>
 
 <div id="rulesModal" class="modal">
@@ -1301,14 +1321,16 @@ Here is your complete, updated code to copy and paste:
     loadScores();
 
     // MODAL AND BUTTON LOGIC
-    const rulesModal = document.getElementById("rulesModal"), 
+    const menuModal = document.getElementById("menuModal"),
+          rulesModal = document.getElementById("rulesModal"), 
           stakesModal = document.getElementById("stakesModal"), 
           bigrModal = document.getElementById("bigrModal"),
           quoteModal = document.getElementById("quoteModal"),
           tribeModal = document.getElementById("tribeModal"),
           idolModal = document.getElementById("idolModal");
 
-    const rulesBtn = document.getElementById("rules-btn"), 
+    const menuBtn = document.getElementById("menu-btn"),
+          rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
           bigrBtn = document.getElementById("bigr-btn"), 
           refreshBtn = document.getElementById("refresh-btn"),
@@ -1348,19 +1370,33 @@ Here is your complete, updated code to copy and paste:
         "Grab your torches, head back to camp. Goodnight."
     ];
 
-    // JS Update: Adds 'modal-open' class to lock body scrolling
-    rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-    stakesBtn.onclick = function() { stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-    bigrBtn.onclick = function() { bigrModal.style.display = "block"; document.body.classList.add('modal-open'); }
-    tribeBtn.onclick = function() { tribeModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    // JS Update: Open Camp Menu
+    menuBtn.onclick = function() { menuModal.style.display = "block"; document.body.classList.add('modal-open'); }
+
+    // Buttons inside the Camp Menu: Close the menu, open the specific modal
+    rulesBtn.onclick = function() { menuModal.style.display = "none"; rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    stakesBtn.onclick = function() { menuModal.style.display = "none"; stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    tribeBtn.onclick = function() { menuModal.style.display = "none"; tribeModal.style.display = "block"; document.body.classList.add('modal-open'); }
     
+    // Logic for Random Quote Button (inside Menu)
+    quoteBtn.onclick = function() {
+        const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
+        quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
+        menuModal.style.display = "none";
+        quoteModal.style.display = "block";
+        document.body.classList.add('modal-open'); 
+    }
+
+    // Buttons on Main Screen
+    bigrBtn.onclick = function() { bigrModal.style.display = "block"; document.body.classList.add('modal-open'); }
+
     // Hidden Idol Scavenger Hunt Logic
     hiddenIdolTrigger.onclick = function() {
         idolModal.style.display = "block";
         document.body.classList.add('modal-open');
     }
 
-    // Group Chat Button Logic: Reverted back to Share API with "SW" text override
+    // Group Chat Button Logic: Main Screen
     groupChatBtn.onclick = async function() {
         if (navigator.share) {
             try {
@@ -1378,14 +1414,7 @@ Here is your complete, updated code to copy and paste:
         }
     }
 
-    // Logic for Random Quote Button
-    quoteBtn.onclick = function() {
-        const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
-        quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
-        quoteModal.style.display = "block";
-        document.body.classList.add('modal-open'); 
-    }
-    
+    // Refresh Button Logic: Main Screen
     refreshBtn.onclick = function() { 
         document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
         loadScores(); 
@@ -1493,13 +1522,13 @@ Here is your complete, updated code to copy and paste:
         }
     }
 
-    // Close Modals when clicking outside of them
+    // Close Modals dynamically by checking for the 'modal' class
     window.onclick = function(event) {
-        if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal || event.target == quoteModal || event.target == tribeModal || event.target == idolModal) {
+        if (event.target.classList.contains('modal')) {
             event.target.style.display = "none";
             document.body.classList.remove('modal-open'); 
             
-            if (event.target == stakesModal) {
+            if (event.target.id === 'stakesModal') {
                  resetStakesModal();
             }
         }
@@ -1591,7 +1620,7 @@ Here is your complete, updated code to copy and paste:
     // Fallback logic to start audio context on first screen tap
     document.addEventListener('touchstart', () => {
         if(!audioInitialized) { initAudioContext(); }
-    }, {once:true});
+    }, {true});
 
 </script>
 </body>
