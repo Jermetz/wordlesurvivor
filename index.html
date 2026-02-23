@@ -612,13 +612,13 @@
 
         /* --- DAILY STAKES VIEWER --- */
         .stakes-viewer {
-            height: 400px; /* Locks the height of the frame so the Back button doesn't move */
+            height: 400px; 
             max-height: 55vh; 
             width: 100%;
             border-radius: 8px;
             border: 3px solid var(--text);
-            overflow: auto; /* Allows panning when image is 100% natural size */
-            -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
+            overflow: auto; 
+            -webkit-overflow-scrolling: touch;
             margin-bottom: 15px;
             background-color: rgba(0,0,0,0.05); 
             display: flex;
@@ -1111,13 +1111,15 @@
             stakesImg.src = 'IMG_0879.jpeg';
             stakesZoomBtn.innerText = 'BACK';
             
-            // When zoomed, force the image to its natural 100% pixel size
-            // This immediately allows panning around the massive image inside the locked frame
-            stakesImg.style.maxWidth = 'none';
-            stakesImg.style.maxHeight = 'none';
-            stakesImg.style.width = 'auto'; 
+            // Forces the image to exactly 100% of the viewer's width, perfectly centered.
+            // Maintains empty space on top/bottom automatically via Flexbox.
+            stakesImg.style.maxWidth = '100%';
+            stakesImg.style.maxHeight = '100%';
+            stakesImg.style.width = '100%'; 
+            stakesImg.style.height = '100%'; 
+            stakesImg.style.objectFit = 'contain';
             
-            stakesViewer.style.display = 'block'; 
+            stakesViewer.style.display = 'flex'; 
             stakesViewer.scrollTop = 0; 
             stakesViewer.scrollLeft = 0;
         } else {
@@ -1128,28 +1130,46 @@
     // Custom Pinch-To-Zoom Gesture Listener for the Stakes Image
     stakesViewer.addEventListener('touchstart', (e) => {
         if (isStakesZoomed && e.touches.length === 2) {
+            // Calculate the distance between two fingers
             initialDistance = Math.hypot(
                 e.touches[0].pageX - e.touches[1].pageX,
                 e.touches[0].pageY - e.touches[1].pageY
             );
-            initialWidth = stakesImg.offsetWidth;
+            // Record the current rendered width of the image to scale from
+            initialWidth = stakesImg.getBoundingClientRect().width;
         }
     });
 
     stakesViewer.addEventListener('touchmove', (e) => {
         if (isStakesZoomed && e.touches.length === 2 && initialDistance > 0) {
-            e.preventDefault(); // Prevents normal scrolling while pinching
+            e.preventDefault(); // Prevents normal page scrolling while actively pinching
             const currentDistance = Math.hypot(
                 e.touches[0].pageX - e.touches[1].pageX,
                 e.touches[0].pageY - e.touches[1].pageY
             );
             
-            // Calculate how far the fingers moved and dynamically scale the image width
+            // Calculate how far fingers moved and dynamically scale image width
             let scaleRatio = currentDistance / initialDistance;
             let newWidth = initialWidth * scaleRatio;
             
-            // Apply the new width so the scrollbars dynamically update
+            // Prevent the user from shrinking the image smaller than the container
+            if (newWidth < stakesViewer.clientWidth) {
+                newWidth = stakesViewer.clientWidth;
+            }
+            
+            // Apply new massive width and remove constraints to allow free scrolling
+            stakesImg.style.maxWidth = 'none';
+            stakesImg.style.maxHeight = 'none';
             stakesImg.style.width = `${newWidth}px`;
+            stakesImg.style.height = 'auto'; // Lets the height scale naturally with width
+            
+            // CRITICAL: If the image gets larger than the container, we must switch to 'block'
+            // display so the browser allows native panning/scrolling to the top and left edges.
+            if (newWidth > stakesViewer.clientWidth) {
+                stakesViewer.style.display = 'block';
+            } else {
+                stakesViewer.style.display = 'flex';
+            }
         }
     }, { passive: false });
 
@@ -1159,10 +1179,13 @@
         stakesImg.src = "dailystakes.png";
         stakesZoomBtn.innerText = "ZOOM";
         
-        // Re-lock the image to fit perfectly inside the frame
+        // Re-lock the original image to fit perfectly inside the frame
         stakesImg.style.maxWidth = '100%';
         stakesImg.style.maxHeight = '100%';
         stakesImg.style.width = 'auto';
+        stakesImg.style.height = 'auto';
+        stakesImg.style.objectFit = 'contain';
+        
         stakesViewer.style.display = 'flex';
         stakesViewer.scrollTop = 0;
         stakesViewer.scrollLeft = 0;
