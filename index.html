@@ -531,6 +531,10 @@
             transform: scale(0.96);
         }
 
+        #refresh-btn {
+            grid-column: 1 / -1; /* Forces the button to span across all columns */
+        }
+
         /* Rules modal standalone button */
         .text-btn {
             display: block;
@@ -896,6 +900,8 @@
         <div id="stakes-viewer" class="stakes-viewer">
             <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; max-height: 100%; object-fit: contain;">
         </div>
+        
+        <p style="font-size: 0.9rem; font-weight: bold; color: var(--text); font-style: italic; margin: 10px 0;">*Hard Mode grants +1 pt to offset negative scores.</p>
         
         <button id="stakes-zoom-btn" class="text-btn">ZOOM</button>
         
