@@ -884,7 +884,7 @@
 
         <h3 style="text-align: center; font-size: 1.4rem;">THE SETUP (FINE PRINT)</h3>
         <p>Everyone starts with 50 Life Points. The "Sole Wordler" is whoever has the most points remaining after the Survivor 50 Finale night.</p>
-        <p>I will keep track of all points and post daily updates via the Survivor Wordle web app.</p>
+        <p>I will keep track of all points and post daily updates via the Survivor web app.</p>
         
         <h3>HARD MODE BONUS</h3>
         <p>Hard Mode (*) players get +1 Point to offset any scoring penalty.</p>
@@ -997,7 +997,8 @@
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
-    let customTreeMail = ""; 
+    // Default hint built right into the variable
+    let customTreeMail = "RUMOR HAS IT... AN ADVANTAGE IS HIDDEN SOMEWHERE AT CAMP. LEAVE NO STONE UNTURNED... OR PIXEL UN-TAPPED."; 
     
     // Global variable to hold all players data so we can dynamically re-sort it without fetching
     let allPlayersData = []; 
@@ -1102,9 +1103,14 @@
                 bannerContainer.classList.remove('visible');
             }
 
-            // Updated Column Index for Tree Mail
+            // Updated Column Index for Tree Mail, keeping the default hint if empty
             const treeMailText = headerRow[10] ? headerRow[10].trim() : '';
-            customTreeMail = treeMailText;
+            if (treeMailText) {
+                customTreeMail = treeMailText;
+            } else {
+                customTreeMail = "RUMOR HAS IT... AN ADVANTAGE IS HIDDEN SOMEWHERE AT CAMP. LEAVE NO STONE UNTURNED... OR PIXEL UN-TAPPED.";
+            }
+            
             updateCountdown(); 
 
             const rows = allRows.slice(1);
