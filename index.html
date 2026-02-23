@@ -1,7 +1,3 @@
-That is the joy and frustration of building for iOS—Apple makes custom group messaging incredibly strict to prevent spam, which means sometimes the simplest solution (the native Share Sheet) is the most reliable!
-We can absolutely revert to the Share Sheet method and scrap the "Who Are You?" popup.
-To fix the long text issue, I have changed the Share API payload to only pass the text "SW". Apple’s Share Sheet automatically tries to pull the website's <title> (Survivor Scoreboard) or URL if you don't give it something specific. By explicitly telling it to just share "SW", it will override that long default text so you don't have to delete a paragraph every time.
-Here is your complete, cleaned-up code with the "Who Are You?" menu removed and the Share Sheet restored. Just copy and paste this over your current index.html:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -234,6 +230,38 @@ Here is your complete, cleaned-up code with the "Who Are You?" menu removed and 
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
             color: #ffd700;
             letter-spacing: 1px;
+        }
+
+        /* --- NEW VIEW TOGGLE BUTTONS --- */
+        .view-toggle-container {
+            display: flex;
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 25px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .toggle-tab {
+            flex: 1;
+            padding: 12px 0;
+            text-align: center;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-tab.active {
+            background: var(--accent);
+            color: white;
         }
 
         /* --- NEW LEADERBOARD HEADER --- */
@@ -675,6 +703,7 @@ Here is your complete, cleaned-up code with the "Who Are You?" menu removed and 
                 height: 100%;
             }
 
+            .view-toggle-container { max-width: 100%; } /* Stretches nicely on iPad */
             .leaderboard-header, #leaderboard {
                 max-width: 100%; /* Lets it stretch completely on iPad */
                 margin-top: 0;
@@ -712,7 +741,13 @@ Here is your complete, cleaned-up code with the "Who Are You?" menu removed and 
     </div>
 
     <div class="right-panel">
-        <div class="leaderboard-header">
+        
+        <div class="view-toggle-container">
+            <button id="view-total-btn" class="toggle-tab active">TOTAL POINTS</button>
+            <button id="view-hot-btn" class="toggle-tab">🔥 WHO'S HOT?</button>
+        </div>
+
+        <div class="leaderboard-header" id="dynamic-leaderboard-header">
             LEADERBOARD
             <span>(Ranked by Total Life Pts)</span>
         </div>
@@ -831,6 +866,11 @@ Here is your complete, cleaned-up code with the "Who Are You?" menu removed and 
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
     let customTreeMail = ""; 
+    
+    // Global variable to hold all players data so we can dynamically re-sort it without fetching
+    let allPlayersData = []; 
+    // State to track which view is currently selected ('total' or 'hot')
+    let currentSortView = 'total'; 
 
     function updateCountdown() {
         const now = new Date();
@@ -898,6 +938,18 @@ Here is your complete, cleaned-up code with the "Who Are You?" menu removed and 
     updateCountdown();
     setInterval(updateCountdown, 60000); 
 
+    // Helper function to extract a momentum value out of a Wordle string (e.g. "3/6" or "X/6")
+    function getWordleValue(scoreStr) {
+        if (!scoreStr || typeof scoreStr !== 'string') return 0;
+        const match = scoreStr.match(/([1-6X])\/6/i);
+        if (match) {
+            if (match[1].toUpperCase() === 'X') return 0;
+            // 1/6 gets 6 momentum points, 6/6 gets 1 momentum point
+            return 7 - parseInt(match[1], 10);
+        }
+        return 0; // Covers missed days "-"
+    }
+
     async function loadScores() {
         try {
             const timestamp = new Date().getTime();
@@ -925,100 +977,158 @@ Here is your complete, cleaned-up code with the "Who Are You?" menu removed and 
 
             const rows = allRows.slice(1);
 
-            const players = rows.map(row => {
+            allPlayersData = rows.map(row => {
                 // Now fetching the 8th (index 7) for Hard Mode, and 9th (index 8) for Shot in the Dark
                 const [name, score, change, idols, hist1, hist2, hist3, hardModeCol, shotInDarkCol] = row.split(',');
+                
+                // Parse strings safely
+                const safeHist1 = hist1 ? hist1.trim() : '-';
+                const safeHist2 = hist2 ? hist2.trim() : '-';
+                const safeHist3 = hist3 ? hist3.trim() : '-';
+
+                // Calculate momentum behind the scenes
+                const calculatedHotScore = getWordleValue(safeHist1) + getWordleValue(safeHist2) + getWordleValue(safeHist3);
+
                 return { 
                     name: name ? name.trim() : '', 
                     score: parseInt(score) || 0,
                     change: parseInt(change) || 0,
                     idols: parseInt(idols) || 0,
-                    hist1: hist1 ? hist1.trim() : '-',
-                    hist2: hist2 ? hist2.trim() : '-',
-                    hist3: hist3 ? hist3.trim() : '-',
+                    hist1: safeHist1,
+                    hist2: safeHist2,
+                    hist3: safeHist3,
                     hardMode: hardModeCol ? hardModeCol.trim() : '',
-                    shotInDark: shotInDarkCol ? shotInDarkCol.trim() : '0'
+                    shotInDark: shotInDarkCol ? shotInDarkCol.trim() : '0',
+                    hotScore: calculatedHotScore
                 };
-            }).sort((a, b) => b.score - a.score);
+            }).filter(player => player.name !== ''); // Filter out empty names
 
-            const container = document.getElementById('leaderboard');
-            container.innerHTML = '';
-            const allUnranked = players.every(p => p.score === 50);
-            let currentRank = 1;
-            let previousScore = null;
+            // Now that data is loaded and mapped, render the leaderboard
+            renderLeaderboard();
 
-            players.forEach((player, index) => {
-                if(!player.name) return;
-                const card = document.createElement('div');
-                card.className = 'player-card';
-                card.addEventListener('click', () => {
-                    card.classList.toggle('expanded');
-                });
-                if (player.score < 40) card.classList.add('extinguished');
-                if (previousScore !== null && player.score < previousScore) {
-                    currentRank++;
-                }
-                previousScore = player.score;
-                const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
-                let changeDisplay = '-';
-                let changeClass = 'change-neutral';
-                if (player.change > 0) {
-                    changeDisplay = `+${player.change}`;
-                    changeClass = 'change-positive';
-                } else if (player.change < 0) {
-                    changeDisplay = `${player.change}`;
-                    changeClass = 'change-negative';
-                }
-
-                // Check the dedicated Hard Mode column for an asterisk
-                const isHardMode = player.hardMode.includes('*');
-                const hardModeText = isHardMode ? '✅' : '❌';
-
-                card.innerHTML = `
-                    <div class="card-main">
-                        <div class="rank">${rankDisplay}</div>
-                        <div class="name">
-                            ${player.name}
-                            ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
-                        </div>
-                        <div class="change-container">
-                            <span class="change-label">Change</span>
-                            <span class="${changeClass}">${changeDisplay}</span>
-                        </div>
-                        <div class="score-container">
-                            <div class="score">${player.score}</div>
-                        </div>
-                    </div>
-                    <div class="history-drawer">
-                        <div class="drawer-status">
-                            <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
-                            <div>📿 Immunity Idols Banked: ${player.idols}</div>
-                            <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
-                        </div>
-                        <div class="history-title"><strong>Wordle History</strong></div>
-                        <div class="history-grid">
-                            <div class="history-day">
-                                <span class="history-label">YESTERDAY</span>
-                                <span class="history-value">${player.hist1}</span>
-                            </div>
-                            <div class="history-day">
-                                <span class="history-label">2 DAYS AGO</span>
-                                <span class="history-value">${player.hist2}</span>
-                            </div>
-                            <div class="history-day">
-                                <span class="history-label">3 DAYS AGO</span>
-                                <span class="history-value">${player.hist3}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
         } catch (e) {
             document.getElementById('leaderboard').innerHTML = '<p style="color:white; font-size:1.2rem;">The tribe has spoken (Error loading data).</p>';
         }
     }
 
+    function renderLeaderboard() {
+        const container = document.getElementById('leaderboard');
+        const headerEl = document.getElementById('dynamic-leaderboard-header');
+        container.innerHTML = '';
+        
+        let sortedPlayers = [...allPlayersData]; // Clone array to sort without destroying original data
+
+        // Sort based on the current toggle view
+        if (currentSortView === 'hot') {
+            // Sort by their 3-day momentum. Break ties with their total score.
+            sortedPlayers.sort((a, b) => b.hotScore - a.hotScore || b.score - a.score);
+            headerEl.innerHTML = '🔥 WHO\'S HOT? 🔥<span>(Ranked by 3-Day Momentum)</span>';
+        } else {
+            // Sort standard Total Life Points
+            sortedPlayers.sort((a, b) => b.score - a.score);
+            headerEl.innerHTML = 'LEADERBOARD<span>(Ranked by Total Life Pts)</span>';
+        }
+
+        const allUnranked = sortedPlayers.every(p => p.score === 50);
+        let currentRank = 1;
+        let previousScore = null;
+
+        sortedPlayers.forEach((player, index) => {
+            const card = document.createElement('div');
+            card.className = 'player-card';
+            card.addEventListener('click', () => {
+                card.classList.toggle('expanded');
+            });
+            
+            if (player.score < 40) card.classList.add('extinguished');
+            
+            // Rank Tie Logic matching the active view
+            const currentCompareVal = currentSortView === 'hot' ? player.hotScore : player.score;
+            if (previousScore !== null && currentCompareVal < previousScore) {
+                currentRank++;
+            }
+            previousScore = currentCompareVal;
+            
+            const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
+            
+            let changeDisplay = '-';
+            let changeClass = 'change-neutral';
+            if (player.change > 0) {
+                changeDisplay = `+${player.change}`;
+                changeClass = 'change-positive';
+            } else if (player.change < 0) {
+                changeDisplay = `${player.change}`;
+                changeClass = 'change-negative';
+            }
+
+            // Check the dedicated Hard Mode column for an asterisk
+            const isHardMode = player.hardMode.includes('*');
+            const hardModeText = isHardMode ? '✅' : '❌';
+
+            // When viewing "Who's Hot", dynamically swap out the main big score number 
+            // to show their Momentum points instead of Total Life points so users understand the rank.
+            const mainScoreDisplay = currentSortView === 'hot' ? player.hotScore : player.score;
+
+            card.innerHTML = `
+                <div class="card-main">
+                    <div class="rank">${rankDisplay}</div>
+                    <div class="name">
+                        ${player.name}
+                        ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
+                    </div>
+                    <div class="change-container">
+                        <span class="change-label">Change</span>
+                        <span class="${changeClass}">${changeDisplay}</span>
+                    </div>
+                    <div class="score-container">
+                        <div class="score">${mainScoreDisplay}</div>
+                    </div>
+                </div>
+                <div class="history-drawer">
+                    <div class="drawer-status">
+                        <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
+                        <div>📿 Immunity Idols Banked: ${player.idols}</div>
+                        <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
+                    </div>
+                    <div class="history-title"><strong>Wordle History</strong></div>
+                    <div class="history-grid">
+                        <div class="history-day">
+                            <span class="history-label">YESTERDAY</span>
+                            <span class="history-value">${player.hist1}</span>
+                        </div>
+                        <div class="history-day">
+                            <span class="history-label">2 DAYS AGO</span>
+                            <span class="history-value">${player.hist2}</span>
+                        </div>
+                        <div class="history-day">
+                            <span class="history-label">3 DAYS AGO</span>
+                            <span class="history-value">${player.hist3}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Toggle Button Listeners
+    document.getElementById('view-total-btn').addEventListener('click', function() {
+        if(currentSortView === 'total') return; // Prevent unnecessary re-renders
+        currentSortView = 'total';
+        this.classList.add('active');
+        document.getElementById('view-hot-btn').classList.remove('active');
+        renderLeaderboard();
+    });
+
+    document.getElementById('view-hot-btn').addEventListener('click', function() {
+        if(currentSortView === 'hot') return; 
+        currentSortView = 'hot';
+        this.classList.add('active');
+        document.getElementById('view-total-btn').classList.remove('active');
+        renderLeaderboard();
+    });
+
+    // Boot up the app by loading data
     loadScores();
 
     // MODAL AND BUTTON LOGIC
