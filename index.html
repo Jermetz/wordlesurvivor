@@ -531,18 +531,26 @@
             transform: scale(0.96);
         }
 
-        /* Ultimate Survivor Button spans the full bottom row */
-        #bigr-btn {
+        /* Camp Menu Button spans the full bottom row */
+        #menu-btn {
             grid-column: 1 / -1; 
         }
 
-        /* Sub-grid for the Camp Menu modal */
-        .menu-grid {
-            display: grid;
+        /* Drawer for the Camp Menu */
+        .camp-menu-drawer {
+            display: none;
+            grid-column: 1 / -1;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            background: rgba(0,0,0,0.15);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: -5px; /* Pull it slightly up to feel visually connected to the button */
+        }
+
+        .camp-menu-drawer.open {
+            display: grid;
         }
 
         /* Rules modal standalone button */
@@ -553,6 +561,7 @@
             color: var(--accent);
             padding: 14px 10px; 
             border-radius: 25px;
+            /* Clamp scales the font smoothly between small and large screens */
             font-size: clamp(0.75rem, 4vw, 1.1rem); 
             white-space: nowrap; 
             cursor: pointer;
@@ -752,6 +761,11 @@
                 margin-top: 10px; 
             }
 
+            /* Stack drawer buttons single column on iPad to match action grid */
+            .camp-menu-drawer {
+                grid-template-columns: 1fr; 
+            }
+
             .right-panel {
                 grid-column: 2;
                 grid-row: 1 / span 4; /* Spans all rows perfectly flush to the top */
@@ -835,9 +849,16 @@
         <button id="group-chat-btn" class="action-btn">GROUP CHAT</button>
         
         <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
+        <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
+
         <button id="menu-btn" class="action-btn" style="background: var(--text); color: var(--card-bg); border-color: var(--text);">⛺ CAMP MENU</button>
         
-        <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
+        <div id="camp-menu-drawer" class="camp-menu-drawer">
+            <button id="rules-btn" class="action-btn">VIEW RULES</button>
+            <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
+            <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
+            <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
+        </div>
     </div>
 </div>
 
@@ -846,21 +867,6 @@
     <button id="theme-toggle-btn" class="toggle-btn" title="Toggle Theme Music">
         <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
     </button>
-</div>
-
-<div id="menuModal" class="modal">
-  <div class="modal-content">
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('menuModal')">&times;</span></div>
-    <div class="modal-header">⛺ CAMP MENU</div>
-    <div class="modal-body">
-        <div class="menu-grid">
-            <button id="rules-btn" class="action-btn">VIEW RULES</button>
-            <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
-            <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
-            <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
-        </div>
-    </div>
-  </div>
 </div>
 
 <div id="rulesModal" class="modal">
@@ -1321,23 +1327,23 @@
     loadScores();
 
     // MODAL AND BUTTON LOGIC
-    const menuModal = document.getElementById("menuModal"),
-          rulesModal = document.getElementById("rulesModal"), 
+    const rulesModal = document.getElementById("rulesModal"), 
           stakesModal = document.getElementById("stakesModal"), 
           bigrModal = document.getElementById("bigrModal"),
           quoteModal = document.getElementById("quoteModal"),
           tribeModal = document.getElementById("tribeModal"),
           idolModal = document.getElementById("idolModal");
 
-    const menuBtn = document.getElementById("menu-btn"),
-          rulesBtn = document.getElementById("rules-btn"), 
+    const rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
           bigrBtn = document.getElementById("bigr-btn"), 
           refreshBtn = document.getElementById("refresh-btn"),
           quoteBtn = document.getElementById("quote-btn"),
           tribeBtn = document.getElementById("tribe-btn"),
           groupChatBtn = document.getElementById("group-chat-btn"),
-          hiddenIdolTrigger = document.getElementById("hidden-idol-trigger");
+          hiddenIdolTrigger = document.getElementById("hidden-idol-trigger"),
+          menuBtn = document.getElementById("menu-btn"),
+          campMenuDrawer = document.getElementById("camp-menu-drawer");
 
     const quoteText = document.getElementById("quote-text");
 
@@ -1370,19 +1376,18 @@
         "Grab your torches, head back to camp. Goodnight."
     ];
 
-    // JS Update: Open Camp Menu
-    menuBtn.onclick = function() { menuModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    // JS Update: Open Camp Menu Drawer
+    menuBtn.onclick = function() { campMenuDrawer.classList.toggle('open'); }
 
-    // Buttons inside the Camp Menu: Close the menu, open the specific modal
-    rulesBtn.onclick = function() { menuModal.style.display = "none"; rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-    stakesBtn.onclick = function() { menuModal.style.display = "none"; stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-    tribeBtn.onclick = function() { menuModal.style.display = "none"; tribeModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    // Buttons inside the Camp Menu Drawer
+    rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    stakesBtn.onclick = function() { stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    tribeBtn.onclick = function() { tribeModal.style.display = "block"; document.body.classList.add('modal-open'); }
     
-    // Logic for Random Quote Button (inside Menu)
+    // Logic for Random Quote Button (inside Menu Drawer)
     quoteBtn.onclick = function() {
         const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
         quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
-        menuModal.style.display = "none";
         quoteModal.style.display = "block";
         document.body.classList.add('modal-open'); 
     }
