@@ -608,70 +608,6 @@
             line-height: 1.5;
         }
 
-        /* --- DAILY STAKES STYLES --- */
-        .zoom-controls {
-            margin-bottom: 10px;
-        }
-
-        .zoom-btn {
-            background: var(--card-bg);
-            color: var(--accent);
-            border: 2px solid var(--accent);
-            font-weight: bold;
-            font-size: 1.2rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            margin: 0 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .image-zoom-container {
-            overflow: auto; /* Allows scrolling if zoomed in */
-            max-height: 60vh;
-            border-radius: 8px;
-            border: 3px solid var(--text);
-            /* Smooth scrolling on iOS */
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .stakes-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-family: 'Arial Black', sans-serif;
-            color: var(--text);
-        }
-
-        .stakes-table th {
-            background-color: var(--accent);
-            color: var(--card-bg);
-            padding: 12px;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            border: 2px solid var(--text);
-        }
-
-        .stakes-table td {
-            padding: 10px;
-            border: 2px solid var(--text);
-            font-size: 1rem;
-            font-weight: bold;
-            text-align: center;
-        }
-        
-        .stakes-table td:nth-child(2) {
-            text-align: left; /* Left-align the outcome column */
-        }
-
-        /* Row-specific styling for visual clarity */
-        .adv-row { background-color: rgba(255, 215, 0, 0.25); } /* Gold tint for advantages */
-        .pos-row { background-color: rgba(46, 125, 50, 0.15); } /* Green tint for positive */
-        .safe-row { background-color: rgba(255, 255, 255, 0.4); } /* Neutral */
-        .neg-row { background-color: rgba(235, 64, 52, 0.15); } /* Red tint for negative */
-        .penalty-row { background-color: rgba(235, 64, 52, 0.3); font-weight: 900; } /* Darker red for big penalties */
-
         /* --- DASHBOARD WRAPPER FOR RESPONSIVENESS --- */
         .dashboard-layout {
             display: flex;
@@ -837,38 +773,11 @@
     <span class="close" onclick="closeModal('stakesModal')">&times;</span>
     <div class="modal-header">THE DAILY STAKES</div>
     <div class="modal-body" style="text-align: center;">
-
-        <div class="zoom-controls">
-            <button id="zoom-out-btn" class="zoom-btn">-</button>
-            <button id="zoom-in-btn" class="zoom-btn">+</button>
-        </div>
-
-        <div class="image-zoom-container">
-             <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="width: 100%; transition: transform 0.3s ease; transform-origin: top center;">
-        </div>
-
-        <p id="stakes-drawer-toggle" style="cursor: pointer; text-decoration: underline; color: var(--accent); margin-top: 15px; font-weight: bold;">Can't read? View Table</p>
-
-        <div id="stakes-drawer" style="display: none;">
-            <table class="stakes-table">
-                <thead>
-                    <tr>
-                        <th>SCORE</th>
-                        <th>OUTCOME</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="adv-row"><td>1/6</td><td>+3 Pts + Legacy Adv. (Auto-Idol)</td></tr>
-                    <tr class="adv-row"><td>2/6</td><td>+2 Pts + Bank an Idol</td></tr>
-                    <tr class="pos-row"><td>3/6</td><td>+1 Pt</td></tr>
-                    <tr class="safe-row"><td>4/6</td><td>0 Pts (Safe)</td></tr>
-                    <tr class="neg-row"><td>5/6</td><td>-1 Pt</td></tr>
-                    <tr class="neg-row"><td>6/6</td><td>-2 Pts</td></tr>
-                    <tr class="penalty-row"><td>X/6</td><td>-3 Pts</td></tr>
-                    <tr class="penalty-row"><td>Missed Day</td><td>-5 Pts</td></tr>
-                </tbody>
-            </table>
-        </div>
+        
+        <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
+        
+        <button id="stakes-zoom-btn" class="text-btn">ZOOM</button>
+        
     </div>
   </div>
 </div>
@@ -1166,33 +1075,19 @@
         loadScores(); 
     }
 
-    // --- DAILY STAKES IMAGE ZOOM & DRAWER LOGIC ---
-    let currentZoom = 1;
+    // --- DAILY STAKES IMAGE TOGGLE LOGIC ---
     const stakesImg = document.getElementById('stakes-img');
-    const zoomInBtn = document.getElementById('zoom-in-btn');
-    const zoomOutBtn = document.getElementById('zoom-out-btn');
-    const drawerToggle = document.getElementById('stakes-drawer-toggle');
-    const drawer = document.getElementById('stakes-drawer');
+    const stakesZoomBtn = document.getElementById('stakes-zoom-btn');
+    let isStakesZoomed = false;
 
-    zoomInBtn.onclick = () => {
-        currentZoom += 0.25;
-        if (currentZoom > 3) currentZoom = 3; // Max zoom 3x
-        stakesImg.style.transform = `scale(${currentZoom})`;
-    };
-
-    zoomOutBtn.onclick = () => {
-        currentZoom -= 0.25;
-        if (currentZoom < 1) currentZoom = 1; // Min zoom 1x
-        stakesImg.style.transform = `scale(${currentZoom})`;
-    };
-
-    drawerToggle.onclick = () => {
-        if (drawer.style.display === "none") {
-            drawer.style.display = "block";
-            drawerToggle.innerText = "Hide Table";
+    stakesZoomBtn.onclick = function() {
+        isStakesZoomed = !isStakesZoomed;
+        if (isStakesZoomed) {
+            stakesImg.src = 'IMG_0879.jpeg';
+            stakesZoomBtn.innerText = 'BACK';
         } else {
-            drawer.style.display = "none";
-            drawerToggle.innerText = "Can't read? View Table";
+            stakesImg.src = 'dailystakes.png';
+            stakesZoomBtn.innerText = 'ZOOM';
         }
     };
 
@@ -1203,10 +1098,9 @@
         
         // Reset Daily Stakes modal state on close
         if (modalId === 'stakesModal') {
-             currentZoom = 1;
-             stakesImg.style.transform = `scale(1)`;
-             drawer.style.display = "none";
-             drawerToggle.innerText = "Can't read? View Table";
+             isStakesZoomed = false;
+             stakesImg.src = "dailystakes.png";
+             stakesZoomBtn.innerText = "ZOOM";
         }
     }
 
@@ -1218,10 +1112,9 @@
             
             // Reset Daily Stakes modal state on outside click close
             if (event.target == stakesModal) {
-                 currentZoom = 1;
-                 stakesImg.style.transform = `scale(1)`;
-                 drawer.style.display = "none";
-                 drawerToggle.innerText = "Can't read? View Table";
+                 isStakesZoomed = false;
+                 stakesImg.src = "dailystakes.png";
+                 stakesZoomBtn.innerText = "ZOOM";
             }
         }
     }
