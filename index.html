@@ -41,6 +41,11 @@
             overscroll-behavior-y: contain; 
         }
 
+        /* --- BACKGROUND SCROLL LOCK (Applied via JS) --- */
+        body.modal-open {
+            overflow: hidden; 
+        }
+
         /* --- FIRE BACKGROUND EFFECTS --- */
         .fire-glow {
             position: fixed;
@@ -498,6 +503,7 @@
             max-width: 90%;
         }
 
+        /* --- MODAL UPDATES FOR UI CONSISTENCY --- */
         .modal {
             display: none; 
             position: fixed; 
@@ -507,8 +513,8 @@
             width: 100%; 
             height: 100%; 
             overflow: auto; 
-            background-color: rgba(0,0,0,0.65); /* Increased Transparency */
-            backdrop-filter: blur(3px); /* Modern blur effect behind the modal */
+            background-color: rgba(0,0,0,0.65); 
+            backdrop-filter: blur(3px); 
             -webkit-backdrop-filter: blur(3px);
             padding-top: 60px;
         }
@@ -516,7 +522,7 @@
         .modal-content {
             background-color: var(--card-bg);
             margin: 5% auto; 
-            padding: 25px;
+            padding: 25px 20px; /* Adjusted padding */
             border: 3px solid var(--accent);
             width: 90%; 
             max-width: 550px;
@@ -527,14 +533,22 @@
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            box-sizing: border-box; /* CRITICAL: Prevents width from pushing past the screen */
+            position: relative; /* Allows absolute positioning of the X button */
+            overscroll-behavior-y: contain; /* Prevents scroll chaining to the background */
+            -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
         }
 
         .close {
             color: var(--accent);
-            float: right;
-            font-size: 32px;
+            position: absolute; /* Takes the button out of flow so it never hits text */
+            top: 10px;
+            right: 15px;
+            font-size: 36px;
             font-weight: bold;
             cursor: pointer;
+            line-height: 1;
+            z-index: 10;
         }
 
         .modal-header {
@@ -546,6 +560,9 @@
             font-size: 1.5rem;
             text-shadow: var(--text-shadow);
             text-decoration: underline;
+            padding-top: 5px;
+            padding-left: 20px;
+            padding-right: 20px; /* Keep text away from close button */
         }
 
         .modal-body h3 {
@@ -958,7 +975,7 @@
           bigrBtn = document.getElementById("bigr-btn"), 
           refreshBtn = document.getElementById("refresh-btn"),
           quoteBtn = document.getElementById("quote-btn"),
-          groupChatBtn = document.getElementById("group-chat-btn"); // Added reference
+          groupChatBtn = document.getElementById("group-chat-btn");
 
     const quoteText = document.getElementById("quote-text");
 
@@ -991,32 +1008,25 @@
         "Grab your torches, head back to camp. Goodnight."
     ];
 
-    rulesBtn.onclick = function() { rulesModal.style.display = "block"; }
-    stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
-    bigrBtn.onclick = function() { bigrModal.style.display = "block"; }
+    // JS Update: Adds 'modal-open' class to lock body scrolling
+    rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    stakesBtn.onclick = function() { stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    bigrBtn.onclick = function() { bigrModal.style.display = "block"; document.body.classList.add('modal-open'); }
     
     // Group Chat Button Logic: Share API + Fallback URL Scheme
     groupChatBtn.onclick = async function() {
-        // METHOD 1: The Modern iOS Share Sheet. 
-        // This is the cleanest UX. It slides up Apple's native share menu, and your 
-        // "Survivor Wordle" group chat will automatically appear at the top in the suggestions row.
         if (navigator.share) {
             try {
                 await navigator.share({
                     title: 'Survivor Wordle'
                 });
-                return; // Stop here if it worked successfully!
+                return; 
             } catch (err) {
                 console.log("Share sheet dismissed or failed, attempting fallback.");
             }
         }
         
-        // METHOD 2: The Strict iOS URL Fallback.
-        // THE FIX: Your personal number (12676002525) has been REMOVED from this list. 
-        // Including it was causing the exact-match bug on the iPhone.
         const otherMembers = "12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,jwalsh1015@gmail.com";
-        
-        // We also use the undocumented 'open?addresses=' format which handles long lists better on iOS.
         window.location.href = `sms://open?addresses=${otherMembers}`;
     }
 
@@ -1025,6 +1035,7 @@
         const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
         quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
         quoteModal.style.display = "block";
+        document.body.classList.add('modal-open'); // Locks background scroll
     }
     
     refreshBtn.onclick = function() { 
@@ -1032,14 +1043,17 @@
         loadScores(); 
     }
 
+    // JS Update: Removes 'modal-open' class when closed
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = "none";
+        document.body.classList.remove('modal-open'); 
     }
 
     // Close Modals when clicking outside of them
     window.onclick = function(event) {
         if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal || event.target == quoteModal) {
             event.target.style.display = "none";
+            document.body.classList.remove('modal-open'); 
         }
     }
 
