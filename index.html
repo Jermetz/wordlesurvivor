@@ -525,6 +525,11 @@
             justify-content: center;
             line-height: 1.2;
             transition: all 0.3s ease;
+            
+            /* Stops iOS from zooming in when double tapping quickly */
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         .action-btn:active {
@@ -575,6 +580,10 @@
             width: 100%; 
             box-sizing: border-box;
             transition: all 0.3s ease;
+            
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         /* Tribe Theme Swatches */
@@ -811,9 +820,6 @@
 <body>
 
 <script>
-    // Clearing the old storage key so everyone is forced to see the Welcome Prompt again!
-    localStorage.removeItem('survivorTribeColor'); 
-
     const savedTribeColor = localStorage.getItem('survivorTribeColor_v2');
     if(savedTribeColor) {
         document.documentElement.style.setProperty('--accent', savedTribeColor);
@@ -1023,7 +1029,7 @@
 <div id="fireGameModal" class="modal">
   <div class="modal-content" style="text-align: center;">
     <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('fireGameModal')">&times;</span></div>
-    <div class="modal-header">CAN YOU MAKE FIRE?</div>
+    <div class="modal-header">CAN YOU MAKE FIRE FAST?</div>
     <div class="modal-body">
         <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px;">Your torch is on the line. Tap the button as fast as you can to build your fire before the 10-second timer runs out!</p>
 
@@ -1033,7 +1039,7 @@
             <div id="fire-progress" class="progress-bar-fill"></div>
         </div>
 
-        <h2 id="fire-timer" style="color: var(--text); font-size: 2rem; margin-top: 0;">10.0s</h2>
+        <h2 id="fire-timer" style="color: var(--text); font-size: 2.2rem; margin-top: 0; font-family: monospace;">10.00s</h2>
 
         <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px;">STRIKE FLINT</button>
         <button id="start-fire-btn" class="text-btn">START CHALLENGE</button>
@@ -1042,7 +1048,7 @@
             <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem;">🔥 FIRE MADE! 🔥</h3>
             <p style="font-size: 1.1rem; font-weight: bold;">Time: <span id="final-time-display"></span>s</p>
             <div style="margin-top: 15px;">
-                <input type="text" id="player-initials" placeholder="Initials (e.g. JEFF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                <input type="text" id="player-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
                 <button id="save-score-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
             </div>
         </div>
@@ -1550,9 +1556,10 @@
     const leaderboardList = document.getElementById('fire-leaderboard-list');
 
     let fireHeat = 0;
-    let fireTimeLeft = 10.0;
+    let fireTimeLeft = 10.00;
     let fireInterval;
     let fireGameActive = false;
+    let fireStartTime = 0;
 
     fireGameBtn.onclick = function() {
         resetFireGame();
@@ -1578,11 +1585,11 @@
         clearInterval(fireInterval);
         fireGameActive = false;
         fireHeat = 0;
-        fireTimeLeft = 10.0;
+        fireTimeLeft = 10.00;
         
         updateFireVisuals();
         
-        fireTimerDisplay.innerText = "10.0s";
+        fireTimerDisplay.innerText = "10.00s";
         fireTimerDisplay.style.color = "var(--text)";
         fireEmoji.innerText = "🪵";
         
@@ -1607,20 +1614,28 @@
         strikeBtn.style.display = "block";
         fireInstructions.innerText = "KEEP TAPPING!";
 
-        // Fast interval: updates every 100ms
+        fireStartTime = Date.now();
+
+        // High precision interval using accurate Date math
         fireInterval = setInterval(() => {
-            fireTimeLeft -= 0.1;
-            fireHeat -= 2.5; // High wind! Heat decays very fast.
+            let elapsed = (Date.now() - fireStartTime) / 1000;
+            fireTimeLeft = 10.00 - elapsed;
+            
+            // High wind! Heat decays very fast.
+            fireHeat -= 0.5; 
 
             if (fireHeat < 0) fireHeat = 0;
 
-            fireTimerDisplay.innerText = Math.max(0, fireTimeLeft).toFixed(1) + "s";
-            updateFireVisuals();
-
             if (fireTimeLeft <= 0) {
+                fireTimeLeft = 0;
+                fireTimerDisplay.innerText = "0.00s";
+                updateFireVisuals();
                 endFireGame(false);
+            } else {
+                fireTimerDisplay.innerText = fireTimeLeft.toFixed(2) + "s";
+                updateFireVisuals();
             }
-        }, 100);
+        }, 20);
     }
 
     function updateFireVisuals() {
@@ -1646,8 +1661,9 @@
         strikeBtn.style.display = "none";
 
         if (won) {
-            // Calculate time taken to win
-            let timeTaken = (10.0 - fireTimeLeft).toFixed(1);
+            // Calculate precise time taken to win
+            let elapsed = (Date.now() - fireStartTime) / 1000;
+            let timeTaken = elapsed.toFixed(2);
             
             fireInstructions.style.display = "none"; 
             fireTimerDisplay.style.color = "var(--leaf-green)";
@@ -1699,7 +1715,7 @@
             board.forEach(entry => {
                 let li = document.createElement('li');
                 li.style.marginBottom = "8px";
-                li.innerHTML = `<span style="display:inline-block; width: 60px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(1)}s`;
+                li.innerHTML = `<span style="display:inline-block; width: 60px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
                 leaderboardList.appendChild(li);
             });
         } else {
