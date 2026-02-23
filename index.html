@@ -525,11 +525,6 @@
             justify-content: center;
             line-height: 1.2;
             transition: all 0.3s ease;
-            
-            /* Stops iOS from zooming in when double tapping quickly */
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
         }
         
         .action-btn:active {
@@ -580,10 +575,6 @@
             width: 100%; 
             box-sizing: border-box;
             transition: all 0.3s ease;
-            
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         /* Tribe Theme Swatches */
@@ -630,7 +621,15 @@
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #d95100 0%, #ffd700 100%);
-            transition: width 0.1s linear;
+            /* Eased out transition makes the jump to 100% look silky smooth */
+            transition: width 0.15s ease-out; 
+        }
+        
+        /* This prevents users from double-tap zooming while playing the fire game! */
+        #fireGameModal .modal-content {
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         /* --- MODAL UPDATES --- */
@@ -820,6 +819,9 @@
 <body>
 
 <script>
+    // Clearing the old storage key so everyone is forced to see the Welcome Prompt again!
+    localStorage.removeItem('survivorTribeColor'); 
+
     const savedTribeColor = localStorage.getItem('survivorTribeColor_v2');
     if(savedTribeColor) {
         document.documentElement.style.setProperty('--accent', savedTribeColor);
@@ -1572,12 +1574,27 @@
 
     strikeBtn.onclick = function() {
         if (!fireGameActive) return;
+        
         fireHeat += 8; // Gain per tap
-        if (fireHeat > 100) fireHeat = 100;
-        updateFireVisuals();
-
+        
         if (fireHeat >= 100) {
-            endFireGame(true);
+            fireHeat = 100;
+            fireGameActive = false;
+            clearInterval(fireInterval); // Instantly stop the clock
+            
+            // Record the exact time of the winning tap
+            let elapsed = (Date.now() - fireStartTime) / 1000;
+            fireTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+            updateFireVisuals();
+
+            // Wait 400ms to allow the progress bar CSS transition to finish 
+            // AND prevent accidental double clicks when the UI flips!
+            setTimeout(() => {
+                endFireGame(true, elapsed);
+            }, 400);
+
+        } else {
+            updateFireVisuals();
         }
     }
 
@@ -1621,8 +1638,8 @@
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimeLeft = 10.00 - elapsed;
             
-            // High wind! Heat decays very fast.
-            fireHeat -= 0.5; 
+            // Increased Wind! Fire decays 40 heat per second (requires >7 taps a sec to win)
+            fireHeat -= 0.8; 
 
             if (fireHeat < 0) fireHeat = 0;
 
@@ -1630,7 +1647,11 @@
                 fireTimeLeft = 0;
                 fireTimerDisplay.innerText = "0.00s";
                 updateFireVisuals();
-                endFireGame(false);
+                
+                // Allow the CSS transition to finish before flipping UI
+                setTimeout(() => {
+                    endFireGame(false);
+                }, 100);
             } else {
                 fireTimerDisplay.innerText = fireTimeLeft.toFixed(2) + "s";
                 updateFireVisuals();
@@ -1655,15 +1676,13 @@
         fireEmoji.style.transform = `scale(${scale})`;
     }
 
-    function endFireGame(won) {
+    function endFireGame(won, winningTime = 0) {
         clearInterval(fireInterval);
         fireGameActive = false;
         strikeBtn.style.display = "none";
 
         if (won) {
-            // Calculate precise time taken to win
-            let elapsed = (Date.now() - fireStartTime) / 1000;
-            let timeTaken = elapsed.toFixed(2);
+            let timeTaken = winningTime.toFixed(2);
             
             fireInstructions.style.display = "none"; 
             fireTimerDisplay.style.color = "var(--leaf-green)";
@@ -1697,8 +1716,8 @@
         // Sort lowest time to the top
         board.sort((a, b) => a.time - b.time);
         
-        // Keep only top 5 scores
-        board = board.slice(0, 5); 
+        // Keep top 10 scores
+        board = board.slice(0, 10); 
         
         localStorage.setItem('fireLeaderboard', JSON.stringify(board));
         
