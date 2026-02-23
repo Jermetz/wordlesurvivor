@@ -885,7 +885,7 @@
             <button id="rules-btn" class="action-btn">VIEW RULES</button>
             <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
             <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
-            <button id="fire-game-btn" class="action-btn">🔥 TIEBREAKER</button>
+            <button id="fire-game-btn" class="action-btn">🔥 MINI-GAME</button>
             <button id="tribe-btn" class="action-btn" style="grid-column: 1 / -1;">TRIBE COLORS</button>
         </div>
     </div>
@@ -1023,7 +1023,7 @@
 <div id="fireGameModal" class="modal">
   <div class="modal-content" style="text-align: center;">
     <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('fireGameModal')">&times;</span></div>
-    <div class="modal-header">FIRE TIEBREAKER</div>
+    <div class="modal-header">CAN YOU MAKE FIRE?</div>
     <div class="modal-body">
         <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px;">Your torch is on the line. Tap the button as fast as you can to build your fire before the 10-second timer runs out!</p>
 
@@ -1035,8 +1035,26 @@
 
         <h2 id="fire-timer" style="color: var(--text); font-size: 2rem; margin-top: 0;">10.0s</h2>
 
-        <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none;">STRIKE FLINT</button>
+        <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px;">STRIKE FLINT</button>
         <button id="start-fire-btn" class="text-btn">START CHALLENGE</button>
+        
+        <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
+            <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem;">🔥 FIRE MADE! 🔥</h3>
+            <p style="font-size: 1.1rem; font-weight: bold;">Time: <span id="final-time-display"></span>s</p>
+            <div style="margin-top: 15px;">
+                <input type="text" id="player-initials" placeholder="Initials (e.g. JEFF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                <button id="save-score-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+            </div>
+        </div>
+
+        <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none;">
+            <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem;">🔥 FASTEST FIRE MAKERS</h3>
+            <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.1rem; color: var(--text); font-weight: bold; padding-left: 20px;">
+                </ol>
+        </div>
+
+        <button id="play-again-btn" class="text-btn" style="display: none; margin-top: 30px; background-color: var(--text); color: var(--card-bg);">PLAY AGAIN</button>
+
     </div>
   </div>
 </div>
@@ -1515,13 +1533,21 @@
         loadScores(); 
     }
 
+
     // --- MINI-GAME LOGIC: FIRE TIEBREAKER ---
     const startFireBtn = document.getElementById('start-fire-btn');
     const strikeBtn = document.getElementById('strike-btn');
+    const playAgainBtn = document.getElementById('play-again-btn');
     const fireProgress = document.getElementById('fire-progress');
     const fireTimerDisplay = document.getElementById('fire-timer');
     const fireEmoji = document.getElementById('fire-emoji');
     const fireInstructions = document.getElementById('fire-instructions');
+    const saveScoreSection = document.getElementById('save-score-section');
+    const finalTimeDisplay = document.getElementById('final-time-display');
+    const playerInitials = document.getElementById('player-initials');
+    const saveScoreBtn = document.getElementById('save-score-btn');
+    const leaderboardSection = document.getElementById('fire-leaderboard-section');
+    const leaderboardList = document.getElementById('fire-leaderboard-list');
 
     let fireHeat = 0;
     let fireTimeLeft = 10.0;
@@ -1534,13 +1560,12 @@
         document.body.classList.add('modal-open');
     }
 
-    startFireBtn.onclick = function() {
-        startFireGame();
-    }
+    startFireBtn.onclick = function() { startFireGame(); }
+    playAgainBtn.onclick = function() { resetFireGame(); }
 
     strikeBtn.onclick = function() {
         if (!fireGameActive) return;
-        fireHeat += 6; // Heat goes up +6 per tap
+        fireHeat += 8; // Gain per tap
         if (fireHeat > 100) fireHeat = 100;
         updateFireVisuals();
 
@@ -1554,14 +1579,25 @@
         fireGameActive = false;
         fireHeat = 0;
         fireTimeLeft = 10.0;
+        
         updateFireVisuals();
+        
         fireTimerDisplay.innerText = "10.0s";
         fireTimerDisplay.style.color = "var(--text)";
         fireEmoji.innerText = "🪵";
+        
+        fireInstructions.style.display = "block";
         fireInstructions.innerText = "Your torch is on the line. Tap the button as fast as you can to build your fire before the 10-second timer runs out!";
+        
         startFireBtn.style.display = "block";
         startFireBtn.innerText = "START CHALLENGE";
+        
         strikeBtn.style.display = "none";
+        playAgainBtn.style.display = "none";
+        saveScoreSection.style.display = "none";
+        playerInitials.value = "";
+        
+        renderFireLeaderboard();
     }
 
     function startFireGame() {
@@ -1571,9 +1607,10 @@
         strikeBtn.style.display = "block";
         fireInstructions.innerText = "KEEP TAPPING!";
 
+        // Fast interval: updates every 100ms
         fireInterval = setInterval(() => {
             fireTimeLeft -= 0.1;
-            fireHeat -= 1.5; // Fire loses heat naturally over time
+            fireHeat -= 2.5; // High wind! Heat decays very fast.
 
             if (fireHeat < 0) fireHeat = 0;
 
@@ -1607,18 +1644,66 @@
         clearInterval(fireInterval);
         fireGameActive = false;
         strikeBtn.style.display = "none";
-        startFireBtn.style.display = "block";
-        startFireBtn.innerText = "PLAY AGAIN";
 
         if (won) {
-            fireInstructions.innerHTML = "<strong>🔥 YOU SURVIVED! 🔥</strong><br>Your fire is roaring. You live to play another day.";
+            // Calculate time taken to win
+            let timeTaken = (10.0 - fireTimeLeft).toFixed(1);
+            
+            fireInstructions.style.display = "none"; 
             fireTimerDisplay.style.color = "var(--leaf-green)";
+            
+            finalTimeDisplay.innerText = timeTaken;
+            saveScoreSection.style.display = "block";
+            
+            playAgainBtn.style.display = "block";
         } else {
             fireInstructions.innerHTML = "<strong>💀 YOUR FLAME DIED 💀</strong><br>The tribe has spoken. You failed to make fire in time.";
             fireTimerDisplay.style.color = "var(--low-score)";
             fireProgress.style.width = "0%";
             fireEmoji.innerText = "💨";
             fireEmoji.style.transform = `scale(1)`;
+            playAgainBtn.style.display = "block";
+        }
+        
+        renderFireLeaderboard();
+    }
+
+    saveScoreBtn.onclick = function() {
+        let initials = playerInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        
+        let timeTaken = parseFloat(finalTimeDisplay.innerText);
+        
+        // Retrieve existing local leaderboard or start fresh
+        let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
+        board.push({ name: initials, time: timeTaken });
+        
+        // Sort lowest time to the top
+        board.sort((a, b) => a.time - b.time);
+        
+        // Keep only top 5 scores
+        board = board.slice(0, 5); 
+        
+        localStorage.setItem('fireLeaderboard', JSON.stringify(board));
+        
+        saveScoreSection.style.display = "none";
+        renderFireLeaderboard();
+    }
+
+    function renderFireLeaderboard() {
+        let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
+        
+        if(board.length > 0) {
+            leaderboardSection.style.display = "block";
+            leaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 60px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(1)}s`;
+                leaderboardList.appendChild(li);
+            });
+        } else {
+            leaderboardSection.style.display = "none";
         }
     }
 
