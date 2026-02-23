@@ -786,7 +786,10 @@
 <body>
 
 <script>
-    const savedTribeColor = localStorage.getItem('survivorTribeColor');
+    // Clearing the old storage key so everyone is forced to see the Welcome Prompt again!
+    localStorage.removeItem('survivorTribeColor'); 
+
+    const savedTribeColor = localStorage.getItem('survivorTribeColor_v2');
     if(savedTribeColor) {
         document.documentElement.style.setProperty('--accent', savedTribeColor);
     }
@@ -959,7 +962,14 @@
     <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('tribeModal')">&times;</span></div>
     <div class="modal-header">CHOOSE YOUR TRIBE</div>
     <div class="modal-body" style="text-align: center; margin-top: 15px;">
-        <p style="margin-bottom: 20px;">Personalize your app by choosing your buff color.</p>
+        
+        <div id="welcome-blurb" style="display: none; margin-bottom: 20px;">
+            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 10px; font-size: 1.4rem;">WELCOME TO SURVIVOR WORDLE!</h3>
+            <p style="font-size: 1.05rem; color: var(--text); line-height: 1.4;">Your 14-week adventure begins now. First things first...</p>
+        </div>
+
+        <p style="margin-bottom: 5px; font-weight: bold; font-size: 1.1rem; color: var(--text);">Personalize your app by choosing your buff color.</p>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px; font-style: italic;">(You can always change this later in the ⛺ Camp Menu)</p>
         <button class="color-swatch" style="background-color: #d95100;" onclick="setThemeColor('#d95100')">Tagi Orange (Default)</button>
         <button class="color-swatch" style="background-color: #2e7d32;" onclick="setThemeColor('#2e7d32')">Pagong Green</button>
         <button class="color-swatch" style="background-color: #1976d2;" onclick="setThemeColor('#1976d2')">Heroes Blue</button>
@@ -1326,6 +1336,14 @@
     // Boot up the app by loading data
     loadScores();
 
+    // --- First-time Tribe Color Prompt ---
+    // If they don't have the new v2 save key, prompt them immediately and show welcome message.
+    if (!localStorage.getItem('survivorTribeColor_v2')) {
+        document.getElementById("welcome-blurb").style.display = "block";
+        document.getElementById("tribeModal").style.display = "block";
+        document.body.classList.add('modal-open');
+    }
+
     // MODAL AND BUTTON LOGIC
     const rulesModal = document.getElementById("rulesModal"), 
           stakesModal = document.getElementById("stakesModal"), 
@@ -1393,7 +1411,13 @@
     // Buttons inside the Camp Menu Drawer
     rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
     stakesBtn.onclick = function() { stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-    tribeBtn.onclick = function() { tribeModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    
+    // Explicitly hide the welcome blurb if opening from the menu later
+    tribeBtn.onclick = function() { 
+        document.getElementById("welcome-blurb").style.display = "none";
+        tribeModal.style.display = "block"; 
+        document.body.classList.add('modal-open'); 
+    }
     
     // Logic for Random Quote Button (inside Menu Drawer)
     quoteBtn.onclick = function() {
@@ -1439,7 +1463,7 @@
     // --- TRIBE THEME LOGIC ---
     function setThemeColor(hexColor) {
         document.documentElement.style.setProperty('--accent', hexColor);
-        localStorage.setItem('survivorTribeColor', hexColor);
+        localStorage.setItem('survivorTribeColor_v2', hexColor);
         closeModal('tribeModal');
     }
 
