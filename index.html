@@ -995,14 +995,30 @@
     stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
     bigrBtn.onclick = function() { bigrModal.style.display = "block"; }
     
-    // Group Chat Button Logic
-    groupChatBtn.onclick = function() {
-        const numbers = "12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,12676002525";
+    // Group Chat Button Logic: Share API + Fallback URL Scheme
+    groupChatBtn.onclick = async function() {
+        // METHOD 1: The Modern iOS Share Sheet. 
+        // This is the cleanest UX. It slides up Apple's native share menu, and your 
+        // "Survivor Wordle" group chat will automatically appear at the top in the suggestions row.
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Survivor Wordle',
+                    text: 'The tribe has spoken... 🌴'
+                });
+                return; // Stop here if it worked successfully!
+            } catch (err) {
+                console.log("Share sheet dismissed or failed, attempting fallback.");
+            }
+        }
         
-        // Ensure iOS attempts to process the full string
-        let iosLink = `sms:${numbers}&body=`;
+        // METHOD 2: The Strict iOS URL Fallback.
+        // THE FIX: Your personal number (12676002525) has been REMOVED from this list. 
+        // Including it was causing the exact-match bug on the iPhone.
+        const otherMembers = "12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,jwalsh1015@gmail.com";
         
-        window.location.href = iosLink;
+        // We also use the undocumented 'open?addresses=' format which handles long lists better on iOS.
+        window.location.href = `sms://open?addresses=${otherMembers}`;
     }
 
     // Logic for Random Quote Button
