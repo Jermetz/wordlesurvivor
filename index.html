@@ -547,7 +547,7 @@
             z-index: 1000;
             display: flex;
             justify-content: flex-end; 
-            height: 0; /* Takes zero space vertically so it doesn't affect image centering */
+            height: 0; 
         }
 
         .close {
@@ -562,7 +562,7 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            transform: translate(10px, -15px); /* Bumps it into the top right corner */
+            transform: translate(10px, -15px); 
         }
 
         /* --- CENTERED JEFF QUOTE MODAL FIX --- */
@@ -611,20 +611,20 @@
         }
 
         /* --- DAILY STAKES VIEWER --- */
-        /* Fixed container that ensures the button below never moves when swapping images */
         .stakes-viewer {
-            height: 400px; /* Locked height */
-            max-height: 55vh; /* Adapts slightly to smaller screens */
+            height: 400px; /* Locks the height of the frame so the Back button doesn't move */
+            max-height: 55vh; 
             width: 100%;
             border-radius: 8px;
             border: 3px solid var(--text);
-            overflow: auto; /* Allows panning when zoomed in */
-            -webkit-overflow-scrolling: touch;
+            overflow: auto; /* Allows panning when image is 100% natural size */
+            -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
             margin-bottom: 15px;
-            background-color: rgba(0,0,0,0.05); /* Slight tint behind image */
+            background-color: rgba(0,0,0,0.05); 
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
         /* --- DASHBOARD WRAPPER FOR RESPONSIVENESS --- */
@@ -1096,11 +1096,14 @@
         loadScores(); 
     }
 
-    // --- DAILY STAKES IMAGE TOGGLE LOGIC ---
+    // --- DAILY STAKES IMAGE TOGGLE & CUSTOM PINCH-ZOOM LOGIC ---
     const stakesViewer = document.getElementById('stakes-viewer');
     const stakesImg = document.getElementById('stakes-img');
     const stakesZoomBtn = document.getElementById('stakes-zoom-btn');
+    
     let isStakesZoomed = false;
+    let initialDistance = 0;
+    let initialWidth = 0;
 
     stakesZoomBtn.onclick = function() {
         isStakesZoomed = !isStakesZoomed;
@@ -1108,34 +1111,55 @@
             stakesImg.src = 'IMG_0879.jpeg';
             stakesZoomBtn.innerText = 'BACK';
             
-            // Allow image to overflow its fixed container to enable massive zooming and panning
+            // When zoomed, force the image to its natural 100% pixel size
+            // This immediately allows panning around the massive image inside the locked frame
             stakesImg.style.maxWidth = 'none';
             stakesImg.style.maxHeight = 'none';
-            stakesImg.style.width = '200%'; // Pushes the image to 2x size inside the scrolling box
+            stakesImg.style.width = 'auto'; 
             
-            // Switch to block display so native iOS 2D scrolling works perfectly
             stakesViewer.style.display = 'block'; 
             stakesViewer.scrollTop = 0; 
             stakesViewer.scrollLeft = 0;
         } else {
-            stakesImg.src = 'dailystakes.png';
-            stakesZoomBtn.innerText = 'ZOOM';
-            
-            // Reset image constraints to fit perfectly inside the fixed container
-            stakesImg.style.maxWidth = '100%';
-            stakesImg.style.maxHeight = '100%';
-            stakesImg.style.width = 'auto';
-            
-            // Restore flexbox to center the zoomed-out image
-            stakesViewer.style.display = 'flex'; 
+            resetStakesModal();
         }
     };
+
+    // Custom Pinch-To-Zoom Gesture Listener for the Stakes Image
+    stakesViewer.addEventListener('touchstart', (e) => {
+        if (isStakesZoomed && e.touches.length === 2) {
+            initialDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            initialWidth = stakesImg.offsetWidth;
+        }
+    });
+
+    stakesViewer.addEventListener('touchmove', (e) => {
+        if (isStakesZoomed && e.touches.length === 2 && initialDistance > 0) {
+            e.preventDefault(); // Prevents normal scrolling while pinching
+            const currentDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            
+            // Calculate how far the fingers moved and dynamically scale the image width
+            let scaleRatio = currentDistance / initialDistance;
+            let newWidth = initialWidth * scaleRatio;
+            
+            // Apply the new width so the scrollbars dynamically update
+            stakesImg.style.width = `${newWidth}px`;
+        }
+    }, { passive: false });
 
     // Helper function to cleanly reset stakes modal back to default
     function resetStakesModal() {
         isStakesZoomed = false;
         stakesImg.src = "dailystakes.png";
         stakesZoomBtn.innerText = "ZOOM";
+        
+        // Re-lock the image to fit perfectly inside the frame
         stakesImg.style.maxWidth = '100%';
         stakesImg.style.maxHeight = '100%';
         stakesImg.style.width = 'auto';
