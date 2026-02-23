@@ -823,6 +823,36 @@
   </div>
 </div>
 
+<div id="identityModal" class="modal">
+  <div class="modal-content">
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('identityModal')">&times;</span></div>
+    <div class="modal-header">WHO ARE YOU?</div>
+    <div class="modal-body" style="text-align: center;">
+        <p style="margin-bottom: 20px;">To ensure the group chat opens perfectly on your device, please select your name from the tribe. (You only have to do this once!)</p>
+        
+        <select id="tribe-select" style="width: 100%; padding: 12px; font-size: 1.1rem; margin-bottom: 25px; border-radius: 8px; border: 2px solid var(--text); background-color: white; color: black; font-family: 'Arial Black', sans-serif;">
+            <option value="" disabled selected>Select your name...</option>
+            <option value="12676002525">Jeremy</option>
+            <option value="12157830476">Casey</option>
+            <option value="12155340778">Wendy</option>
+            <option value="12677840928">Shawn</option>
+            <option value="12672462812">Leigh</option>
+            <option value="12157782017">Kristi</option>
+            <option value="12155342754">Kelly</option>
+            <option value="12155345206">John W.</option>
+            <option value="12154160918">Joan</option>
+            <option value="15705176212">Graci</option>
+            <option value="12676886136">Aunt Dawn</option>
+            <option value="12156511073">Bob</option>
+            <option value="12677848350">Chris</option>
+            <option value="jwalsh1015@gmail.com">John Walsh (Email)</option>
+        </select>
+        
+        <button id="save-identity-btn" class="action-btn" style="width: 100%;">SAVE & OPEN CHAT</button>
+    </div>
+  </div>
+</div>
+
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
 
@@ -1021,16 +1051,19 @@
     const rulesModal = document.getElementById("rulesModal"), 
           stakesModal = document.getElementById("stakesModal"), 
           bigrModal = document.getElementById("bigrModal"),
-          quoteModal = document.getElementById("quoteModal");
+          quoteModal = document.getElementById("quoteModal"),
+          identityModal = document.getElementById("identityModal");
 
     const rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
           bigrBtn = document.getElementById("bigr-btn"), 
           refreshBtn = document.getElementById("refresh-btn"),
           quoteBtn = document.getElementById("quote-btn"),
-          groupChatBtn = document.getElementById("group-chat-btn");
+          groupChatBtn = document.getElementById("group-chat-btn"),
+          saveIdentityBtn = document.getElementById("save-identity-btn");
 
     const quoteText = document.getElementById("quote-text");
+    const tribeSelect = document.getElementById("tribe-select");
 
     // Array of 25 random Jeff Probst Quotes
     const jeffQuotes = [
@@ -1061,26 +1094,52 @@
         "Grab your torches, head back to camp. Goodnight."
     ];
 
+    // Master list of all 14 phone numbers/emails
+    const allTribeMembers = [
+        "12676002525", "12157830476", "12155340778", "12677840928", 
+        "12672462812", "12157782017", "12155342754", "12155345206", 
+        "12154160918", "15705176212", "12676886136", "12156511073", 
+        "12677848350", "jwalsh1015@gmail.com"
+    ];
+
     // JS Update: Adds 'modal-open' class to lock body scrolling
     rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
     stakesBtn.onclick = function() { stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
     bigrBtn.onclick = function() { bigrModal.style.display = "block"; document.body.classList.add('modal-open'); }
     
-    // Group Chat Button Logic: Share API + Fallback URL Scheme
-    groupChatBtn.onclick = async function() {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'Survivor Wordle'
-                });
-                return; 
-            } catch (err) {
-                console.log("Share sheet dismissed or failed, attempting fallback.");
-            }
+    // --- DYNAMIC GROUP CHAT LOGIC ---
+    groupChatBtn.onclick = function() {
+        // Check if the user has already identified themselves
+        const savedNumber = localStorage.getItem('survivor_my_number');
+        
+        if (!savedNumber) {
+            // If they haven't, pop up the identity modal
+            identityModal.style.display = "block";
+            document.body.classList.add('modal-open');
         } else {
-            const otherMembers = "12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,jwalsh1015@gmail.com";
-            window.location.href = `sms://open?addresses=${otherMembers}`;
+            // If they have, instantly open the chat
+            openGroupChat(savedNumber);
         }
+    }
+
+    saveIdentityBtn.onclick = function() {
+        const selectedNumber = tribeSelect.value;
+        if (selectedNumber) {
+            // Save it forever so they never have to do this again
+            localStorage.setItem('survivor_my_number', selectedNumber);
+            closeModal('identityModal');
+            openGroupChat(selectedNumber);
+        } else {
+            alert("Please select your name from the list!");
+        }
+    }
+
+    function openGroupChat(userNumber) {
+        // This is the magic: It builds the list of 13 numbers by completely removing the user's specific number
+        const otherMembers = allTribeMembers.filter(num => num !== userNumber).join(',');
+        
+        // Jumps directly to iMessage with a completely empty text body
+        window.location.href = `sms:${otherMembers}`;
     }
 
     // Logic for Random Quote Button
@@ -1203,7 +1262,7 @@
 
     // Close Modals when clicking outside of them
     window.onclick = function(event) {
-        if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal || event.target == quoteModal) {
+        if (event.target == rulesModal || event.target == stakesModal || event.target == bigrModal || event.target == quoteModal || event.target == identityModal) {
             event.target.style.display = "none";
             document.body.classList.remove('modal-open'); 
             
