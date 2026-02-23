@@ -661,7 +661,7 @@
         
         <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn">PLAY WORDLE</a>
         
-        <a href="sms:12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,12676002525" class="action-btn">GROUP CHAT</a>
+        <button id="group-chat-btn" class="action-btn">GROUP CHAT</button>
         
         <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
         <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
@@ -957,7 +957,8 @@
           stakesBtn = document.getElementById("stakes-btn"), 
           bigrBtn = document.getElementById("bigr-btn"), 
           refreshBtn = document.getElementById("refresh-btn"),
-          quoteBtn = document.getElementById("quote-btn");
+          quoteBtn = document.getElementById("quote-btn"),
+          groupChatBtn = document.getElementById("group-chat-btn"); // Added reference
 
     const quoteText = document.getElementById("quote-text");
 
@@ -994,6 +995,16 @@
     stakesBtn.onclick = function() { stakesModal.style.display = "block"; }
     bigrBtn.onclick = function() { bigrModal.style.display = "block"; }
     
+    // Group Chat Button Logic
+    groupChatBtn.onclick = function() {
+        const numbers = "12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,12676002525";
+        
+        // Ensure iOS attempts to process the full string
+        let iosLink = `sms:${numbers}&body=`;
+        
+        window.location.href = iosLink;
+    }
+
     // Logic for Random Quote Button
     quoteBtn.onclick = function() {
         const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
