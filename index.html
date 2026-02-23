@@ -599,6 +599,31 @@
             transform: scale(0.98);
         }
 
+        /* --- FIRE MINI GAME CSS --- */
+        .fire-emoji {
+            font-size: 4.5rem;
+            margin: 20px 0;
+            transition: transform 0.1s ease;
+            display: inline-block; 
+            text-shadow: none; /* keep emoji clean */
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 30px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid var(--card-border);
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #d95100 0%, #ffd700 100%);
+            transition: width 0.1s linear;
+        }
+
         /* --- MODAL UPDATES --- */
         .modal {
             display: none; 
@@ -663,9 +688,9 @@
             transition: background-color 0.3s ease;
         }
 
-        /* --- CENTERED MODALS (Quotes, Idol) FIX --- */
-        #quoteModal, #idolModal { padding-top: 0; }
-        #quoteModal .modal-content, #idolModal .modal-content {
+        /* --- CENTERED MODALS (Quotes, Idol, Fire) FIX --- */
+        #quoteModal, #idolModal, #fireGameModal { padding-top: 0; }
+        #quoteModal .modal-content, #idolModal .modal-content, #fireGameModal .modal-content {
             margin: 0; 
             position: absolute;
             top: 50%;
@@ -860,7 +885,8 @@
             <button id="rules-btn" class="action-btn">VIEW RULES</button>
             <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
             <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
-            <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
+            <button id="fire-game-btn" class="action-btn">🔥 TIEBREAKER</button>
+            <button id="tribe-btn" class="action-btn" style="grid-column: 1 / -1;">TRIBE COLORS</button>
         </div>
     </div>
 </div>
@@ -990,6 +1016,27 @@
         <div style="background: var(--text); color: var(--card-bg); padding: 15px; border-radius: 8px; font-size: 2rem; font-weight: 900; letter-spacing: 2px;">BLIND SIDE</div>
         
         <a href="sms:12676002525?body=Blind%20side" class="text-btn" style="margin-top: 25px;">TEXT JEFF TO CLAIM IDOL</a>
+    </div>
+  </div>
+</div>
+
+<div id="fireGameModal" class="modal">
+  <div class="modal-content" style="text-align: center;">
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('fireGameModal')">&times;</span></div>
+    <div class="modal-header">FIRE TIEBREAKER</div>
+    <div class="modal-body">
+        <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px;">Your torch is on the line. Tap the button as fast as you can to build your fire before the 10-second timer runs out!</p>
+
+        <div id="fire-emoji" class="fire-emoji">🪵</div>
+
+        <div class="progress-bar-bg">
+            <div id="fire-progress" class="progress-bar-fill"></div>
+        </div>
+
+        <h2 id="fire-timer" style="color: var(--text); font-size: 2rem; margin-top: 0;">10.0s</h2>
+
+        <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none;">STRIKE FLINT</button>
+        <button id="start-fire-btn" class="text-btn">START CHALLENGE</button>
     </div>
   </div>
 </div>
@@ -1356,7 +1403,8 @@
           bigrModal = document.getElementById("bigrModal"),
           quoteModal = document.getElementById("quoteModal"),
           tribeModal = document.getElementById("tribeModal"),
-          idolModal = document.getElementById("idolModal");
+          idolModal = document.getElementById("idolModal"),
+          fireGameModal = document.getElementById("fireGameModal");
 
     const rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
@@ -1367,6 +1415,7 @@
           groupChatBtn = document.getElementById("group-chat-btn"),
           hiddenIdolTrigger = document.getElementById("hidden-idol-trigger"),
           menuBtn = document.getElementById("menu-btn"),
+          fireGameBtn = document.getElementById("fire-game-btn"),
           campMenuDrawer = document.getElementById("camp-menu-drawer");
 
     const quoteText = document.getElementById("quote-text");
@@ -1465,6 +1514,114 @@
         document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
         loadScores(); 
     }
+
+    // --- MINI-GAME LOGIC: FIRE TIEBREAKER ---
+    const startFireBtn = document.getElementById('start-fire-btn');
+    const strikeBtn = document.getElementById('strike-btn');
+    const fireProgress = document.getElementById('fire-progress');
+    const fireTimerDisplay = document.getElementById('fire-timer');
+    const fireEmoji = document.getElementById('fire-emoji');
+    const fireInstructions = document.getElementById('fire-instructions');
+
+    let fireHeat = 0;
+    let fireTimeLeft = 10.0;
+    let fireInterval;
+    let fireGameActive = false;
+
+    fireGameBtn.onclick = function() {
+        resetFireGame();
+        fireGameModal.style.display = "block";
+        document.body.classList.add('modal-open');
+    }
+
+    startFireBtn.onclick = function() {
+        startFireGame();
+    }
+
+    strikeBtn.onclick = function() {
+        if (!fireGameActive) return;
+        fireHeat += 6; // Heat goes up +6 per tap
+        if (fireHeat > 100) fireHeat = 100;
+        updateFireVisuals();
+
+        if (fireHeat >= 100) {
+            endFireGame(true);
+        }
+    }
+
+    function resetFireGame() {
+        clearInterval(fireInterval);
+        fireGameActive = false;
+        fireHeat = 0;
+        fireTimeLeft = 10.0;
+        updateFireVisuals();
+        fireTimerDisplay.innerText = "10.0s";
+        fireTimerDisplay.style.color = "var(--text)";
+        fireEmoji.innerText = "🪵";
+        fireInstructions.innerText = "Your torch is on the line. Tap the button as fast as you can to build your fire before the 10-second timer runs out!";
+        startFireBtn.style.display = "block";
+        startFireBtn.innerText = "START CHALLENGE";
+        strikeBtn.style.display = "none";
+    }
+
+    function startFireGame() {
+        resetFireGame();
+        fireGameActive = true;
+        startFireBtn.style.display = "none";
+        strikeBtn.style.display = "block";
+        fireInstructions.innerText = "KEEP TAPPING!";
+
+        fireInterval = setInterval(() => {
+            fireTimeLeft -= 0.1;
+            fireHeat -= 1.5; // Fire loses heat naturally over time
+
+            if (fireHeat < 0) fireHeat = 0;
+
+            fireTimerDisplay.innerText = Math.max(0, fireTimeLeft).toFixed(1) + "s";
+            updateFireVisuals();
+
+            if (fireTimeLeft <= 0) {
+                endFireGame(false);
+            }
+        }, 100);
+    }
+
+    function updateFireVisuals() {
+        fireProgress.style.width = fireHeat + "%";
+
+        // Emoji progression based on heat level
+        if (fireHeat < 15) {
+            fireEmoji.innerText = "🪵";
+        } else if (fireHeat < 50) {
+            fireEmoji.innerText = "💨";
+        } else {
+            fireEmoji.innerText = "🔥";
+        }
+
+        // Scale the emoji as it gets hotter
+        let scale = 1 + (fireHeat / 100) * 1.5;
+        fireEmoji.style.transform = `scale(${scale})`;
+    }
+
+    function endFireGame(won) {
+        clearInterval(fireInterval);
+        fireGameActive = false;
+        strikeBtn.style.display = "none";
+        startFireBtn.style.display = "block";
+        startFireBtn.innerText = "PLAY AGAIN";
+
+        if (won) {
+            fireInstructions.innerHTML = "<strong>🔥 YOU SURVIVED! 🔥</strong><br>Your fire is roaring. You live to play another day.";
+            fireTimerDisplay.style.color = "var(--leaf-green)";
+        } else {
+            fireInstructions.innerHTML = "<strong>💀 YOUR FLAME DIED 💀</strong><br>The tribe has spoken. You failed to make fire in time.";
+            fireTimerDisplay.style.color = "var(--low-score)";
+            fireProgress.style.width = "0%";
+            fireEmoji.innerText = "💨";
+            fireEmoji.style.transform = `scale(1)`;
+        }
+    }
+
 
     // --- TRIBE THEME LOGIC ---
     function setThemeColor(hexColor) {
@@ -1566,6 +1723,9 @@
         if (modalId === 'stakesModal') {
              resetStakesModal();
         }
+        if (modalId === 'fireGameModal') {
+             resetFireGame();
+        }
     }
 
     // Close Modals dynamically by checking for the 'modal' class
@@ -1576,6 +1736,9 @@
             
             if (event.target.id === 'stakesModal') {
                  resetStakesModal();
+            }
+            if (event.target.id === 'fireGameModal') {
+                 resetFireGame();
             }
         }
     }
