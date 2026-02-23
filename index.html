@@ -503,7 +503,7 @@
             max-width: 90%;
         }
 
-        /* --- MODAL UPDATES FOR UI CONSISTENCY --- */
+        /* --- MODAL UPDATES --- */
         .modal {
             display: none; 
             position: fixed; 
@@ -522,7 +522,7 @@
         .modal-content {
             background-color: var(--card-bg);
             margin: 5% auto; 
-            padding: 25px 20px; /* Adjusted padding */
+            padding: 25px 20px;
             border: 3px solid var(--accent);
             width: 90%; 
             max-width: 550px;
@@ -533,15 +533,31 @@
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            box-sizing: border-box; /* CRITICAL: Prevents width from pushing past the screen */
-            position: relative; /* Allows absolute positioning of the X button */
-            overscroll-behavior-y: contain; /* Prevents scroll chaining to the background */
-            -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
+            box-sizing: border-box;
+            position: relative;
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* --- CENTERED JEFF QUOTE MODAL --- */
+        #quoteModal {
+            padding-top: 0; /* Remove default top padding */
+            display: flex !important; /* Override JS display:block for centering */
+            align-items: center; /* Vertical center */
+            justify-content: center; /* Horizontal center */
+        }
+
+        #quoteModal .modal-content {
+            margin: 0; /* Remove default margin */
+            max-height: 90vh; /* Ensure it fits on screen */
+            width: auto; /* Allow it to shrink to fit content */
+            min-width: 300px; /* Give it a reasonable minimum width */
+            max-width: 90%; /* Keep max width constraint */
         }
 
         .close {
             color: var(--accent);
-            position: absolute; /* Takes the button out of flow so it never hits text */
+            position: absolute;
             top: 10px;
             right: 15px;
             font-size: 36px;
@@ -562,7 +578,7 @@
             text-decoration: underline;
             padding-top: 5px;
             padding-left: 20px;
-            padding-right: 20px; /* Keep text away from close button */
+            padding-right: 20px;
         }
 
         .modal-body h3 {
@@ -580,6 +596,43 @@
             font-size: 1.1rem;
             line-height: 1.5;
         }
+
+        /* --- DAILY STAKES TABLE --- */
+        .stakes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-family: 'Arial Black', sans-serif;
+            color: var(--text);
+        }
+
+        .stakes-table th {
+            background-color: var(--accent);
+            color: var(--card-bg);
+            padding: 12px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            border: 2px solid var(--text);
+        }
+
+        .stakes-table td {
+            padding: 10px;
+            border: 2px solid var(--text);
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .stakes-table td:nth-child(2) {
+            text-align: left; /* Left-align the outcome column */
+        }
+
+        /* Row-specific styling for visual clarity */
+        .adv-row { background-color: rgba(255, 215, 0, 0.25); } /* Gold tint for advantages */
+        .pos-row { background-color: rgba(46, 125, 50, 0.15); } /* Green tint for positive */
+        .safe-row { background-color: rgba(255, 255, 255, 0.4); } /* Neutral */
+        .neg-row { background-color: rgba(235, 64, 52, 0.15); } /* Red tint for negative */
+        .penalty-row { background-color: rgba(235, 64, 52, 0.3); font-weight: 900; } /* Darker red for big penalties */
 
         /* --- DASHBOARD WRAPPER FOR RESPONSIVENESS --- */
         .dashboard-layout {
@@ -744,8 +797,26 @@
 <div id="stakesModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('stakesModal')">&times;</span>
-    <div class="modal-body" style="text-align: center; margin-top: 15px;">
-        <img src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
+    <div class="modal-header">THE DAILY STAKES</div>
+    <div class="modal-body">
+        <table class="stakes-table">
+            <thead>
+                <tr>
+                    <th>SCORE</th>
+                    <th>OUTCOME</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="adv-row"><td>1/6</td><td>+3 Pts + Legacy Adv. (Auto-Idol)</td></tr>
+                <tr class="adv-row"><td>2/6</td><td>+2 Pts + Bank an Idol</td></tr>
+                <tr class="pos-row"><td>3/6</td><td>+1 Pt</td></tr>
+                <tr class="safe-row"><td>4/6</td><td>0 Pts (Safe)</td></tr>
+                <tr class="neg-row"><td>5/6</td><td>-1 Pt</td></tr>
+                <tr class="neg-row"><td>6/6</td><td>-2 Pts</td></tr>
+                <tr class="penalty-row"><td>X/6</td><td>-5 Pts</td></tr>
+                <tr class="penalty-row"><td>Missed Day</td><td>-5 Pts</td></tr>
+            </tbody>
+        </table>
     </div>
   </div>
 </div>
@@ -1015,19 +1086,22 @@
     
     // Group Chat Button Logic: Share API + Fallback URL Scheme
     groupChatBtn.onclick = async function() {
+        // Primary Method: Native Share Sheet
         if (navigator.share) {
             try {
                 await navigator.share({
                     title: 'Survivor Wordle'
                 });
-                return; 
+                // Success or dismissed by user. Do nothing more to avoid Safari prompt.
             } catch (err) {
-                console.log("Share sheet dismissed or failed, attempting fallback.");
+                console.log('Share API interaction finished.');
             }
+        } else {
+            // Fallback Method: ONLY for browsers that do not support navigator.share at all.
+            // Your number is removed from this list.
+            const otherMembers = "12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,jwalsh1015@gmail.com";
+            window.location.href = `sms://open?addresses=${otherMembers}`;
         }
-        
-        const otherMembers = "12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350,jwalsh1015@gmail.com";
-        window.location.href = `sms://open?addresses=${otherMembers}`;
     }
 
     // Logic for Random Quote Button
