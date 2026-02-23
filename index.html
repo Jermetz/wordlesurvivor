@@ -1,3 +1,9 @@
+This is a hilarious and incredibly fun addition. Adding a little bit of trash talk fits the Survivor theme perfectly and gives players even more of an incentive to keep trying for that High Score!
+I have implemented the exact logic you requested:
+ * The Ultimate Survivor Reaction: Added a hidden div that displays your attached image along with a CSS-generated speech bubble that points directly to his mouth. (Note: Make sure to save the image you provided to your app's folder and name it exactly ultimate_survivor.png so the code can find it!)
+ * Random Insults vs. High Score Logic: I created a list of random trash-talk phrases. When the game ends (whether they win or lose), it checks their time against the #1 spot on the leaderboard. If they beat it, the text turns green and says "NEW HIGH SCORE!". If they didn't beat the #1 spot (or if they ran out of time), it randomly selects an insult to display.
+ * Reset Logic: The reaction completely hides itself when they hit "Play Again" or "Start Challenge".
+Here is your complete, updated code ready to copy and paste over your existing file:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -525,6 +531,11 @@
             justify-content: center;
             line-height: 1.2;
             transition: all 0.3s ease;
+            
+            /* Stops iOS from zooming in when double tapping quickly */
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         .action-btn:active {
@@ -575,6 +586,10 @@
             width: 100%; 
             box-sizing: border-box;
             transition: all 0.3s ease;
+            
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         /* Tribe Theme Swatches */
@@ -630,6 +645,44 @@
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
+        }
+
+        /* --- FIRE MINI GAME REACTION --- */
+        #end-game-reaction {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .reaction-face {
+            width: 90px;
+            height: auto;
+            border-radius: 8px;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
+        }
+        .speech-bubble {
+            position: relative;
+            background: #fff;
+            color: #000;
+            border-radius: 15px;
+            padding: 12px 15px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 0.9rem;
+            max-width: 160px;
+            margin-left: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            text-align: left;
+        }
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 60%; /* Align with the mouth in the specific picture */
+            transform: translateY(-50%);
+            border-width: 10px 15px 10px 0;
+            border-style: solid;
+            border-color: transparent #fff transparent transparent;
         }
 
         /* --- MODAL UPDATES --- */
@@ -1033,7 +1086,7 @@
     <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('fireGameModal')">&times;</span></div>
     <div class="modal-header">CAN YOU MAKE FIRE FAST?</div>
     <div class="modal-body">
-        <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px;">Your torch is on the line. Tap the button as fast as you can to build your fire before the 10-second timer runs out!</p>
+        <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px;">Your torch is on the line (pretend). Tap the button as fast as you can to build your fire before the 10-second timer runs out!</p>
 
         <div id="fire-emoji" class="fire-emoji">🪵</div>
 
@@ -1046,6 +1099,11 @@
         <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px;">STRIKE FLINT</button>
         <button id="start-fire-btn" class="text-btn">START CHALLENGE</button>
         
+        <div id="end-game-reaction">
+            <img src="ultimate_survivor.png" alt="Ultimate Survivor" class="reaction-face">
+            <div id="reaction-bubble" class="speech-bubble"></div>
+        </div>
+
         <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
             <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem;">🔥 FIRE MADE! 🔥</h3>
             <p style="font-size: 1.1rem; font-weight: bold;">Time: <span id="final-time-display"></span>s</p>
@@ -1057,7 +1115,7 @@
 
         <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none;">
             <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem;">🔥 FASTEST FIRE MAKERS</h3>
-            <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.1rem; color: var(--text); font-weight: bold; padding-left: 20px;">
+            <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: var(--text); font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px;">
                 </ol>
         </div>
 
@@ -1556,6 +1614,20 @@
     const saveScoreBtn = document.getElementById('save-score-btn');
     const leaderboardSection = document.getElementById('fire-leaderboard-section');
     const leaderboardList = document.getElementById('fire-leaderboard-list');
+    
+    // NEW: Reaction elements
+    const endGameReaction = document.getElementById('end-game-reaction');
+    const reactionBubble = document.getElementById('reaction-bubble');
+
+    const fireInsults = [
+        "You can do better than that!",
+        "What was that?",
+        "You tap like a girl!",
+        "My grandma makes fire faster!",
+        "Is your screen broken, or just your fingers?",
+        "A wet match has more spark than you.",
+        "Pathetic."
+    ];
 
     let fireHeat = 0;
     let fireTimeLeft = 10.00;
@@ -1611,7 +1683,7 @@
         fireEmoji.innerText = "🪵";
         
         fireInstructions.style.display = "block";
-        fireInstructions.innerText = "Your torch is on the line. Tap the button as fast as you can to build your fire before the 10-second timer runs out!";
+        fireInstructions.innerText = "Your torch is on the line (pretend). Tap the button as fast as you can to build your fire before the 10-second timer runs out!";
         
         startFireBtn.style.display = "block";
         startFireBtn.innerText = "START CHALLENGE";
@@ -1619,6 +1691,7 @@
         strikeBtn.style.display = "none";
         playAgainBtn.style.display = "none";
         saveScoreSection.style.display = "none";
+        endGameReaction.style.display = "none"; // Hide reaction image
         playerInitials.value = "";
         
         renderFireLeaderboard();
@@ -1638,7 +1711,7 @@
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimeLeft = 10.00 - elapsed;
             
-            // Increased Wind! Fire decays 40 heat per second (requires >7 taps a sec to win)
+            // Increased Wind! Fire decays fast
             fireHeat -= 0.8; 
 
             if (fireHeat < 0) fireHeat = 0;
@@ -1681,6 +1754,17 @@
         fireGameActive = false;
         strikeBtn.style.display = "none";
 
+        // Determine if it's a high score to trigger special reaction text
+        let isHighScore = false;
+        let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
+        if (won && board.length > 0) {
+            if (winningTime < board[0].time) {
+                isHighScore = true;
+            }
+        } else if (won && board.length === 0) {
+            isHighScore = true;
+        }
+
         if (won) {
             let timeTaken = winningTime.toFixed(2);
             
@@ -1689,8 +1773,18 @@
             
             finalTimeDisplay.innerText = timeTaken;
             saveScoreSection.style.display = "block";
-            
             playAgainBtn.style.display = "block";
+
+            // Trigger Reaction Picture + Bubble
+            endGameReaction.style.display = "flex";
+            if (isHighScore) {
+                reactionBubble.innerText = "NEW HIGH SCORE!";
+                reactionBubble.style.color = "var(--leaf-green)";
+            } else {
+                reactionBubble.innerText = fireInsults[Math.floor(Math.random() * fireInsults.length)];
+                reactionBubble.style.color = "var(--text)";
+            }
+
         } else {
             fireInstructions.innerHTML = "<strong>💀 YOUR FLAME DIED 💀</strong><br>The tribe has spoken. You failed to make fire in time.";
             fireTimerDisplay.style.color = "var(--low-score)";
@@ -1698,6 +1792,11 @@
             fireEmoji.innerText = "💨";
             fireEmoji.style.transform = `scale(1)`;
             playAgainBtn.style.display = "block";
+
+            // Show insult reaction on lose
+            endGameReaction.style.display = "flex";
+            reactionBubble.innerText = fireInsults[Math.floor(Math.random() * fireInsults.length)];
+            reactionBubble.style.color = "var(--low-score)";
         }
         
         renderFireLeaderboard();
@@ -1734,7 +1833,7 @@
             board.forEach(entry => {
                 let li = document.createElement('li');
                 li.style.marginBottom = "8px";
-                li.innerHTML = `<span style="display:inline-block; width: 60px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
                 leaderboardList.appendChild(li);
             });
         } else {
@@ -1954,3 +2053,4 @@
 </script>
 </body>
 </html>
+
