@@ -845,7 +845,6 @@
             <option value="12676886136">Aunt Dawn</option>
             <option value="12156511073">Bob</option>
             <option value="12677848350">Chris</option>
-            <option value="jwalsh1015@gmail.com">John Walsh (Email)</option>
         </select>
         
         <button id="save-identity-btn" class="action-btn" style="width: 100%;">SAVE & OPEN CHAT</button>
@@ -1094,12 +1093,12 @@
         "Grab your torches, head back to camp. Goodnight."
     ];
 
-    // Master list of all 14 phone numbers/emails
+    // Master list of all phone numbers. EMAIL REMOVED to fix iOS parsing bug.
     const allTribeMembers = [
         "12676002525", "12157830476", "12155340778", "12677840928", 
         "12672462812", "12157782017", "12155342754", "12155345206", 
         "12154160918", "15705176212", "12676886136", "12156511073", 
-        "12677848350", "jwalsh1015@gmail.com"
+        "12677848350"
     ];
 
     // JS Update: Adds 'modal-open' class to lock body scrolling
@@ -1135,7 +1134,7 @@
     }
 
     function openGroupChat(userNumber) {
-        // This is the magic: It builds the list of 13 numbers by completely removing the user's specific number
+        // This is the magic: It builds the list of 12 remaining numbers by completely removing the user's specific number
         const otherMembers = allTribeMembers.filter(num => num !== userNumber).join(',');
         
         // Jumps directly to iMessage with a completely empty text body
