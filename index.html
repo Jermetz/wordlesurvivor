@@ -767,18 +767,18 @@
         }
 
         .flag-pole {
-            width: 8px;
+            width: 4px; /* Make it skinny */
             height: 100%;
-            background: linear-gradient(to right, #8b5a2b, #d4b886, #8b5a2b);
-            border-radius: 4px;
-            border: 1px solid #4a2e15;
+            /* Use a repeating gradient for a wood-grain stick look */
+            background: repeating-linear-gradient(90deg, #8b5a2b, #8b5a2b 2px, #6b4226 2px, #6b4226 4px);
+            border: 1px solid #3e2723; /* Dark border for definition */
             box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
         }
 
         .flag-triangle {
             position: absolute;
             top: 10px;
-            left: 6px; /* Attach to right edge of pole */
+            left: 2px; /* Attach to right edge of pole */
             width: 65px;
             height: 40px;
             background: #d32f2f;
@@ -787,7 +787,7 @@
             font-size: 0.9rem;
             line-height: 40px;
             text-align: left;
-            padding-left: 6px;
+            padding-left: 8px;
             box-sizing: border-box;
             clip-path: polygon(0 0, 100% 50%, 0 100%);
         }
