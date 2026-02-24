@@ -1966,8 +1966,8 @@
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimeLeft = 10.00 - elapsed;
             
-            // Hard Mode Wind is brutal! 
-            let windDecay = isHardMode ? 1.2 : 0.6; 
+            // Hard Mode Wind is brutal! Standard is normal.
+            let windDecay = isHardMode ? 1.0 : 0.5; 
             fireHeat -= windDecay; 
 
             if (fireHeat < 0) fireHeat = 0;
