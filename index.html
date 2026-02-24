@@ -630,9 +630,11 @@
             background-size: 200px;
             z-index: 3000; /* Ensure it's on top of everything */
             overflow-y: auto; 
-            padding: 0;
+            padding: 0; /* Remove padding to stretch edge to edge */
             box-sizing: border-box;
-            touch-action: none !important; /* Ultimate Double-Tap Zoom Prevention */
+            /* CRITICAL: Disables ALL browser zooming and panning on this screen */
+            touch-action: none !important; 
+            -webkit-user-select: none;
             user-select: none;
         }
 
@@ -682,6 +684,7 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            flex-shrink: 0;
         }
 
         /* THE VISUAL CHALLENGE RIG */
@@ -723,7 +726,7 @@
         /* The Vertical Sticks (Sitting EXACTLY ON TOP of the crate) */
         .stick {
             position: absolute;
-            bottom: 100px; /* Aligned with top of 100px crate */
+            bottom: 100px; /* Aligned exactly with top of 100px crate */
             width: 14px;
             height: 160px;
             background: linear-gradient(to right, #4a2e15, #8b5a2b, #4a2e15);
@@ -738,7 +741,7 @@
         /* The Hemp Rope */
         .hemp-rope {
             position: absolute;
-            top: 40px; /* Attached near top of the 160px stick */
+            top: 20px; /* Attached near top of the 160px stick */
             height: 6px;
             background: repeating-linear-gradient(45deg, #d4b886, #d4b886 4px, #8b5a2b 4px, #8b5a2b 8px);
             border-radius: 3px;
@@ -747,31 +750,31 @@
             transition: transform 0.4s cubic-bezier(0.5, 0, 1, 1);
         }
         .rope-full {
-            left: 77px;
-            right: 77px;
+            left: 77px; /* Attaches exactly inside the left stick */
+            right: 77px; /* Attaches exactly inside the right stick */
             width: auto;
         }
         .rope-left {
             left: 77px;
             width: calc(50% - 77px);
-            transform-origin: left center;
+            transform-origin: left top; /* Falls DOWN and left */
         }
         .rope-right {
             right: 77px;
             width: calc(50% - 77px);
-            transform-origin: right center;
+            transform-origin: right top; /* Falls DOWN and right */
         }
 
         /* The Pop-up Win Flag Mechanism */
         .flag-mechanism {
             position: absolute;
-            bottom: 100px; /* Matches top of crate, same as right stick */
-            right: 56px;   /* Sits just to the right of the right stick (which is at 70px) */
-            height: 160px; /* Same height as main stick */
+            bottom: 100px; /* Matches top of crate */
+            right: 50px;   /* Sits just OUTSIDE the right stick (which occupies 70px-84px from right) */
+            height: 160px; /* Matches stick height exactly */
             width: 6px;
             display: none; /* Hidden by default */
             z-index: 0; /* Behind main stick */
-            transform: translateY(160px); /* Hidden down behind the crate */
+            transform: translateY(160px); /* Hidden down behind the crate initially */
             opacity: 0;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
         }
@@ -787,8 +790,8 @@
 
         .flag-triangle {
             position: absolute;
-            top: 0; /* Aligned with top of the pole */
-            left: 4px; /* Attach to right side of pole */
+            top: 0; /* Aligned EXACTLY with the very top of the pole */
+            left: 5px; /* Attached to the right side of the skinny pole */
             width: 70px;
             height: 45px;
             background: #d32f2f;
@@ -809,7 +812,7 @@
             bottom: 95px; /* Sits directly on the crate */
             left: 50%;
             /* TranslateX keeps it centered, Scale makes it grow TALLER towards the rope */
-            transform: translateX(-50%) scale(1);
+            transform: translateX(-50%) scaleX(1) scaleY(1);
             font-size: 3rem; 
             transform-origin: bottom center; 
             transition: transform 0.1s linear;
@@ -835,7 +838,7 @@
             transition: width 0.15s ease-out; 
         }
         
-        /* Ensures the strike button acts as a dead zone for Safari double-tap zooming */
+        /* Stop double tap zoom on the strike button */
         #strike-btn {
             touch-action: none !important;
         }
@@ -1191,7 +1194,7 @@
                 <button id="mode-hrd-btn" class="toggle-tab" style="padding: 5px 0;">HARD MODE</button>
             </div>
 
-            <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px; color: var(--text);">Your torch is on the line (wink). <br><br><strong>TAP THE BUTTON AS FAST AS YOU CAN</strong><br>to build your fire before the 10-second timer runs out!</p>
+            <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px; color: #fff; text-shadow: 1px 1px 2px #000;">Your torch is on the line (wink). <br><br><strong>TAP THE BUTTON AS FAST AS YOU CAN</strong><br>to build your fire before the 10-second timer runs out!</p>
 
             <div class="challenge-container">
                 <div class="stick stick-left"></div>
@@ -1216,9 +1219,9 @@
                 <div id="fire-progress" class="progress-bar-fill"></div>
             </div>
 
-            <h2 id="fire-timer" style="color: #fff; font-size: 2.2rem; margin-top: 0; font-family: monospace;">10.00s</h2>
+            <h2 id="fire-timer" style="color: #fff; font-size: 2.2rem; margin-top: 0; font-family: monospace; text-shadow: 2px 2px 4px #000;">10.00s</h2>
 
-            <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px;">TAP FAST TO STRIKE!</button>
+            <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px; background-color: var(--accent); color: white;">TAP FAST TO STRIKE!</button>
             <button id="start-fire-btn" class="text-btn" style="background-color: var(--accent); color: white;">START CHALLENGE</button>
             
             <div id="end-game-reaction">
@@ -1226,9 +1229,9 @@
                 <div id="reaction-bubble" class="speech-bubble"></div>
             </div>
 
-            <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
+            <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
                 <h3 id="win-status-text" style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🔥 FIRE MADE! 🔥</h3>
-                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="final-time-display"></span>s</p>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px #000;">Time: <span id="final-time-display"></span>s</p>
                 
                 <div id="top-10-input-area" style="margin-top: 15px; display: none;">
                     <input type="text" id="player-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
@@ -1238,7 +1241,7 @@
                 <p id="not-top-10-message" style="display: none; color: var(--low-score); font-weight: bold; margin-top: 10px; text-shadow: 1px 1px 2px #000;">Not fast enough for the Top 10!</p>
             </div>
 
-            <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+            <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
                 <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🔥 FASTEST FIRE MAKERS</h3>
                 
                 <p id="local-only-warning" style="color: var(--low-score); text-align: center; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">(Scores saved to your local device only. Database offline.)</p>
@@ -1247,7 +1250,7 @@
                 </ol>
             </div>
 
-            <button id="play-again-btn" class="text-btn" style="display: none; margin-top: 30px; background-color: var(--text); color: var(--card-bg);">PLAY AGAIN</button>
+            <button id="play-again-btn" class="text-btn" style="display: none; margin-top: 30px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
         </div>
     </div>
 </div>
@@ -2078,6 +2081,7 @@
         fireGamePage.style.display = "flex";
         
         // Anti-Zoom Global Event Listener ONLY active while game is open
+        // Adding passive: false allows preventDefault to work properly
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
     }
 
@@ -2097,11 +2101,15 @@
     }
     
     // Global Double-Tap Zoom Preventer (attached when modal opens)
+    // By keeping track of touch times, we block rapid successive taps anywhere on the screen
+    let lastTouchTime = 0;
     function preventDoubleTapZoom(e) {
-        // If they tap more than 1 finger, or tap too fast, block the browser action
-        if (e.touches.length > 1) {
-             e.preventDefault();
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTouchTime;
+        if (tapLength < 500 && tapLength > 0) {
+            e.preventDefault();
         }
+        lastTouchTime = currentTime;
     }
 
     startFireBtn.onclick = function() { startFireGame(); }
@@ -2115,6 +2123,7 @@
         
         if (!fireGameActive) return;
         
+        // Progressive Resistance: Heat gained decreases, and wind decay increases as the fire grows!
         let tapGain = isHardMode ? 6 : 8; 
         fireHeat += tapGain; 
         
@@ -2155,7 +2164,9 @@
         // Reset Visual Rope Challenge Elements
         ropeFull.style.display = "block";
         ropeLeft.style.display = "none";
+        ropeLeft.style.transform = "rotate(0deg)";
         ropeRight.style.display = "none";
+        ropeRight.style.transform = "rotate(0deg)";
         
         // Reset Flag
         flagMechanism.style.opacity = "0";
@@ -2165,7 +2176,7 @@
         updateFireVisuals();
         
         fireTimerDisplay.innerText = "10.00s";
-        fireTimerDisplay.style.color = "var(--text)";
+        fireTimerDisplay.style.color = "#fff";
         fireEmoji.innerText = "🪵";
         
         fireInstructions.style.display = "block";
@@ -2240,8 +2251,9 @@
 
         // Scale the fire up physically towards the rope. 
         // Max scale ~3.5 reaches the rope perfectly based on CSS dimensions.
-        let scale = 1 + (fireHeat / 100) * 2.5;
-        fireEmoji.style.transform = `translateX(-50%) scale(${scale})`;
+        let scaleHeight = 1 + (fireHeat / 100) * 2.5;
+        let scaleWidth = 1 + (fireHeat / 100) * 1.5;
+        fireEmoji.style.transform = `translateX(-50%) scaleX(${scaleWidth}) scaleY(${scaleHeight})`;
     }
 
     function endFireGame(won, winningTime = 0) {
@@ -2289,8 +2301,8 @@
             
             // Allow display:block to register before dropping ropes and popping flag
             setTimeout(() => {
-                ropeLeft.style.transform = "rotate(75deg)";
-                ropeRight.style.transform = "rotate(-75deg)";
+                ropeLeft.style.transform = "rotate(85deg)"; // Falls down left
+                ropeRight.style.transform = "rotate(-85deg)"; // Falls down right
                 
                 flagMechanism.style.opacity = "1";
                 flagMechanism.style.transform = "translateY(0px)"; // Springs straight up!
