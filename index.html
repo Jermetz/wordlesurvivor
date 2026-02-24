@@ -705,12 +705,12 @@
             padding: 25px 20px;
             border: 3px solid var(--accent);
             width: 90%; 
-            max-width: 550px;
+            max-width: 800px; /* INCREASED MAX-WIDTH */
             border-radius: 12px;
             color: var(--text);
             font-family: 'Arial Black', sans-serif; 
             font-weight: normal;
-            max-height: 80vh;
+            max-height: 90vh; /* INCREASED MAX-HEIGHT */
             overflow-y: auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
@@ -756,7 +756,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 550px;
+            max-width: 800px; /* INCREASED MAX-WIDTH */
         }
 
         .modal-header {
@@ -1125,6 +1125,20 @@
     </div>
   </div>
 </div>
+
+<div id="adminModal" class="modal">
+    <div class="modal-content">
+        <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('adminModal')">&times;</span></div>
+        <div class="modal-header">ADMIN MENU</div>
+        <div class="modal-body" style="text-align: center;">
+            <p>Enter Admin Code to Wipe Leaderboard:</p>
+            <input type="password" id="admin-code-input" style="padding: 10px; font-size: 1rem; width: 200px; text-align: center; border: 2px solid var(--card-border); border-radius: 6px; margin-bottom: 15px;">
+            <button id="admin-clear-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 0 auto;">CLEAR LEADERBOARD</button>
+            <p id="admin-message" style="margin-top: 15px; font-weight: bold;"></p>
+        </div>
+    </div>
+</div>
+
 
 <script>
     const firebaseConfig = {
@@ -1511,7 +1525,8 @@
           quoteModal = document.getElementById("quoteModal"),
           tribeModal = document.getElementById("tribeModal"),
           idolModal = document.getElementById("idolModal"),
-          fireGameModal = document.getElementById("fireGameModal");
+          fireGameModal = document.getElementById("fireGameModal"),
+          adminModal = document.getElementById("adminModal");
 
     const rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
@@ -1523,7 +1538,11 @@
           hiddenIdolTrigger = document.getElementById("hidden-idol-trigger"),
           menuBtn = document.getElementById("menu-btn"),
           fireGameBtn = document.getElementById("fire-game-btn"),
-          campMenuDrawer = document.getElementById("camp-menu-drawer");
+          campMenuDrawer = document.getElementById("camp-menu-drawer"),
+          dynamicLeaderboardHeader = document.getElementById("dynamic-leaderboard-header"),
+          adminClearBtn = document.getElementById("admin-clear-btn"),
+          adminCodeInput = document.getElementById("admin-code-input"),
+          adminMessage = document.getElementById("admin-message");
 
     const quoteText = document.getElementById("quote-text");
 
@@ -1620,6 +1639,58 @@
     refreshBtn.onclick = function() { 
         document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
         loadScores(); 
+    }
+
+    // Secret Admin Menu Logic
+    let adminTapCount = 0;
+    let adminTapTimer;
+
+    dynamicLeaderboardHeader.onclick = function() {
+        adminTapCount++;
+        clearTimeout(adminTapTimer);
+        adminTapTimer = setTimeout(() => {
+            adminTapCount = 0;
+        }, 1000); // Reset count after 1 second of inactivity
+
+        if (adminTapCount === 5) {
+            adminTapCount = 0;
+            adminModal.style.display = "block";
+            document.body.classList.add('modal-open');
+            adminCodeInput.value = "";
+            adminMessage.innerText = "";
+            adminMessage.style.color = "var(--text)";
+        }
+    }
+
+    adminClearBtn.onclick = function() {
+        const code = adminCodeInput.value;
+        if (code === "PRIDE12") {
+            if (usingGlobalLeaderboard) {
+                fireDb.ref('fireLeaderboard').remove()
+                    .then(() => {
+                        adminMessage.innerText = "Leaderboard Cleared Successfully!";
+                        adminMessage.style.color = "var(--leaf-green)";
+                        setTimeout(() => {
+                            closeModal('adminModal');
+                        }, 1500);
+                    })
+                    .catch((error) => {
+                        adminMessage.innerText = "Error Clearing Leaderboard: " + error.message;
+                        adminMessage.style.color = "var(--low-score)";
+                    });
+            } else {
+                localStorage.removeItem('fireLeaderboard');
+                renderFireLeaderboard();
+                adminMessage.innerText = "Local Leaderboard Cleared Successfully!";
+                adminMessage.style.color = "var(--leaf-green)";
+                setTimeout(() => {
+                    closeModal('adminModal');
+                }, 1500);
+            }
+        } else {
+            adminMessage.innerText = "Invalid Code.";
+            adminMessage.style.color = "var(--low-score)";
+        }
     }
 
 
@@ -2010,6 +2081,10 @@
         if (modalId === 'fireGameModal') {
              resetFireGame();
         }
+        if (modalId === 'adminModal') {
+            adminCodeInput.value = "";
+            adminMessage.innerText = "";
+        }
     }
 
     // Close Modals dynamically by checking for the 'modal' class
@@ -2023,6 +2098,10 @@
             }
             if (event.target.id === 'fireGameModal') {
                  resetFireGame();
+            }
+            if (event.target.id === 'adminModal') {
+                adminCodeInput.value = "";
+                adminMessage.innerText = "";
             }
         }
     }
