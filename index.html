@@ -28,6 +28,12 @@
             --leaf-green: #2e7d32; 
         }
 
+        /* --- GLOBAL ANTI-ZOOM RULES --- */
+        html, body {
+            touch-action: manipulation;
+            -webkit-text-size-adjust: none;
+        }
+
         body {
             background-color: var(--bg-color);
             background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('bg-pattern.jpg');
@@ -638,11 +644,9 @@
             transition: width 0.15s ease-out; 
         }
         
-        /* This prevents users from double-tap zooming while playing the fire game! */
-        #fireGameModal .modal-content {
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
+        /* Ensures the strike button acts as a dead zone for Safari double-tap zooming */
+        #strike-btn {
+            touch-action: none !important;
         }
 
         /* --- FIRE MINI GAME REACTION --- */
@@ -1082,7 +1086,7 @@
 <div id="fireGameModal" class="modal">
   <div class="modal-content" style="text-align: center;">
     <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('fireGameModal')">&times;</span></div>
-    <div class="modal-header">CAN YOU MAKE FIRE FAST?</div>
+    <div class="modal-header">CAN YOU MAKE FIRE....FAST?</div>
     <div class="modal-body">
         <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px;">Your torch is on the line (pretend). Tap the button as fast as you can to build your fire before the 10-second timer runs out!</p>
 
@@ -1741,7 +1745,12 @@
     startFireBtn.onclick = function() { startFireGame(); }
     playAgainBtn.onclick = function() { resetFireGame(); }
 
-    strikeBtn.onclick = function() {
+    // Use touchstart to intercept mobile taps BEFORE the browser interprets a double-tap zoom
+    function handleStrikeEvent(e) {
+        if (e && e.cancelable) {
+            e.preventDefault(); // CRITICAL: This is the magic line that stops double-tap zooming entirely!
+        }
+        
         if (!fireGameActive) return;
         
         fireHeat += 8; // Gain per tap
@@ -1766,6 +1775,14 @@
             updateFireVisuals();
         }
     }
+
+    // Attach native touch events to the strike button to make it infinitely spammable
+    strikeBtn.addEventListener('touchstart', handleStrikeEvent, { passive: false });
+    
+    // Fallback for desktop testing with a mouse
+    strikeBtn.addEventListener('mousedown', function(e) {
+        if (e.button === 0) handleStrikeEvent(e);
+    });
 
     function resetFireGame() {
         clearInterval(fireInterval);
