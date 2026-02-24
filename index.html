@@ -1,3 +1,10 @@
+This is the perfect finishing touch! A spring-loaded, triangle flag popping up exactly as it does on the show is going to make hitting that 100% mark incredibly satisfying.
+Here is exactly what I updated:
+ * The Pop-Up Flag: I removed the old square flag that hung off the stick. Now, there is a dedicated flag pole hidden completely out of sight. When you hit 100%, a pole with a red triangular "WIN" flag pointing to the right shoots up from behind the crate, outside the main fire area!
+ * Title Update: The header now cleanly reads "HOW FAST CAN YOU MAKE FIRE?"
+ * No More Strike Audio: I completely removed the strike.mp3 audio logic so you can tap in peace. The Win and Lose sounds are still intact!
+ * Maintained the "Sweet Spot" Hard Mode: The math remains at the balanced difficulty level from the previous version so it's challenging but won't break your fingers.
+Here is your complete, updated code ready to copy and paste:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -767,18 +774,18 @@
         }
 
         .flag-pole {
-            width: 4px; /* Make it skinny */
+            width: 8px;
             height: 100%;
-            /* Use a repeating gradient for a wood-grain stick look */
-            background: repeating-linear-gradient(90deg, #8b5a2b, #8b5a2b 2px, #6b4226 2px, #6b4226 4px);
-            border: 1px solid #3e2723; /* Dark border for definition */
+            background: linear-gradient(to right, #8b5a2b, #d4b886, #8b5a2b);
+            border-radius: 4px;
+            border: 1px solid #4a2e15;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
         }
 
         .flag-triangle {
             position: absolute;
             top: 10px;
-            left: 2px; /* Attach to right edge of pole */
+            left: 6px; /* Attach to right edge of pole */
             width: 65px;
             height: 40px;
             background: #d32f2f;
@@ -787,7 +794,7 @@
             font-size: 0.9rem;
             line-height: 40px;
             text-align: left;
-            padding-left: 8px;
+            padding-left: 6px;
             box-sizing: border-box;
             clip-path: polygon(0 0, 100% 50%, 0 100%);
         }
