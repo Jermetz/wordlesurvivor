@@ -1041,7 +1041,7 @@
 <div id="fire-game-page" class="full-page">
     <div class="full-page-content">
         <div class="full-page-header">
-            <span></span> <span>CAN YOU MAKE FIRE....FAST?</span>
+            <span></span> <span>HOW FAST CAN YOU MAKE FIRE?</span>
             <span class="close" onclick="closeFireGamePage()" style="position: static; transform: none; box-shadow: none;">&times;</span>
         </div>
         
@@ -1952,8 +1952,8 @@
         
         if (!fireGameActive) return;
         
-        // Progressive Resistance: Heat gained decreases, and wind decay increases as the fire grows!
-        let tapGain = isHardMode ? 4 : 8; 
+        // Reverted the math to make it slightly easier
+        let tapGain = isHardMode ? 6 : 8; 
         fireHeat += tapGain; 
         
         if (fireHeat >= 100) {
@@ -2030,10 +2030,9 @@
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimeLeft = 10.00 - elapsed;
             
-            // Progressive Wind Decay: The fire decays faster the hotter it gets.
-            // Hard Mode Wind is brutal! 
-            let baseDecay = isHardMode ? 1.0 : 0.4;
-            let scalingDecay = (fireHeat / 100) * (isHardMode ? 1.5 : 0.4);
+            // Reverted back to the manageable decay
+            let baseDecay = isHardMode ? 0.8 : 0.4;
+            let scalingDecay = (fireHeat / 100) * (isHardMode ? 0.8 : 0.4);
             fireHeat -= (baseDecay + scalingDecay);
 
             if (fireHeat < 0) fireHeat = 0;
