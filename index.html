@@ -673,67 +673,119 @@
         /* THE VISUAL CHALLENGE RIG */
         .challenge-container {
             position: relative;
-            height: 180px;
+            height: 250px;
             width: 100%;
-            max-width: 250px;
+            max-width: 280px;
             margin: 15px auto;
-            border-bottom: 6px solid #4a2e15; /* The wood base */
             overflow: visible;
         }
+
+        /* The Wooden Crate Base */
+        .crate {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 90px;
+            background: #6b4226;
+            border: 4px solid #3e2723;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 8px 15px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            border-radius: 2px;
+        }
+
+        /* Create slats/X pattern for the crate */
+        .crate::before, .crate::after {
+            content: '';
+            position: absolute;
+            width: 130%;
+            height: 6px;
+            background: #4e342e;
+            border: 1px solid #3e2723;
+        }
+        .crate::before { transform: rotate(33deg); }
+        .crate::after { transform: rotate(-33deg); }
+
+        /* The Vertical Sticks */
+        .stick {
+            position: absolute;
+            bottom: 80px;
+            width: 12px;
+            height: 160px;
+            background: linear-gradient(to right, #4a2e15, #8b5a2b, #4a2e15);
+            border: 1px solid #2b1d0e;
+            border-radius: 4px;
+            z-index: 1;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+        .stick-left { left: 40px; }
+        .stick-right { right: 40px; }
 
         /* The Hemp Rope */
         .hemp-rope {
             position: absolute;
-            top: 30px;
+            top: 20px;
             height: 8px;
             background: repeating-linear-gradient(45deg, #d4b886, #d4b886 4px, #8b5a2b 4px, #8b5a2b 8px);
             border-radius: 4px;
-            z-index: 2;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            z-index: 4;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            transition: transform 0.4s cubic-bezier(0.5, 0, 1, 1);
+        }
+        .rope-full {
+            left: 45px;
+            width: calc(100% - 90px);
+        }
+        .rope-left {
+            left: 45px;
+            width: calc(50% - 45px);
+            transform-origin: left center;
+            transform: rotate(0deg);
+        }
+        .rope-right {
+            right: 45px;
+            width: calc(50% - 45px);
+            transform-origin: right center;
+            transform: rotate(0deg);
         }
 
         /* The Win Flag */
         .win-flag {
             position: absolute;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 44px;
-            height: 0px; /* Hidden initially */
-            background: var(--leaf-green);
+            top: 35px;
+            right: 45px; /* Attached to right stick */
+            width: 60px;
+            height: 35px;
+            background: #d32f2f;
             color: white;
             font-family: 'Arial Black', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            writing-mode: vertical-rl;
-            text-orientation: upright;
-            overflow: hidden;
-            transition: height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy drop effect */
-            z-index: 1;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
-            border-bottom-left-radius: 5px;
-            border-bottom-right-radius: 5px;
-            border: 2px solid #fff;
-            border-top: none;
-            box-sizing: border-box;
+            font-size: 0.8rem;
+            line-height: 35px;
+            text-align: center;
+            border-radius: 0 5px 5px 0;
+            transform-origin: left bottom; 
+            transform: rotate(90deg); /* Hidden/hanging down initially */
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 0; /* Behind the stick */
+            box-shadow: 2px -2px 6px rgba(0,0,0,0.5);
         }
 
         /* The Growing Flame */
         .fire-base {
             position: absolute;
-            bottom: -5px;
+            bottom: 80px; /* Sitting directly on top of the crate */
             left: 50%;
             /* TranslateX keeps it centered, Scale makes it grow TALLER towards the rope */
             transform: translateX(-50%) scale(1);
-            font-size: 3rem;
+            font-size: 3rem; /* Starts normal size */
             transform-origin: bottom center; 
             transition: transform 0.1s linear;
             z-index: 3;
-            text-shadow: none; /* keep emoji clean */
+            text-shadow: none; 
         }
 
         .progress-bar-bg {
@@ -1120,14 +1172,19 @@
             <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px; color: var(--text);">Your torch is on the line (wink). <br><br><strong>TAP THE BUTTON AS FAST AS YOU CAN</strong><br>to build your fire before the 10-second timer runs out!</p>
 
             <div class="challenge-container">
-                <div id="rope-full" class="hemp-rope" style="width: 120%; left: -10%;"></div>
-                
-                <div id="rope-left" class="hemp-rope" style="display: none; width: 45%; left: -10%; transform-origin: left; transform: rotate(-25deg);"></div>
-                <div id="rope-right" class="hemp-rope" style="display: none; width: 45%; left: 65%; transform-origin: right; transform: rotate(25deg);"></div>
+                <div class="stick stick-left"></div>
+                <div class="stick stick-right"></div>
                 
                 <div id="win-flag" class="win-flag">WIN</div>
+
+                <div id="rope-full" class="hemp-rope rope-full"></div>
+                
+                <div id="rope-left" class="hemp-rope rope-left" style="display: none;"></div>
+                <div id="rope-right" class="hemp-rope rope-right" style="display: none;"></div>
                 
                 <div id="fire-emoji" class="fire-base">🪵</div>
+
+                <div class="crate"></div>
             </div>
 
             <div class="progress-bar-bg">
@@ -2074,8 +2131,7 @@
         ropeFull.style.display = "block";
         ropeLeft.style.display = "none";
         ropeRight.style.display = "none";
-        winFlag.style.height = "0px";
-        winFlag.style.border = "none"; // Hide border when height is 0
+        winFlag.style.transform = "rotate(90deg)"; // Hang down parallel to the right stick
 
         updateFireVisuals();
         
@@ -2154,7 +2210,7 @@
         }
 
         // Scale the fire up physically towards the rope. 
-        // Max scale ~3.5 reaches the rope perfectly.
+        // Max scale ~3.5 reaches the rope perfectly based on CSS dimensions.
         let scale = 1 + (fireHeat / 100) * 2.5;
         fireEmoji.style.transform = `translateX(-50%) scale(${scale})`;
     }
@@ -2199,9 +2255,13 @@
             ropeFull.style.display = "none";
             ropeLeft.style.display = "block";
             ropeRight.style.display = "block";
-            winFlag.style.border = "2px solid #fff";
-            winFlag.style.borderTop = "none";
-            winFlag.style.height = "75px";
+            
+            // Allow display:block to register before dropping the ropes
+            setTimeout(() => {
+                ropeLeft.style.transform = "rotate(-75deg)";
+                ropeRight.style.transform = "rotate(75deg)";
+                winFlag.style.transform = "rotate(-10deg)"; // Flag springs up!
+            }, 10);
             
             if (sfxWin) {
                 sfxWin.currentTime = 0;
