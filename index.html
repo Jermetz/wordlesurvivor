@@ -619,23 +619,20 @@
         }
 
         /* --- FIRE MINI GAME CSS --- */
-        /* Mini Game Page Styles */
+        
+        /* Dedicated Full Page for Minigame (Locks out zoom) */
         .full-page {
             display: none; /* Hidden by default */
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-color: var(--bg-color);
             background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('bg-pattern.jpg');
             background-size: 200px;
             z-index: 3000; /* Ensure it's on top of everything */
-            overflow-y: auto; /* Allow scrolling within the page if needed */
+            overflow-y: auto; 
             padding: 20px;
             box-sizing: border-box;
-            flex-direction: column;
-            align-items: center;
+            touch-action: none; /* Ultimate Double-Tap Zoom Prevention */
         }
 
         /* Container for content within the full page */
@@ -645,10 +642,11 @@
             border-radius: 12px;
             padding: 25px 20px;
             width: 100%;
-            max-width: 800px;
+            max-width: 600px;
+            margin: 0 auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
-            margin-bottom: 40px; /* Space at the bottom */
+            margin-bottom: 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -675,7 +673,7 @@
             position: relative;
             height: 250px;
             width: 100%;
-            max-width: 280px;
+            max-width: 260px;
             margin: 15px auto;
             overflow: visible;
         }
@@ -686,120 +684,91 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 150px;
+            width: 160px;
             height: 90px;
             background: #6b4226;
-            border: 4px solid #3e2723;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 8px 15px rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 3px solid #3e2723;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 10px rgba(0,0,0,0.5);
             z-index: 2;
             border-radius: 2px;
         }
 
         /* Create slats/X pattern for the crate */
-        .crate::before, .crate::after {
+        .crate::before {
             content: '';
             position: absolute;
-            width: 130%;
-            height: 6px;
-            background: #4e342e;
-            border: 1px solid #3e2723;
+            top: -3px; left: -3px; right: -3px; bottom: -3px;
+            background-image: 
+                linear-gradient(to bottom right, transparent 48%, #3e2723 48%, #3e2723 52%, transparent 52%),
+                linear-gradient(to top right, transparent 48%, #3e2723 48%, #3e2723 52%, transparent 52%);
+            z-index: 3;
         }
-        .crate::before { transform: rotate(33deg); }
-        .crate::after { transform: rotate(-33deg); }
 
-        /* The Vertical Sticks */
+        /* The Vertical Sticks (Sitting ON TOP of the crate) */
         .stick {
             position: absolute;
-            bottom: 80px;
+            bottom: 90px; /* Aligned with top of crate */
             width: 12px;
-            height: 160px;
+            height: 140px;
             background: linear-gradient(to right, #4a2e15, #8b5a2b, #4a2e15);
             border: 1px solid #2b1d0e;
             border-radius: 4px;
             z-index: 1;
-            box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
         }
-        .stick-left { left: 40px; }
-        .stick-right { right: 40px; }
+        .stick-left { left: 60px; }
+        .stick-right { right: 60px; }
 
         /* The Hemp Rope */
         .hemp-rope {
             position: absolute;
             top: 20px;
-            height: 8px;
+            height: 6px;
             background: repeating-linear-gradient(45deg, #d4b886, #d4b886 4px, #8b5a2b 4px, #8b5a2b 8px);
-            border-radius: 4px;
+            border-radius: 3px;
             z-index: 4;
             box-shadow: 0 4px 6px rgba(0,0,0,0.4);
             transition: transform 0.4s cubic-bezier(0.5, 0, 1, 1);
         }
         .rope-full {
-            left: 45px;
-            width: calc(100% - 90px);
+            left: 65px;
+            width: 130px;
         }
         .rope-left {
-            left: 45px;
-            width: calc(50% - 45px);
+            left: 65px;
+            width: 65px;
             transform-origin: left center;
-            transform: rotate(0deg);
         }
         .rope-right {
-            right: 45px;
-            width: calc(50% - 45px);
-            transform-origin: right center;
-            transform: rotate(0deg);
-        }
-
-        /* The New Pop-Up Win Flag */
-        .flag-mechanism {
-            position: absolute;
-            bottom: 80px; /* Matches top of crate */
-            right: 0px;   /* Outside the fire making area (right stick is at right:40px) */
-            height: 130px;
-            display: none; /* Hidden by default */
-            z-index: 1; /* Behind crate/sticks */
-            transform: translateY(60px); /* Start lowered */
-            opacity: 0;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-        }
-
-        .flag-pole {
-            width: 4px; /* Make it skinny */
-            height: 100%;
-            /* Use a repeating gradient for a wood-grain stick look */
-            background: repeating-linear-gradient(90deg, #8b5a2b, #8b5a2b 2px, #6b4226 2px, #6b4226 4px);
-            border: 1px solid #3e2723; /* Dark border for definition */
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-        }
-
-        .flag-triangle {
-            position: absolute;
-            top: 10px;
-            left: 2px; /* Attach to right edge of pole */
+            right: 65px;
             width: 65px;
-            height: 40px;
+            transform-origin: right center;
+        }
+
+        /* The Triangular Win Flag */
+        .win-flag {
+            position: absolute;
+            top: 20px;
+            left: 200px; /* Attaches exactly to the right side of the right stick */
+            width: 50px;
+            height: 35px;
             background: #d32f2f;
-            color: white;
-            font-family: 'Arial Black', sans-serif;
-            font-size: 0.9rem;
-            line-height: 40px;
-            text-align: left;
-            padding-left: 8px;
-            box-sizing: border-box;
-            clip-path: polygon(0 0, 100% 50%, 0 100%);
+            clip-path: polygon(0 0, 100% 50%, 0 100%); /* Makes it a triangle pointing right */
+            transform-origin: left bottom; 
+            transform: rotate(90deg); /* Starts hanging down vertically */
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+            z-index: 0; 
         }
 
         /* The Growing Flame */
         .fire-base {
             position: absolute;
-            bottom: 80px; /* Sitting directly on top of the crate */
+            bottom: 85px; /* Sits directly on the crate */
             left: 50%;
             /* TranslateX keeps it centered, Scale makes it grow TALLER towards the rope */
             transform: translateX(-50%) scale(1);
-            font-size: 3rem; /* Starts normal size */
+            font-size: 3rem; 
             transform-origin: bottom center; 
             transition: transform 0.1s linear;
             z-index: 3;
@@ -820,18 +789,10 @@
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #d95100 0%, #ffd700 100%);
-            /* Eased out transition makes the jump to 100% look silky smooth */
             transition: width 0.15s ease-out; 
         }
         
-        /* This prevents users from double-tap zooming while playing the fire game! */
-        #fireGameModal .modal-content {
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        
-        /* Ensures the strike button acts as a dead zone for Safari double-tap zooming */
+        /* Stop double tap zoom on the strike button */
         #strike-btn {
             touch-action: none !important;
         }
@@ -887,7 +848,7 @@
             content: '';
             position: absolute;
             left: -12px;
-            top: 60%; /* Align with the mouth in the specific picture */
+            top: 60%;
             transform: translateY(-50%);
             border-width: 10px 15px 10px 0;
             border-style: solid;
@@ -916,12 +877,12 @@
             padding: 25px 20px;
             border: 3px solid var(--accent);
             width: 90%; 
-            max-width: 800px; /* INCREASED MAX-WIDTH */
+            max-width: 800px;
             border-radius: 12px;
             color: var(--text);
             font-family: 'Arial Black', sans-serif; 
             font-weight: normal;
-            max-height: 90vh; /* INCREASED MAX-HEIGHT */
+            max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
@@ -967,7 +928,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 800px; /* INCREASED MAX-WIDTH */
+            max-width: 800px;
         }
 
         .modal-header {
@@ -1052,25 +1013,24 @@
             .action-grid { 
                 grid-column: 1; 
                 grid-row: 4; 
-                grid-template-columns: 1fr; /* Expand buttons to a single column */
+                grid-template-columns: 1fr; 
                 margin-top: 10px; 
             }
 
-            /* Stack drawer buttons single column on iPad to match action grid */
             .camp-menu-drawer {
                 grid-template-columns: 1fr; 
             }
 
             .right-panel {
                 grid-column: 2;
-                grid-row: 1 / span 4; /* Spans all rows perfectly flush to the top */
+                grid-row: 1 / span 4;
                 max-width: 100%;
                 height: 100%;
             }
 
-            .view-toggle-container { max-width: 100%; } /* Stretches nicely on iPad */
+            .view-toggle-container { max-width: 100%; }
             .leaderboard-header, #leaderboard, #extinction-board, #extinction-header {
-                max-width: 100%; /* Lets it stretch completely on iPad */
+                max-width: 100%; 
                 margin-top: 0;
             }
             #extinction-header { margin-top: 40px; }
@@ -1081,7 +1041,6 @@
 <body>
 
 <script>
-    // Clearing the old storage key so everyone is forced to see the Welcome Prompt again!
     localStorage.removeItem('survivorTribeColor'); 
 
     const savedTribeColor = localStorage.getItem('survivorTribeColor_v2');
@@ -1177,7 +1136,8 @@
 <div id="fire-game-page" class="full-page">
     <div class="full-page-content">
         <div class="full-page-header">
-            <span></span> <span>HOW FAST CAN YOU MAKE FIRE?</span>
+            <span></span>
+            <span>HOW FAST CAN YOU MAKE FIRE?</span>
             <span class="close" onclick="closeFireGamePage()" style="position: static; transform: none; box-shadow: none;">&times;</span>
         </div>
         
@@ -1193,10 +1153,7 @@
                 <div class="stick stick-left"></div>
                 <div class="stick stick-right"></div>
                 
-                <div id="flag-mechanism" class="flag-mechanism">
-                    <div class="flag-pole"></div>
-                    <div class="flag-triangle">WIN</div>
-                </div>
+                <div id="win-flag" class="win-flag"></div>
 
                 <div id="rope-full" class="hemp-rope rope-full"></div>
                 
@@ -1240,7 +1197,7 @@
                 <p id="local-only-warning" style="color: var(--low-score); text-align: center; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">(Scores saved to your local device only. Database offline.)</p>
 
                 <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: var(--text); font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px;">
-                    </ol>
+                </ol>
             </div>
 
             <button id="play-again-btn" class="text-btn" style="display: none; margin-top: 30px; background-color: var(--text); color: var(--card-bg);">PLAY AGAIN</button>
@@ -1974,7 +1931,7 @@
     const ropeFull = document.getElementById('rope-full');
     const ropeLeft = document.getElementById('rope-left');
     const ropeRight = document.getElementById('rope-right');
-    const flagMechanism = document.getElementById('flag-mechanism');
+    const winFlag = document.getElementById('win-flag');
 
     // SFX Elements
     const sfxWin = document.getElementById('sfx-win');
@@ -2153,10 +2110,9 @@
         ropeLeft.style.display = "none";
         ropeRight.style.display = "none";
         
-        // Reset Flag Mechanism
-        flagMechanism.style.display = "none";
-        flagMechanism.style.transform = "translateY(60px)";
-        flagMechanism.style.opacity = "0";
+        // Reset Flag
+        winFlag.style.opacity = "0";
+        winFlag.style.transform = "rotate(90deg)"; // Hangs down hidden
 
         updateFireVisuals();
         
@@ -2281,15 +2237,13 @@
             ropeLeft.style.display = "block";
             ropeRight.style.display = "block";
             
-            flagMechanism.style.display = "flex";
-            
             // Allow display:block to register before dropping ropes and popping flag
             setTimeout(() => {
-                ropeLeft.style.transform = "rotate(-75deg)";
-                ropeRight.style.transform = "rotate(75deg)";
+                ropeLeft.style.transform = "rotate(-80deg)";
+                ropeRight.style.transform = "rotate(80deg)";
                 
-                flagMechanism.style.opacity = "1";
-                flagMechanism.style.transform = "translateY(0px)"; // Springs up!
+                winFlag.style.opacity = "1";
+                winFlag.style.transform = "rotate(0deg)"; // Springs up to point right!
             }, 10);
             
             if (sfxWin) {
