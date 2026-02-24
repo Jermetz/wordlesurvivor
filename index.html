@@ -1921,7 +1921,7 @@
     // Function to close the full-page mini game
     function closeFireGamePage() {
         fireGamePage.style.display = "none";
-        mainDashboard.style.display = "flex";
+        mainDashboard.style.display = ""; // <--- FIX: Clear inline style to let CSS grid handle iPad layout
         
         // Remove the anti-zoom listener so normal app functions return
         document.body.removeEventListener('touchstart', preventDoubleTapZoom);
@@ -1952,7 +1952,7 @@
         
         if (!fireGameActive) return;
         
-        // Reverted the math to make it slightly easier
+        // Progressive Resistance: Heat gained decreases, and wind decay increases as the fire grows!
         let tapGain = isHardMode ? 6 : 8; 
         fireHeat += tapGain; 
         
@@ -2338,6 +2338,9 @@
         if (modalId === 'stakesModal') {
              resetStakesModal();
         }
+        if (modalId === 'fireGameModal') {
+             resetFireGame();
+        }
         if (modalId === 'adminModal') {
             adminCodeInput.value = "";
             adminMessage.innerText = "";
@@ -2352,6 +2355,9 @@
             
             if (event.target.id === 'stakesModal') {
                  resetStakesModal();
+            }
+            if (event.target.id === 'fireGameModal') {
+                 resetFireGame();
             }
             if (event.target.id === 'adminModal') {
                 adminCodeInput.value = "";
