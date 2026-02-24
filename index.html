@@ -670,13 +670,72 @@
             align-items: center;
         }
 
-        .fire-emoji {
-            font-size: 4.5rem;
-            margin: 20px 0;
-            transition: transform 0.1s ease;
-            display: inline-block; 
+        /* THE VISUAL CHALLENGE RIG */
+        .challenge-container {
+            position: relative;
+            height: 180px;
+            width: 100%;
+            max-width: 250px;
+            margin: 15px auto;
+            border-bottom: 6px solid #4a2e15; /* The wood base */
+            overflow: visible;
+        }
+
+        /* The Hemp Rope */
+        .hemp-rope {
+            position: absolute;
+            top: 30px;
+            height: 8px;
+            background: repeating-linear-gradient(45deg, #d4b886, #d4b886 4px, #8b5a2b 4px, #8b5a2b 8px);
+            border-radius: 4px;
+            z-index: 2;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        /* The Win Flag */
+        .win-flag {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 44px;
+            height: 0px; /* Hidden initially */
+            background: var(--leaf-green);
+            color: white;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            overflow: hidden;
+            transition: height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy drop effect */
+            z-index: 1;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            border: 2px solid #fff;
+            border-top: none;
+            box-sizing: border-box;
+        }
+
+        /* The Growing Flame */
+        .fire-base {
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            /* TranslateX keeps it centered, Scale makes it grow TALLER towards the rope */
+            transform: translateX(-50%) scale(1);
+            font-size: 3rem;
+            transform-origin: bottom center; 
+            transition: transform 0.1s linear;
+            z-index: 3;
             text-shadow: none; /* keep emoji clean */
         }
+
         .progress-bar-bg {
             width: 100%;
             height: 30px;
@@ -693,6 +752,13 @@
             background: linear-gradient(90deg, #d95100 0%, #ffd700 100%);
             /* Eased out transition makes the jump to 100% look silky smooth */
             transition: width 0.15s ease-out; 
+        }
+        
+        /* This prevents users from double-tap zooming while playing the fire game! */
+        #fireGameModal .modal-content {
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         /* Ensures the strike button acts as a dead zone for Safari double-tap zooming */
@@ -1053,7 +1119,16 @@
 
             <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px; color: var(--text);">Your torch is on the line (wink). <br><br><strong>TAP THE BUTTON AS FAST AS YOU CAN</strong><br>to build your fire before the 10-second timer runs out!</p>
 
-            <div id="fire-emoji" class="fire-emoji">🪵</div>
+            <div class="challenge-container">
+                <div id="rope-full" class="hemp-rope" style="width: 120%; left: -10%;"></div>
+                
+                <div id="rope-left" class="hemp-rope" style="display: none; width: 45%; left: -10%; transform-origin: left; transform: rotate(-25deg);"></div>
+                <div id="rope-right" class="hemp-rope" style="display: none; width: 45%; left: 65%; transform-origin: right; transform: rotate(25deg);"></div>
+                
+                <div id="win-flag" class="win-flag">WIN</div>
+                
+                <div id="fire-emoji" class="fire-base">🪵</div>
+            </div>
 
             <div class="progress-bar-bg">
                 <div id="fire-progress" class="progress-bar-fill"></div>
@@ -1817,6 +1892,12 @@
     const modeStdBtn = document.getElementById('mode-std-btn');
     const modeHrdBtn = document.getElementById('mode-hrd-btn');
     
+    // Visual Rope Challenge Elements
+    const ropeFull = document.getElementById('rope-full');
+    const ropeLeft = document.getElementById('rope-left');
+    const ropeRight = document.getElementById('rope-right');
+    const winFlag = document.getElementById('win-flag');
+
     // SFX Elements
     const sfxWin = document.getElementById('sfx-win');
     const sfxLose = document.getElementById('sfx-lose');
@@ -1952,7 +2033,6 @@
         
         if (!fireGameActive) return;
         
-        // Progressive Resistance: Heat gained decreases, and wind decay increases as the fire grows!
         let tapGain = isHardMode ? 6 : 8; 
         fireHeat += tapGain; 
         
@@ -1961,20 +2041,15 @@
             fireGameActive = false;
             clearInterval(fireInterval); // Instantly stop the clock
             
-            if (sfxWin) {
-                sfxWin.currentTime = 0;
-                sfxWin.play().catch(err => {});
-            }
-
             // Record the exact time of the winning tap
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimerDisplay.innerText = elapsed.toFixed(2) + "s";
             updateFireVisuals();
 
-            // Wait 400ms to allow the progress bar CSS transition to finish 
+            // Wait 250ms to allow the progress bar CSS transition to finish before triggering win state
             setTimeout(() => {
                 endFireGame(true, elapsed);
-            }, 400);
+            }, 250);
 
         } else {
             updateFireVisuals();
@@ -1995,6 +2070,13 @@
         fireHeat = 0;
         fireTimeLeft = 10.00;
         
+        // Reset Visual Rope Challenge Elements
+        ropeFull.style.display = "block";
+        ropeLeft.style.display = "none";
+        ropeRight.style.display = "none";
+        winFlag.style.height = "0px";
+        winFlag.style.border = "none"; // Hide border when height is 0
+
         updateFireVisuals();
         
         fireTimerDisplay.innerText = "10.00s";
@@ -2071,8 +2153,10 @@
             fireEmoji.innerText = "🔥";
         }
 
-        let scale = 1 + (fireHeat / 100) * 1.5;
-        fireEmoji.style.transform = `scale(${scale})`;
+        // Scale the fire up physically towards the rope. 
+        // Max scale ~3.5 reaches the rope perfectly.
+        let scale = 1 + (fireHeat / 100) * 2.5;
+        fireEmoji.style.transform = `translateX(-50%) scale(${scale})`;
     }
 
     function endFireGame(won, winningTime = 0) {
@@ -2111,7 +2195,21 @@
         }
 
         if (won) {
+            // Trigger Visual Rope Snap & Flag Drop
+            ropeFull.style.display = "none";
+            ropeLeft.style.display = "block";
+            ropeRight.style.display = "block";
+            winFlag.style.border = "2px solid #fff";
+            winFlag.style.borderTop = "none";
+            winFlag.style.height = "75px";
+            
+            if (sfxWin) {
+                sfxWin.currentTime = 0;
+                sfxWin.play().catch(err => {});
+            }
+            
             let timeTaken = winningTime.toFixed(2);
+            
             fireInstructions.style.display = "none"; 
             fireTimerDisplay.style.color = "var(--leaf-green)";
             
@@ -2146,7 +2244,7 @@
             fireTimerDisplay.style.color = "var(--low-score)";
             fireProgress.style.width = "0%";
             fireEmoji.innerText = "💨";
-            fireEmoji.style.transform = `scale(1)`;
+            fireEmoji.style.transform = `translateX(-50%) scale(1)`;
             
             saveScoreSection.style.display = "none";
 
@@ -2338,9 +2436,6 @@
         if (modalId === 'stakesModal') {
              resetStakesModal();
         }
-        if (modalId === 'fireGameModal') {
-             resetFireGame();
-        }
         if (modalId === 'adminModal') {
             adminCodeInput.value = "";
             adminMessage.innerText = "";
@@ -2355,9 +2450,6 @@
             
             if (event.target.id === 'stakesModal') {
                  resetStakesModal();
-            }
-            if (event.target.id === 'fireGameModal') {
-                 resetFireGame();
             }
             if (event.target.id === 'adminModal') {
                 adminCodeInput.value = "";
