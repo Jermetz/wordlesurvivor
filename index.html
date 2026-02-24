@@ -753,25 +753,43 @@
             transform: rotate(0deg);
         }
 
-        /* The Win Flag */
-        .win-flag {
+        /* The New Pop-Up Win Flag */
+        .flag-mechanism {
             position: absolute;
-            top: 35px;
-            right: 45px; /* Attached to right stick */
-            width: 60px;
-            height: 35px;
+            bottom: 80px; /* Matches top of crate */
+            right: 0px;   /* Outside the fire making area (right stick is at right:40px) */
+            height: 130px;
+            display: none; /* Hidden by default */
+            z-index: 1; /* Behind crate/sticks */
+            transform: translateY(60px); /* Start lowered */
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        }
+
+        .flag-pole {
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(to right, #8b5a2b, #d4b886, #8b5a2b);
+            border-radius: 4px;
+            border: 1px solid #4a2e15;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .flag-triangle {
+            position: absolute;
+            top: 10px;
+            left: 6px; /* Attach to right edge of pole */
+            width: 65px;
+            height: 40px;
             background: #d32f2f;
             color: white;
             font-family: 'Arial Black', sans-serif;
-            font-size: 0.8rem;
-            line-height: 35px;
-            text-align: center;
-            border-radius: 0 5px 5px 0;
-            transform-origin: left bottom; 
-            transform: rotate(90deg); /* Hidden/hanging down initially */
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 0; /* Behind the stick */
-            box-shadow: 2px -2px 6px rgba(0,0,0,0.5);
+            font-size: 0.9rem;
+            line-height: 40px;
+            text-align: left;
+            padding-left: 6px;
+            box-sizing: border-box;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
         }
 
         /* The Growing Flame */
@@ -1175,7 +1193,10 @@
                 <div class="stick stick-left"></div>
                 <div class="stick stick-right"></div>
                 
-                <div id="win-flag" class="win-flag">WIN</div>
+                <div id="flag-mechanism" class="flag-mechanism">
+                    <div class="flag-pole"></div>
+                    <div class="flag-triangle">WIN</div>
+                </div>
 
                 <div id="rope-full" class="hemp-rope rope-full"></div>
                 
@@ -1953,7 +1974,7 @@
     const ropeFull = document.getElementById('rope-full');
     const ropeLeft = document.getElementById('rope-left');
     const ropeRight = document.getElementById('rope-right');
-    const winFlag = document.getElementById('win-flag');
+    const flagMechanism = document.getElementById('flag-mechanism');
 
     // SFX Elements
     const sfxWin = document.getElementById('sfx-win');
@@ -2131,7 +2152,11 @@
         ropeFull.style.display = "block";
         ropeLeft.style.display = "none";
         ropeRight.style.display = "none";
-        winFlag.style.transform = "rotate(90deg)"; // Hang down parallel to the right stick
+        
+        // Reset Flag Mechanism
+        flagMechanism.style.display = "none";
+        flagMechanism.style.transform = "translateY(60px)";
+        flagMechanism.style.opacity = "0";
 
         updateFireVisuals();
         
@@ -2251,16 +2276,20 @@
         }
 
         if (won) {
-            // Trigger Visual Rope Snap & Flag Drop
+            // Trigger Visual Rope Snap
             ropeFull.style.display = "none";
             ropeLeft.style.display = "block";
             ropeRight.style.display = "block";
             
-            // Allow display:block to register before dropping the ropes
+            flagMechanism.style.display = "flex";
+            
+            // Allow display:block to register before dropping ropes and popping flag
             setTimeout(() => {
                 ropeLeft.style.transform = "rotate(-75deg)";
                 ropeRight.style.transform = "rotate(75deg)";
-                winFlag.style.transform = "rotate(-10deg)"; // Flag springs up!
+                
+                flagMechanism.style.opacity = "1";
+                flagMechanism.style.transform = "translateY(0px)"; // Springs up!
             }, 10);
             
             if (sfxWin) {
