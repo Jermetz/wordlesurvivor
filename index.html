@@ -741,7 +741,7 @@
         /* The Hemp Rope */
         .hemp-rope {
             position: absolute;
-            top: 20px; /* Attached near top of the 160px stick */
+            top: 38px; /* Perfectly overlaps the top rim of the sticks */
             height: 6px;
             background: repeating-linear-gradient(45deg, #d4b886, #d4b886 4px, #8b5a2b 4px, #8b5a2b 8px);
             border-radius: 3px;
@@ -750,18 +750,18 @@
             transition: transform 0.4s cubic-bezier(0.5, 0, 1, 1);
         }
         .rope-full {
-            left: 77px; /* Attaches exactly inside the left stick */
-            right: 77px; /* Attaches exactly inside the right stick */
+            left: 70px; /* Covers the outer edge of the left stick */
+            right: 70px; /* Covers the outer edge of the right stick */
             width: auto;
         }
         .rope-left {
-            left: 77px;
-            width: calc(50% - 77px);
+            left: 70px;
+            width: calc(50% - 70px);
             transform-origin: left top; /* Falls DOWN and left */
         }
         .rope-right {
-            right: 77px;
-            width: calc(50% - 77px);
+            right: 70px;
+            width: calc(50% - 70px);
             transform-origin: right top; /* Falls DOWN and right */
         }
 
@@ -769,7 +769,7 @@
         .flag-mechanism {
             position: absolute;
             bottom: 100px; /* Matches top of crate */
-            right: 50px;   /* Sits just OUTSIDE the right stick (which occupies 70px-84px from right) */
+            right: 62px;   /* Sits extremely close to the right stick with a 2px gap */
             height: 160px; /* Matches stick height exactly */
             width: 6px;
             display: none; /* Hidden by default */
