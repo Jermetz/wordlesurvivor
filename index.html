@@ -618,7 +618,8 @@
             transform: scale(0.98);
         }
 
-        /* --- TRUE FULL-PAGE MINI GAME STYLES --- */
+        /* --- FIRE MINI GAME CSS --- */
+        /* Mini Game Page Styles */
         .full-page {
             display: none; /* Hidden by default */
             position: fixed;
@@ -626,32 +627,32 @@
             left: 0;
             width: 100%;
             height: 100%;
+            background-color: var(--bg-color);
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('bg-pattern.jpg');
+            background-size: 200px;
             z-index: 3000; /* Ensure it's on top of everything */
-            padding: 0; /* Removing padding so it fully bleeds to the edge */
+            overflow-y: auto; /* Allow scrolling within the page if needed */
+            padding: 20px;
             box-sizing: border-box;
-            /* touch-action: pan-y allows scrolling down to leaderboards but stops double-tap zoom! */
-            touch-action: pan-y;
+            flex-direction: column;
+            align-items: center;
         }
 
+        /* Container for content within the full page */
         .full-page-content {
-            background-color: var(--bg-color);
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('bg-pattern.jpg');
-            background-size: 200px;
-            background-attachment: fixed;
-            width: 100%;
-            height: 100%;
-            margin: 0;
+            background-color: var(--card-bg);
+            border: 3px solid var(--accent);
+            border-radius: 12px;
             padding: 25px 20px;
-            border: none;
-            border-radius: 0;
-            box-shadow: none;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
+            margin-bottom: 40px; /* Space at the bottom */
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            overflow-y: auto; /* Let them scroll if the leaderboard is long */
-            -webkit-overflow-scrolling: touch;
         }
 
         .full-page-header {
@@ -664,25 +665,9 @@
             text-shadow: var(--text-shadow);
             text-decoration: underline;
             width: 100%;
-            max-width: 550px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .full-page-header .close {
-            color: var(--card-bg);
-            background-color: var(--accent);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 28px;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-            transition: background-color 0.3s ease;
         }
 
         /* THE VISUAL CHALLENGE RIG */
@@ -755,14 +740,12 @@
             left: 45px;
             width: calc(100% - 90px);
         }
-        /* Left rope falls down to the left */
         .rope-left {
             left: 45px;
             width: calc(50% - 45px);
             transform-origin: left center;
             transform: rotate(0deg);
         }
-        /* Right rope falls down to the right */
         .rope-right {
             right: 45px;
             width: calc(50% - 45px);
@@ -774,39 +757,39 @@
         .flag-mechanism {
             position: absolute;
             bottom: 80px; /* Matches top of crate */
-            right: 25px;   /* Sits just outside the right stick (stick is right:40) */
-            height: 160px; /* Matches the stick height perfectly */
+            right: 0px;   /* Outside the fire making area (right stick is at right:40px) */
+            height: 130px;
             display: none; /* Hidden by default */
-            z-index: 0; /* Behind crate/sticks */
-            transform: translateY(160px); /* Start hidden below the crate line */
+            z-index: 1; /* Behind crate/sticks */
+            transform: translateY(60px); /* Start lowered */
             opacity: 0;
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
         }
 
         .flag-pole {
-            width: 8px;
+            width: 4px; /* Make it skinny */
             height: 100%;
-            background: linear-gradient(to right, #ccc, #fff, #ccc);
-            border-radius: 4px;
+            /* Use a repeating gradient for a wood-grain stick look */
+            background: repeating-linear-gradient(90deg, #8b5a2b, #8b5a2b 2px, #6b4226 2px, #6b4226 4px);
+            border: 1px solid #3e2723; /* Dark border for definition */
             box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
         }
 
         .flag-triangle {
             position: absolute;
-            top: 5px; /* Sits right at the top of the pole */
-            left: 8px; /* Attached to right edge of pole, pointing outwards */
-            width: 50px;
-            height: 34px;
+            top: 10px;
+            left: 2px; /* Attach to right edge of pole */
+            width: 65px;
+            height: 40px;
             background: #d32f2f;
             color: white;
             font-family: 'Arial Black', sans-serif;
-            font-size: 0.7rem;
-            line-height: 34px;
+            font-size: 0.9rem;
+            line-height: 40px;
             text-align: left;
-            padding-left: 5px;
+            padding-left: 8px;
             box-sizing: border-box;
-            clip-path: polygon(0 0, 100% 50%, 0 100%); /* Triangle pointing right */
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
         }
 
         /* The Growing Flame */
@@ -825,7 +808,6 @@
 
         .progress-bar-bg {
             width: 100%;
-            max-width: 450px;
             height: 30px;
             background: rgba(0,0,0,0.3);
             border-radius: 15px;
@@ -842,10 +824,16 @@
             transition: width 0.15s ease-out; 
         }
         
+        /* This prevents users from double-tap zooming while playing the fire game! */
+        #fireGameModal .modal-content {
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
         /* Ensures the strike button acts as a dead zone for Safari double-tap zooming */
         #strike-btn {
             touch-action: none !important;
-            max-width: 450px;
         }
 
         /* --- FIRE MINI GAME REACTION --- */
@@ -928,12 +916,12 @@
             padding: 25px 20px;
             border: 3px solid var(--accent);
             width: 90%; 
-            max-width: 800px;
+            max-width: 800px; /* INCREASED MAX-WIDTH */
             border-radius: 12px;
             color: var(--text);
             font-family: 'Arial Black', sans-serif; 
             font-weight: normal;
-            max-height: 90vh; 
+            max-height: 90vh; /* INCREASED MAX-HEIGHT */
             overflow-y: auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
@@ -979,7 +967,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 800px;
+            max-width: 800px; /* INCREASED MAX-WIDTH */
         }
 
         .modal-header {
@@ -1193,7 +1181,7 @@
             <span class="close" onclick="closeFireGamePage()" style="position: static; transform: none; box-shadow: none;">&times;</span>
         </div>
         
-        <div style="width: 100%; max-width: 450px;">
+        <div style="width: 100%;">
             <div class="view-toggle-container" style="max-width: 280px; margin: 0 auto 15px auto; height: 35px; border-radius: 8px;">
                 <button id="mode-std-btn" class="toggle-tab active" style="padding: 5px 0;">STANDARD</button>
                 <button id="mode-hrd-btn" class="toggle-tab" style="padding: 5px 0;">HARD MODE</button>
@@ -1226,7 +1214,7 @@
 
             <h2 id="fire-timer" style="color: var(--text); font-size: 2.2rem; margin-top: 0; font-family: monospace;">10.00s</h2>
 
-            <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px; margin-bottom: 20px;">TAP FAST TO STRIKE!</button>
+            <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px;">TAP FAST TO STRIKE!</button>
             <button id="start-fire-btn" class="text-btn">START CHALLENGE</button>
             
             <div id="end-game-reaction">
@@ -1255,7 +1243,7 @@
                     </ol>
             </div>
 
-            <button id="play-again-btn" class="text-btn" style="display: none; margin-top: 30px; margin-bottom: 40px; background-color: var(--text); color: var(--card-bg);">PLAY AGAIN</button>
+            <button id="play-again-btn" class="text-btn" style="display: none; margin-top: 30px; background-color: var(--text); color: var(--card-bg);">PLAY AGAIN</button>
         </div>
     </div>
 </div>
@@ -2086,16 +2074,16 @@
         fireGamePage.style.display = "flex";
         
         // Anti-Zoom Global Event Listener ONLY active while game is open
-        document.addEventListener('touchend', preventDoubleTapZoom, { passive: false });
+        document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
     }
 
     // Function to close the full-page mini game
     function closeFireGamePage() {
         fireGamePage.style.display = "none";
-        mainDashboard.style.display = ""; // Clears inline style to let CSS grid handle iPad layout
+        mainDashboard.style.display = ""; // <--- FIX: Clear inline style to let CSS grid handle iPad layout
         
         // Remove the anti-zoom listener so normal app functions return
-        document.removeEventListener('touchend', preventDoubleTapZoom);
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
         
         // Remove Firebase listeners to save memory
         if (currentFirebaseRef) {
@@ -2105,13 +2093,11 @@
     }
     
     // Global Double-Tap Zoom Preventer (attached when modal opens)
-    let lastTouchEnd = 0;
     function preventDoubleTapZoom(e) {
-        const now = (new Date()).getTime();
-        if (now - lastTouchEnd <= 300) {
-            e.preventDefault();
+        // If they tap more than 1 finger, or tap too fast, block the browser action
+        if (e.touches.length > 1) {
+             e.preventDefault();
         }
-        lastTouchEnd = now;
     }
 
     startFireBtn.onclick = function() { startFireGame(); }
@@ -2169,7 +2155,7 @@
         
         // Reset Flag Mechanism
         flagMechanism.style.display = "none";
-        flagMechanism.style.transform = "translateY(160px)";
+        flagMechanism.style.transform = "translateY(60px)";
         flagMechanism.style.opacity = "0";
 
         updateFireVisuals();
@@ -2295,12 +2281,12 @@
             ropeLeft.style.display = "block";
             ropeRight.style.display = "block";
             
-            flagMechanism.style.display = "block";
+            flagMechanism.style.display = "flex";
             
             // Allow display:block to register before dropping ropes and popping flag
             setTimeout(() => {
-                ropeLeft.style.transform = "rotate(75deg)";
-                ropeRight.style.transform = "rotate(-75deg)";
+                ropeLeft.style.transform = "rotate(-75deg)";
+                ropeRight.style.transform = "rotate(75deg)";
                 
                 flagMechanism.style.opacity = "1";
                 flagMechanism.style.transform = "translateY(0px)"; // Springs up!
