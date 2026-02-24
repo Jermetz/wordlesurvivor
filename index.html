@@ -650,6 +650,11 @@
             -webkit-user-select: none;
             user-select: none;
         }
+        
+        /* Ensures the strike button acts as a dead zone for Safari double-tap zooming */
+        #strike-btn {
+            touch-action: none !important;
+        }
 
         /* --- FIRE MINI GAME REACTION --- */
         #end-game-reaction {
@@ -1119,6 +1124,12 @@
     <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('fireGameModal')">&times;</span></div>
     <div class="modal-header">CAN YOU MAKE FIRE....FAST?</div>
     <div class="modal-body">
+        
+        <div class="view-toggle-container" style="max-width: 280px; margin: 0 auto 15px auto; height: 35px; border-radius: 8px;">
+            <button id="mode-std-btn" class="toggle-tab active" style="padding: 5px 0;">STANDARD</button>
+            <button id="mode-hrd-btn" class="toggle-tab" style="padding: 5px 0;">HARD MODE</button>
+        </div>
+
         <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px;">Your torch is on the line (wink). Tap the button as fast as you can to build your fire before the 10-second timer runs out!</p>
 
         <div id="fire-emoji" class="fire-emoji">🪵</div>
@@ -1138,12 +1149,15 @@
         </div>
 
         <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
-            <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem;">🔥 FIRE MADE! 🔥</h3>
+            <h3 id="win-status-text" style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem;">🔥 FIRE MADE! 🔥</h3>
             <p style="font-size: 1.1rem; font-weight: bold;">Time: <span id="final-time-display"></span>s</p>
-            <div style="margin-top: 15px;">
+            
+            <div id="top-10-input-area" style="margin-top: 15px; display: none;">
                 <input type="text" id="player-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
                 <button id="save-score-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
             </div>
+            
+            <p id="not-top-10-message" style="display: none; color: var(--low-score); font-weight: bold; margin-top: 10px;">Not fast enough for the Top 10!</p>
         </div>
 
         <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none;">
@@ -1697,26 +1711,29 @@
         }
     }
 
+    // Updated Admin Clear button to clear the currently selected mode
     adminClearBtn.onclick = function() {
         const code = adminCodeInput.value;
+        const currentFirebaseKey = isHardMode ? 'fireLeaderboard_hard' : 'fireLeaderboard';
+        
         if (code === "PRIDE12") {
             if (usingGlobalLeaderboard) {
-                fireDb.ref('fireLeaderboard').remove()
+                fireDb.ref(currentFirebaseKey).remove()
                     .then(() => {
-                        adminMessage.innerText = "Leaderboard Cleared Successfully!";
+                        adminMessage.innerText = `${isHardMode ? "Hard" : "Standard"} Leaderboard Cleared!`;
                         adminMessage.style.color = "var(--leaf-green)";
                         setTimeout(() => {
                             closeModal('adminModal');
                         }, 1500);
                     })
                     .catch((error) => {
-                        adminMessage.innerText = "Error Clearing Leaderboard: " + error.message;
+                        adminMessage.innerText = "Error Clearing: " + error.message;
                         adminMessage.style.color = "var(--low-score)";
                     });
             } else {
-                localStorage.removeItem('fireLeaderboard');
+                localStorage.removeItem(currentFirebaseKey);
                 renderFireLeaderboard();
-                adminMessage.innerText = "Local Leaderboard Cleared Successfully!";
+                adminMessage.innerText = `Local ${isHardMode ? "Hard" : "Standard"} Leaderboard Cleared!`;
                 adminMessage.style.color = "var(--leaf-green)";
                 setTimeout(() => {
                     closeModal('adminModal');
@@ -1737,14 +1754,24 @@
     const fireTimerDisplay = document.getElementById('fire-timer');
     const fireEmoji = document.getElementById('fire-emoji');
     const fireInstructions = document.getElementById('fire-instructions');
+    
+    // Save UI
     const saveScoreSection = document.getElementById('save-score-section');
     const finalTimeDisplay = document.getElementById('final-time-display');
     const playerInitials = document.getElementById('player-initials');
     const saveScoreBtn = document.getElementById('save-score-btn');
+    const top10InputArea = document.getElementById('top-10-input-area');
+    const notTop10Message = document.getElementById('not-top-10-message');
+    const winStatusText = document.getElementById('win-status-text');
     
+    // Board UI
     const leaderboardSection = document.getElementById('fire-leaderboard-section');
     const leaderboardList = document.getElementById('fire-leaderboard-list');
     const localOnlyWarning = document.getElementById('local-only-warning');
+    
+    // Difficulty Toggles
+    const modeStdBtn = document.getElementById('mode-std-btn');
+    const modeHrdBtn = document.getElementById('mode-hrd-btn');
     
     // SFX Elements
     const sfxStrike = document.getElementById('sfx-strike');
@@ -1816,7 +1843,27 @@
     let fireInterval;
     let fireGameActive = false;
     let fireStartTime = 0;
-    let isLeaderboardListening = false; // Prevents duplicate Firebase listeners
+    let isHardMode = false;
+    
+    // Allows us to turn off previous firebase listeners when switching modes
+    let currentFirebaseRef = null; 
+
+    // Mode Switcher Logic
+    modeStdBtn.onclick = function() {
+        if (!isHardMode) return;
+        isHardMode = false;
+        modeStdBtn.classList.add('active');
+        modeHrdBtn.classList.remove('active');
+        resetFireGame();
+    }
+
+    modeHrdBtn.onclick = function() {
+        if (isHardMode) return;
+        isHardMode = true;
+        modeHrdBtn.classList.add('active');
+        modeStdBtn.classList.remove('active');
+        resetFireGame();
+    }
 
     fireGameBtn.onclick = function() {
         resetFireGame();
@@ -1830,33 +1877,37 @@
     // Use touchstart to intercept mobile taps BEFORE the browser interprets a double-tap zoom
     function handleStrikeEvent(e) {
         if (e && e.cancelable) {
-            e.preventDefault(); // CRITICAL: This is the magic line that stops double-tap zooming entirely!
+            e.preventDefault(); // CRITICAL: This stops double-tap zooming entirely!
         }
         
         if (!fireGameActive) return;
         
         // --- SFX Logic ---
-        // We clone the node so rapid taps don't clip the previous sound
         if (sfxStrike) {
-            const strikeClone = sfxStrike.cloneNode();
-            strikeClone.volume = 0.5; // Optional: soften the rapid sparking slightly
-            strikeClone.play().catch(err => { console.log("SFX autoplay prevented"); });
+            sfxStrike.currentTime = 0; // Rewind to start for rapid playback
+            sfxStrike.play().catch(err => {});
         }
         
-        fireHeat += 8; // Gain per tap
+        // Hard Mode makes taps weaker!
+        let tapGain = isHardMode ? 6 : 8; 
+        fireHeat += tapGain; 
         
         if (fireHeat >= 100) {
             fireHeat = 100;
             fireGameActive = false;
             clearInterval(fireInterval); // Instantly stop the clock
             
+            if (sfxWin) {
+                sfxWin.currentTime = 0;
+                sfxWin.play().catch(err => {});
+            }
+
             // Record the exact time of the winning tap
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimerDisplay.innerText = elapsed.toFixed(2) + "s";
             updateFireVisuals();
 
             // Wait 400ms to allow the progress bar CSS transition to finish 
-            // AND prevent accidental double clicks when the UI flips!
             setTimeout(() => {
                 endFireGame(true, elapsed);
             }, 400);
@@ -1895,7 +1946,7 @@
         strikeBtn.style.display = "none";
         playAgainBtn.style.display = "none";
         saveScoreSection.style.display = "none";
-        endGameReaction.style.display = "none"; // Hide reaction image
+        endGameReaction.style.display = "none"; 
         playerInitials.value = "";
         
         renderFireLeaderboard();
@@ -1915,16 +1966,24 @@
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimeLeft = 10.00 - elapsed;
             
-            // Increased Wind! Fire decays 40 heat per second (requires >7 taps a sec to win)
-            fireHeat -= 0.8; 
+            // Hard Mode Wind is brutal! 
+            let windDecay = isHardMode ? 1.2 : 0.6; 
+            fireHeat -= windDecay; 
 
             if (fireHeat < 0) fireHeat = 0;
 
             if (fireTimeLeft <= 0) {
                 fireTimeLeft = 0;
+                fireGameActive = false;
+                clearInterval(fireInterval);
                 fireTimerDisplay.innerText = "0.00s";
                 updateFireVisuals();
                 
+                if (sfxLose) {
+                    sfxLose.currentTime = 0;
+                    sfxLose.play().catch(err => {});
+                }
+
                 // Allow the CSS transition to finish before flipping UI
                 setTimeout(() => {
                     endFireGame(false);
@@ -1939,7 +1998,6 @@
     function updateFireVisuals() {
         fireProgress.style.width = fireHeat + "%";
 
-        // Emoji progression based on heat level
         if (fireHeat < 15) {
             fireEmoji.innerText = "🪵";
         } else if (fireHeat < 50) {
@@ -1948,144 +2006,155 @@
             fireEmoji.innerText = "🔥";
         }
 
-        // Scale the emoji as it gets hotter
         let scale = 1 + (fireHeat / 100) * 1.5;
         fireEmoji.style.transform = `scale(${scale})`;
     }
 
     function endFireGame(won, winningTime = 0) {
-        clearInterval(fireInterval);
-        fireGameActive = false;
         strikeBtn.style.display = "none";
-
-        // Determine if it's a high score to trigger special reaction text
-        let isHighScore = false;
+        playAgainBtn.style.display = "block";
         
-        // Peek at the DOM to see the current #1 score without needing an async database query
-        let firstScoreElement = leaderboardList.querySelector('li');
-        if (won && firstScoreElement) {
-            let match = firstScoreElement.innerText.match(/-\s*([0-9.]+)/);
-            if (match) {
-                let currentBestTime = parseFloat(match[1]);
-                if (winningTime < currentBestTime) {
-                    isHighScore = true;
+        const reactionFaceImg = endGameReaction.querySelector('.reaction-face');
+        reactionFaceImg.classList.remove('shake-anim');
+        void reactionFaceImg.offsetWidth; 
+
+        // 1. Check current leaderboard times directly from the UI elements
+        let currentTimes = [];
+        let boardElems = leaderboardList.querySelectorAll('li');
+        boardElems.forEach(li => {
+            let match = li.innerText.match(/-\s*([0-9.]+)/);
+            if (match) currentTimes.push(parseFloat(match[1]));
+        });
+
+        // 2. Logic for Top 10 and #1 Spot
+        let isHighScore = false;
+        let qualifiesForTop10 = false;
+        
+        if (won) {
+            if (currentTimes.length === 0) {
+                isHighScore = true;
+                qualifiesForTop10 = true;
+            } else {
+                if (winningTime < currentTimes[0]) isHighScore = true;
+                
+                if (currentTimes.length < 10) {
+                    qualifiesForTop10 = true;
+                } else if (winningTime < currentTimes[currentTimes.length - 1]) {
+                    qualifiesForTop10 = true;
                 }
             }
-        } else if (won && !firstScoreElement) {
-            isHighScore = true; // First time playing!
         }
 
-        const reactionFaceImg = endGameReaction.querySelector('.reaction-face');
-        
-        // Reset the shake animation if it ran during a previous round
-        reactionFaceImg.classList.remove('shake-anim');
-        void reactionFaceImg.offsetWidth; // Force a DOM reflow to restart animation
-
         if (won) {
-            if (sfxWin) {
-                sfxWin.play().catch(err => { console.log("SFX autoplay prevented"); });
-            }
             let timeTaken = winningTime.toFixed(2);
-            
             fireInstructions.style.display = "none"; 
             fireTimerDisplay.style.color = "var(--leaf-green)";
             
-            finalTimeDisplay.innerText = timeTaken;
             saveScoreSection.style.display = "block";
-            playAgainBtn.style.display = "block";
+            finalTimeDisplay.innerText = timeTaken;
+            
+            // Adjust save UI based on Top 10 qualification
+            if (qualifiesForTop10) {
+                winStatusText.innerText = "🔥 FIRE MADE! 🔥";
+                top10InputArea.style.display = "block";
+                notTop10Message.style.display = "none";
+            } else {
+                winStatusText.innerText = "👍 YOU SURVIVED";
+                top10InputArea.style.display = "none";
+                notTop10Message.style.display = "block";
+            }
 
             // Trigger Reaction Picture + Bubble
             endGameReaction.style.display = "flex";
-            
             if (isHighScore) {
                 reactionBubble.innerText = "NEW LEADER!";
                 reactionBubble.style.color = "var(--leaf-green)";
             } else {
                 reactionBubble.innerText = fireInsults[Math.floor(Math.random() * fireInsults.length)];
                 reactionBubble.style.color = "var(--text)";
-                // Shake with anger/disappointment
                 reactionFaceImg.classList.add('shake-anim');
             }
 
         } else {
-            if (sfxLose) {
-                sfxLose.play().catch(err => { console.log("SFX autoplay prevented"); });
-            }
             fireInstructions.innerHTML = "<strong>💀 YOUR FLAME DIED 💀</strong><br>The tribe has spoken. You failed to make fire in time.";
             fireTimerDisplay.style.color = "var(--low-score)";
             fireProgress.style.width = "0%";
             fireEmoji.innerText = "💨";
             fireEmoji.style.transform = `scale(1)`;
-            playAgainBtn.style.display = "block";
+            
+            saveScoreSection.style.display = "none";
 
             // Show insult reaction on lose
             endGameReaction.style.display = "flex";
             reactionBubble.innerText = fireInsults[Math.floor(Math.random() * fireInsults.length)];
             reactionBubble.style.color = "var(--low-score)";
-            // Shake with anger/disappointment
             reactionFaceImg.classList.add('shake-anim');
         }
-        
-        renderFireLeaderboard();
     }
 
     saveScoreBtn.onclick = function() {
         let initials = playerInitials.value.trim().toUpperCase();
         if(initials === "") initials = "???";
         let timeTaken = parseFloat(finalTimeDisplay.innerText);
+        
+        let targetKey = isHardMode ? 'fireLeaderboard_hard' : 'fireLeaderboard';
 
         if (usingGlobalLeaderboard) {
-            // Save to Cloud (Firebase)
-            fireDb.ref('fireLeaderboard').push({
+            fireDb.ref(targetKey).push({
                 name: initials,
                 time: timeTaken,
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             saveScoreSection.style.display = "none";
-            // The real-time listener will automatically update the UI list!
         } else {
-            // Save Local (Offline mode fallback)
-            let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
+            let board = JSON.parse(localStorage.getItem(targetKey)) || [];
             board.push({ name: initials, time: timeTaken });
             board.sort((a, b) => a.time - b.time);
             board = board.slice(0, 10); 
-            localStorage.setItem('fireLeaderboard', JSON.stringify(board));
+            localStorage.setItem(targetKey, JSON.stringify(board));
             saveScoreSection.style.display = "none";
             renderFireLeaderboard();
         }
     }
 
     function renderFireLeaderboard() {
+        let targetKey = isHardMode ? 'fireLeaderboard_hard' : 'fireLeaderboard';
+        
         if (usingGlobalLeaderboard) {
             localOnlyWarning.style.display = "none";
             
-            // Only attach the live listener once to prevent duplicates
-            if (!isLeaderboardListening) {
-                isLeaderboardListening = true;
-                fireDb.ref('fireLeaderboard').orderByChild('time').limitToFirst(10).on('value', (snapshot) => {
-                    let board = [];
-                    snapshot.forEach((childSnapshot) => {
-                        board.push(childSnapshot.val());
-                    });
-                    
-                    if(board.length > 0) {
-                        leaderboardSection.style.display = "block";
-                        leaderboardList.innerHTML = "";
-                        board.forEach(entry => {
-                            let li = document.createElement('li');
-                            li.style.marginBottom = "8px";
-                            li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
-                            leaderboardList.appendChild(li);
-                        });
-                    } else {
-                        leaderboardSection.style.display = "none";
-                    }
-                });
+            // Unbind previous listener if switching between Hard/Standard
+            if (currentFirebaseRef) {
+                currentFirebaseRef.off();
             }
+            
+            currentFirebaseRef = fireDb.ref(targetKey).orderByChild('time').limitToFirst(10);
+            
+            currentFirebaseRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => {
+                    board.push(childSnapshot.val());
+                });
+                
+                if(board.length > 0) {
+                    leaderboardSection.style.display = "block";
+                    leaderboardList.innerHTML = "";
+                    board.forEach(entry => {
+                        let li = document.createElement('li');
+                        li.style.marginBottom = "8px";
+                        li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                        leaderboardList.appendChild(li);
+                    });
+                } else {
+                    leaderboardSection.style.display = "none";
+                    leaderboardList.innerHTML = "";
+                }
+            });
+            
         } else {
             // Render from LocalStorage (Fallback)
             localOnlyWarning.style.display = "block";
-            let board = JSON.parse(localStorage.getItem('fireLeaderboard')) || [];
+            let board = JSON.parse(localStorage.getItem(targetKey)) || [];
             if(board.length > 0) {
                 leaderboardSection.style.display = "block";
                 leaderboardList.innerHTML = "";
@@ -2097,6 +2166,7 @@
                 });
             } else {
                 leaderboardSection.style.display = "none";
+                leaderboardList.innerHTML = "";
             }
         }
     }
