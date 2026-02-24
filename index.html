@@ -620,7 +620,7 @@
 
         /* --- FIRE MINI GAME CSS --- */
         
-        /* Dedicated Full Page for Minigame (Locks out zoom) */
+        /* Dedicated Full Page for Minigame (Locks out zoom completely) */
         .full-page {
             display: none; /* Hidden by default */
             position: fixed;
@@ -630,27 +630,29 @@
             background-size: 200px;
             z-index: 3000; /* Ensure it's on top of everything */
             overflow-y: auto; 
-            padding: 20px;
+            padding: 0;
             box-sizing: border-box;
-            touch-action: none; /* Ultimate Double-Tap Zoom Prevention */
+            touch-action: none !important; /* Ultimate Double-Tap Zoom Prevention */
+            user-select: none;
         }
 
         /* Container for content within the full page */
         .full-page-content {
-            background-color: var(--card-bg);
-            border: 3px solid var(--accent);
-            border-radius: 12px;
+            background-color: transparent; /* Remove card look for true full-page immersion */
+            border: none;
+            border-radius: 0;
             padding: 25px 20px;
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            box-shadow: none;
             box-sizing: border-box;
             margin-bottom: 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            min-height: 100%;
         }
 
         .full-page-header {
@@ -660,7 +662,7 @@
             text-align: center;
             margin-bottom: 20px;
             font-size: 1.5rem;
-            text-shadow: var(--text-shadow);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             text-decoration: underline;
             width: 100%;
             display: flex;
@@ -668,12 +670,26 @@
             align-items: center;
         }
 
+        .close-btn-full {
+            color: var(--card-bg);
+            background-color: var(--accent);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+
         /* THE VISUAL CHALLENGE RIG */
         .challenge-container {
             position: relative;
-            height: 250px;
+            height: 300px;
             width: 100%;
-            max-width: 260px;
+            max-width: 320px;
             margin: 15px auto;
             overflow: visible;
         }
@@ -684,8 +700,8 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 160px;
-            height: 90px;
+            width: 180px;
+            height: 100px;
             background: #6b4226;
             border: 3px solid #3e2723;
             box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 10px rgba(0,0,0,0.5);
@@ -704,25 +720,25 @@
             z-index: 3;
         }
 
-        /* The Vertical Sticks (Sitting ON TOP of the crate) */
+        /* The Vertical Sticks (Sitting EXACTLY ON TOP of the crate) */
         .stick {
             position: absolute;
-            bottom: 90px; /* Aligned with top of crate */
-            width: 12px;
-            height: 140px;
+            bottom: 100px; /* Aligned with top of 100px crate */
+            width: 14px;
+            height: 160px;
             background: linear-gradient(to right, #4a2e15, #8b5a2b, #4a2e15);
             border: 1px solid #2b1d0e;
             border-radius: 4px;
             z-index: 1;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
         }
-        .stick-left { left: 60px; }
-        .stick-right { right: 60px; }
+        .stick-left { left: 70px; }
+        .stick-right { right: 70px; }
 
         /* The Hemp Rope */
         .hemp-rope {
             position: absolute;
-            top: 20px;
+            top: 40px; /* Attached near top of the 160px stick */
             height: 6px;
             background: repeating-linear-gradient(45deg, #d4b886, #d4b886 4px, #8b5a2b 4px, #8b5a2b 8px);
             border-radius: 3px;
@@ -731,40 +747,66 @@
             transition: transform 0.4s cubic-bezier(0.5, 0, 1, 1);
         }
         .rope-full {
-            left: 65px;
-            width: 130px;
+            left: 77px;
+            right: 77px;
+            width: auto;
         }
         .rope-left {
-            left: 65px;
-            width: 65px;
+            left: 77px;
+            width: calc(50% - 77px);
             transform-origin: left center;
         }
         .rope-right {
-            right: 65px;
-            width: 65px;
+            right: 77px;
+            width: calc(50% - 77px);
             transform-origin: right center;
         }
 
-        /* The Triangular Win Flag */
-        .win-flag {
+        /* The Pop-up Win Flag Mechanism */
+        .flag-mechanism {
             position: absolute;
-            top: 20px;
-            left: 200px; /* Attaches exactly to the right side of the right stick */
-            width: 50px;
-            height: 35px;
-            background: #d32f2f;
-            clip-path: polygon(0 0, 100% 50%, 0 100%); /* Makes it a triangle pointing right */
-            transform-origin: left bottom; 
-            transform: rotate(90deg); /* Starts hanging down vertically */
+            bottom: 100px; /* Matches top of crate, same as right stick */
+            right: 56px;   /* Sits just to the right of the right stick (which is at 70px) */
+            height: 160px; /* Same height as main stick */
+            width: 6px;
+            display: none; /* Hidden by default */
+            z-index: 0; /* Behind main stick */
+            transform: translateY(160px); /* Hidden down behind the crate */
             opacity: 0;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
-            z-index: 0; 
+        }
+
+        .flag-pole {
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(90deg, #8b5a2b, #8b5a2b 2px, #6b4226 2px, #6b4226 4px);
+            border: 1px solid #3e2723; 
+            border-radius: 3px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .flag-triangle {
+            position: absolute;
+            top: 0; /* Aligned with top of the pole */
+            left: 4px; /* Attach to right side of pole */
+            width: 70px;
+            height: 45px;
+            background: #d32f2f;
+            clip-path: polygon(0 0, 100% 50%, 0 100%); /* Makes it a triangle pointing right */
+            color: white;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 0.9rem;
+            line-height: 45px;
+            text-align: left;
+            padding-left: 6px;
+            box-sizing: border-box;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
         /* The Growing Flame */
         .fire-base {
             position: absolute;
-            bottom: 85px; /* Sits directly on the crate */
+            bottom: 95px; /* Sits directly on the crate */
             left: 50%;
             /* TranslateX keeps it centered, Scale makes it grow TALLER towards the rope */
             transform: translateX(-50%) scale(1);
@@ -781,7 +823,7 @@
             background: rgba(0,0,0,0.3);
             border-radius: 15px;
             overflow: hidden;
-            border: 3px solid var(--card-border);
+            border: 3px solid #fff;
             margin-bottom: 15px;
             box-sizing: border-box;
         }
@@ -789,10 +831,11 @@
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #d95100 0%, #ffd700 100%);
+            /* Eased out transition makes the jump to 100% look silky smooth */
             transition: width 0.15s ease-out; 
         }
         
-        /* Stop double tap zoom on the strike button */
+        /* Ensures the strike button acts as a dead zone for Safari double-tap zooming */
         #strike-btn {
             touch-action: none !important;
         }
@@ -848,7 +891,7 @@
             content: '';
             position: absolute;
             left: -12px;
-            top: 60%;
+            top: 60%; /* Align with the mouth in the specific picture */
             transform: translateY(-50%);
             border-width: 10px 15px 10px 0;
             border-style: solid;
@@ -877,12 +920,12 @@
             padding: 25px 20px;
             border: 3px solid var(--accent);
             width: 90%; 
-            max-width: 800px;
+            max-width: 800px; /* INCREASED MAX-WIDTH */
             border-radius: 12px;
             color: var(--text);
             font-family: 'Arial Black', sans-serif; 
             font-weight: normal;
-            max-height: 90vh;
+            max-height: 90vh; /* INCREASED MAX-HEIGHT */
             overflow-y: auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
@@ -928,7 +971,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 800px;
+            max-width: 800px; /* INCREASED MAX-WIDTH */
         }
 
         .modal-header {
@@ -1013,24 +1056,25 @@
             .action-grid { 
                 grid-column: 1; 
                 grid-row: 4; 
-                grid-template-columns: 1fr; 
+                grid-template-columns: 1fr; /* Expand buttons to a single column */
                 margin-top: 10px; 
             }
 
+            /* Stack drawer buttons single column on iPad to match action grid */
             .camp-menu-drawer {
                 grid-template-columns: 1fr; 
             }
 
             .right-panel {
                 grid-column: 2;
-                grid-row: 1 / span 4;
+                grid-row: 1 / span 4; /* Spans all rows perfectly flush to the top */
                 max-width: 100%;
                 height: 100%;
             }
 
-            .view-toggle-container { max-width: 100%; }
+            .view-toggle-container { max-width: 100%; } /* Stretches nicely on iPad */
             .leaderboard-header, #leaderboard, #extinction-board, #extinction-header {
-                max-width: 100%; 
+                max-width: 100%; /* Lets it stretch completely on iPad */
                 margin-top: 0;
             }
             #extinction-header { margin-top: 40px; }
@@ -1041,6 +1085,7 @@
 <body>
 
 <script>
+    // Clearing the old storage key so everyone is forced to see the Welcome Prompt again!
     localStorage.removeItem('survivorTribeColor'); 
 
     const savedTribeColor = localStorage.getItem('survivorTribeColor_v2');
@@ -1136,9 +1181,8 @@
 <div id="fire-game-page" class="full-page">
     <div class="full-page-content">
         <div class="full-page-header">
-            <span></span>
-            <span>HOW FAST CAN YOU MAKE FIRE?</span>
-            <span class="close" onclick="closeFireGamePage()" style="position: static; transform: none; box-shadow: none;">&times;</span>
+            <span></span> <span>HOW FAST CAN YOU MAKE FIRE?</span>
+            <span class="close-btn-full" onclick="closeFireGamePage()">&times;</span>
         </div>
         
         <div style="width: 100%;">
@@ -1153,7 +1197,10 @@
                 <div class="stick stick-left"></div>
                 <div class="stick stick-right"></div>
                 
-                <div id="win-flag" class="win-flag"></div>
+                <div id="flag-mechanism" class="flag-mechanism">
+                    <div class="flag-pole"></div>
+                    <div class="flag-triangle">WIN</div>
+                </div>
 
                 <div id="rope-full" class="hemp-rope rope-full"></div>
                 
@@ -1169,34 +1216,34 @@
                 <div id="fire-progress" class="progress-bar-fill"></div>
             </div>
 
-            <h2 id="fire-timer" style="color: var(--text); font-size: 2.2rem; margin-top: 0; font-family: monospace;">10.00s</h2>
+            <h2 id="fire-timer" style="color: #fff; font-size: 2.2rem; margin-top: 0; font-family: monospace;">10.00s</h2>
 
             <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px;">TAP FAST TO STRIKE!</button>
-            <button id="start-fire-btn" class="text-btn">START CHALLENGE</button>
+            <button id="start-fire-btn" class="text-btn" style="background-color: var(--accent); color: white;">START CHALLENGE</button>
             
             <div id="end-game-reaction">
                 <img src="ultimate_survivor.png" alt="Ultimate Survivor" class="reaction-face">
                 <div id="reaction-bubble" class="speech-bubble"></div>
             </div>
 
-            <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
-                <h3 id="win-status-text" style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem;">🔥 FIRE MADE! 🔥</h3>
-                <p style="font-size: 1.1rem; font-weight: bold; color: var(--text);">Time: <span id="final-time-display"></span>s</p>
+            <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
+                <h3 id="win-status-text" style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🔥 FIRE MADE! 🔥</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="final-time-display"></span>s</p>
                 
                 <div id="top-10-input-area" style="margin-top: 15px; display: none;">
                     <input type="text" id="player-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
                     <button id="save-score-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
                 </div>
                 
-                <p id="not-top-10-message" style="display: none; color: var(--low-score); font-weight: bold; margin-top: 10px;">Not fast enough for the Top 10!</p>
+                <p id="not-top-10-message" style="display: none; color: var(--low-score); font-weight: bold; margin-top: 10px; text-shadow: 1px 1px 2px #000;">Not fast enough for the Top 10!</p>
             </div>
 
-            <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%;">
-                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem;">🔥 FASTEST FIRE MAKERS</h3>
+            <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🔥 FASTEST FIRE MAKERS</h3>
                 
                 <p id="local-only-warning" style="color: var(--low-score); text-align: center; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">(Scores saved to your local device only. Database offline.)</p>
 
-                <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: var(--text); font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px;">
+                <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
                 </ol>
             </div>
 
@@ -1931,7 +1978,7 @@
     const ropeFull = document.getElementById('rope-full');
     const ropeLeft = document.getElementById('rope-left');
     const ropeRight = document.getElementById('rope-right');
-    const winFlag = document.getElementById('win-flag');
+    const flagMechanism = document.getElementById('flag-mechanism');
 
     // SFX Elements
     const sfxWin = document.getElementById('sfx-win');
@@ -2037,7 +2084,7 @@
     // Function to close the full-page mini game
     function closeFireGamePage() {
         fireGamePage.style.display = "none";
-        mainDashboard.style.display = ""; // <--- FIX: Clear inline style to let CSS grid handle iPad layout
+        mainDashboard.style.display = ""; // Let CSS grid handle iPad layout
         
         // Remove the anti-zoom listener so normal app functions return
         document.body.removeEventListener('touchstart', preventDoubleTapZoom);
@@ -2111,8 +2158,9 @@
         ropeRight.style.display = "none";
         
         // Reset Flag
-        winFlag.style.opacity = "0";
-        winFlag.style.transform = "rotate(90deg)"; // Hangs down hidden
+        flagMechanism.style.opacity = "0";
+        flagMechanism.style.display = "none";
+        flagMechanism.style.transform = "translateY(160px)"; 
 
         updateFireVisuals();
         
@@ -2237,13 +2285,15 @@
             ropeLeft.style.display = "block";
             ropeRight.style.display = "block";
             
+            flagMechanism.style.display = "block";
+            
             // Allow display:block to register before dropping ropes and popping flag
             setTimeout(() => {
-                ropeLeft.style.transform = "rotate(-80deg)";
-                ropeRight.style.transform = "rotate(80deg)";
+                ropeLeft.style.transform = "rotate(75deg)";
+                ropeRight.style.transform = "rotate(-75deg)";
                 
-                winFlag.style.opacity = "1";
-                winFlag.style.transform = "rotate(0deg)"; // Springs up to point right!
+                flagMechanism.style.opacity = "1";
+                flagMechanism.style.transform = "translateY(0px)"; // Springs straight up!
             }, 10);
             
             if (sfxWin) {
