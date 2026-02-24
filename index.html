@@ -644,9 +644,11 @@
             transition: width 0.15s ease-out; 
         }
         
-        /* Ensures the strike button acts as a dead zone for Safari double-tap zooming */
-        #strike-btn {
-            touch-action: none !important;
+        /* This prevents users from double-tap zooming while playing the fire game! */
+        #fireGameModal .modal-content {
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         /* --- FIRE MINI GAME REACTION --- */
@@ -662,6 +664,26 @@
             border-radius: 8px;
             filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
         }
+
+        /* THE SHAKE ANIMATION FOR INSULTS */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake-anim {
+            animation: shake 0.4s;
+            animation-iteration-count: 2; /* Shakes twice to show real attitude */
+        }
+
         .speech-bubble {
             position: relative;
             background: #fff;
@@ -1726,7 +1748,53 @@
         "My grandma makes fire faster!",
         "Is your screen broken, or just your fingers?",
         "A wet match has more spark than you.",
-        "Pathetic."
+        "Pathetic.",
+        "The tribe has spoken... and they're laughing at you.",
+        "I've seen sloths tap faster.",
+        "Did you fall asleep?",
+        "You're definitely first boot material.",
+        "Are you trying to make fire or pet the wood?",
+        "Stick to puzzles.",
+        "Your torch is snuffed. Forever.",
+        "That was painful to watch.",
+        "Do you need a medic?",
+        "Absolute garbage.",
+        "I'd rather take a goat to the end than you.",
+        "Even a rock could beat that time.",
+        "Get off my island.",
+        "Zero chance of winning the game.",
+        "You're a literal liability to the tribe.",
+        "You must be doing this with your nose.",
+        "Is it your first time using a phone?",
+        "My blind grandma could strike flint better.",
+        "Go sit on the Edge of Extinction.",
+        "Not even an idol could save that performance.",
+        "You're literally dead weight.",
+        "You call that tapping?",
+        "That was a million-dollar mistake.",
+        "You just lost my jury vote.",
+        "Jeff Probst is shaking his head right now.",
+        "I'm embarrassed for you.",
+        "Might as well give up your necklace now.",
+        "Boston Rob is laughing at you.",
+        "Russell Hantz would eat you alive.",
+        "The medical team is on standby for your broken ego.",
+        "You play like a pre-merger.",
+        "Got nothing for ya. Head back to camp.",
+        "Come on in, guys! ...Wait, stay out.",
+        "Dig deep! Because that was shallow as hell.",
+        "You're officially the goat of this season.",
+        "This is why you don't get chosen for rewards.",
+        "I've seen better fire-making from a wet noodle.",
+        "You're about to be blindsided by how bad that was.",
+        "A literal actual child could beat you.",
+        "Please tell me you were lagging.",
+        "Just hand over your torch.",
+        "Don't quit your day job.",
+        "You're drawing dead.",
+        "We're voting you out at tribal tonight.",
+        "Worst performance in Survivor history.",
+        "That time is a tragedy."
     ];
 
     let fireHeat = 0;
@@ -1885,6 +1953,12 @@
             isHighScore = true; // First time playing!
         }
 
+        const reactionFaceImg = endGameReaction.querySelector('.reaction-face');
+        
+        // Reset the shake animation if it ran during a previous round
+        reactionFaceImg.classList.remove('shake-anim');
+        void reactionFaceImg.offsetWidth; // Force a DOM reflow to restart animation
+
         if (won) {
             let timeTaken = winningTime.toFixed(2);
             
@@ -1897,12 +1971,15 @@
 
             // Trigger Reaction Picture + Bubble
             endGameReaction.style.display = "flex";
+            
             if (isHighScore) {
-                reactionBubble.innerText = "NEW HIGH SCORE!";
+                reactionBubble.innerText = "NEW LEADER!";
                 reactionBubble.style.color = "var(--leaf-green)";
             } else {
                 reactionBubble.innerText = fireInsults[Math.floor(Math.random() * fireInsults.length)];
                 reactionBubble.style.color = "var(--text)";
+                // Shake with anger/disappointment
+                reactionFaceImg.classList.add('shake-anim');
             }
 
         } else {
@@ -1917,6 +1994,8 @@
             endGameReaction.style.display = "flex";
             reactionBubble.innerText = fireInsults[Math.floor(Math.random() * fireInsults.length)];
             reactionBubble.style.color = "var(--low-score)";
+            // Shake with anger/disappointment
+            reactionFaceImg.classList.add('shake-anim');
         }
         
         renderFireLeaderboard();
