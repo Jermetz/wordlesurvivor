@@ -619,6 +619,57 @@
         }
 
         /* --- FIRE MINI GAME CSS --- */
+        /* Mini Game Page Styles */
+        .full-page {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('bg-pattern.jpg');
+            background-size: 200px;
+            z-index: 3000; /* Ensure it's on top of everything */
+            overflow-y: auto; /* Allow scrolling within the page if needed */
+            padding: 20px;
+            box-sizing: border-box;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Container for content within the full page */
+        .full-page-content {
+            background-color: var(--card-bg);
+            border: 3px solid var(--accent);
+            border-radius: 12px;
+            padding: 25px 20px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            margin-bottom: 40px; /* Space at the bottom */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .full-page-header {
+            font-family: 'Arial Black', sans-serif;
+            color: var(--accent);
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-shadow: var(--text-shadow);
+            text-decoration: underline;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .fire-emoji {
             font-size: 4.5rem;
             margin: 20px 0;
@@ -642,13 +693,6 @@
             background: linear-gradient(90deg, #d95100 0%, #ffd700 100%);
             /* Eased out transition makes the jump to 100% look silky smooth */
             transition: width 0.15s ease-out; 
-        }
-        
-        /* This prevents users from double-tap zooming while playing the fire game! */
-        #fireGameModal .modal-content {
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
         }
         
         /* Ensures the strike button acts as a dead zone for Safari double-tap zooming */
@@ -778,9 +822,9 @@
             transition: background-color 0.3s ease;
         }
 
-        /* --- CENTERED MODALS (Quotes, Idol, Fire) FIX --- */
-        #quoteModal, #idolModal, #fireGameModal { padding-top: 0; }
-        #quoteModal .modal-content, #idolModal .modal-content, #fireGameModal .modal-content {
+        /* --- CENTERED MODALS (Quotes, Idol) FIX --- */
+        #quoteModal, #idolModal { padding-top: 0; }
+        #quoteModal .modal-content, #idolModal .modal-content {
             margin: 0; 
             position: absolute;
             top: 50%;
@@ -916,9 +960,6 @@
 <audio id="themeSound" loop preload="auto" crossorigin="anonymous">
     <source src="theme.mp3" type="audio/mpeg">
 </audio>
-<audio id="sfx-strike" preload="auto">
-    <source src="strike.mp3" type="audio/mpeg">
-</audio>
 <audio id="sfx-win" preload="auto">
     <source src="win.mp3" type="audio/mpeg">
 </audio>
@@ -930,7 +971,7 @@
 
 <div id="hidden-idol-trigger" style="position: fixed; top: 0; left: 0; width: 50px; height: 50px; z-index: 9999;"></div>
 
-<div class="dashboard-layout">
+<div class="dashboard-layout" id="main-dashboard">
     <header>
         <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image">
     </header>
@@ -995,6 +1036,63 @@
     <button id="theme-toggle-btn" class="toggle-btn" title="Toggle Theme Music">
         <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
     </button>
+</div>
+
+<div id="fire-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>CAN YOU MAKE FIRE....FAST?</span>
+            <span class="close" onclick="closeFireGamePage()" style="position: static; transform: none; box-shadow: none;">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <div class="view-toggle-container" style="max-width: 280px; margin: 0 auto 15px auto; height: 35px; border-radius: 8px;">
+                <button id="mode-std-btn" class="toggle-tab active" style="padding: 5px 0;">STANDARD</button>
+                <button id="mode-hrd-btn" class="toggle-tab" style="padding: 5px 0;">HARD MODE</button>
+            </div>
+
+            <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px; color: var(--text);">Your torch is on the line (wink). <br><br><strong>TAP THE BUTTON AS FAST AS YOU CAN</strong><br>to build your fire before the 10-second timer runs out!</p>
+
+            <div id="fire-emoji" class="fire-emoji">🪵</div>
+
+            <div class="progress-bar-bg">
+                <div id="fire-progress" class="progress-bar-fill"></div>
+            </div>
+
+            <h2 id="fire-timer" style="color: var(--text); font-size: 2.2rem; margin-top: 0; font-family: monospace;">10.00s</h2>
+
+            <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px;">TAP FAST TO STRIKE!</button>
+            <button id="start-fire-btn" class="text-btn">START CHALLENGE</button>
+            
+            <div id="end-game-reaction">
+                <img src="ultimate_survivor.png" alt="Ultimate Survivor" class="reaction-face">
+                <div id="reaction-bubble" class="speech-bubble"></div>
+            </div>
+
+            <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
+                <h3 id="win-status-text" style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem;">🔥 FIRE MADE! 🔥</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: var(--text);">Time: <span id="final-time-display"></span>s</p>
+                
+                <div id="top-10-input-area" style="margin-top: 15px; display: none;">
+                    <input type="text" id="player-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-score-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+                
+                <p id="not-top-10-message" style="display: none; color: var(--low-score); font-weight: bold; margin-top: 10px;">Not fast enough for the Top 10!</p>
+            </div>
+
+            <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem;">🔥 FASTEST FIRE MAKERS</h3>
+                
+                <p id="local-only-warning" style="color: var(--low-score); text-align: center; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">(Scores saved to your local device only. Database offline.)</p>
+
+                <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: var(--text); font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px;">
+                    </ol>
+            </div>
+
+            <button id="play-again-btn" class="text-btn" style="display: none; margin-top: 30px; background-color: var(--text); color: var(--card-bg);">PLAY AGAIN</button>
+        </div>
+    </div>
 </div>
 
 <div id="rulesModal" class="modal">
@@ -1119,68 +1217,12 @@
   </div>
 </div>
 
-<div id="fireGameModal" class="modal">
-  <div class="modal-content" style="text-align: center;">
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('fireGameModal')">&times;</span></div>
-    <div class="modal-header">CAN YOU MAKE FIRE....FAST?</div>
-    <div class="modal-body">
-        
-        <div class="view-toggle-container" style="max-width: 280px; margin: 0 auto 15px auto; height: 35px; border-radius: 8px;">
-            <button id="mode-std-btn" class="toggle-tab active" style="padding: 5px 0;">STANDARD</button>
-            <button id="mode-hrd-btn" class="toggle-tab" style="padding: 5px 0;">HARD MODE</button>
-        </div>
-
-        <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px;">Your torch is on the line (wink). Tap the button as fast as you can to build your fire before the 10-second timer runs out!</p>
-
-        <div id="fire-emoji" class="fire-emoji">🪵</div>
-
-        <div class="progress-bar-bg">
-            <div id="fire-progress" class="progress-bar-fill"></div>
-        </div>
-
-        <h2 id="fire-timer" style="color: var(--text); font-size: 2.2rem; margin-top: 0; font-family: monospace;">10.00s</h2>
-
-        <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px;">STRIKE FLINT</button>
-        <button id="start-fire-btn" class="text-btn">START CHALLENGE</button>
-        
-        <div id="end-game-reaction">
-            <img src="ultimate_survivor.png" alt="Ultimate Survivor" class="reaction-face">
-            <div id="reaction-bubble" class="speech-bubble"></div>
-        </div>
-
-        <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
-            <h3 id="win-status-text" style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem;">🔥 FIRE MADE! 🔥</h3>
-            <p style="font-size: 1.1rem; font-weight: bold;">Time: <span id="final-time-display"></span>s</p>
-            
-            <div id="top-10-input-area" style="margin-top: 15px; display: none;">
-                <input type="text" id="player-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
-                <button id="save-score-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
-            </div>
-            
-            <p id="not-top-10-message" style="display: none; color: var(--low-score); font-weight: bold; margin-top: 10px;">Not fast enough for the Top 10!</p>
-        </div>
-
-        <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none;">
-            <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem;">🔥 FASTEST FIRE MAKERS</h3>
-            
-            <p id="local-only-warning" style="color: var(--low-score); text-align: center; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">(Scores saved to your local device only. Database offline.)</p>
-
-            <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: var(--text); font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px;">
-                </ol>
-        </div>
-
-        <button id="play-again-btn" class="text-btn" style="display: none; margin-top: 30px; background-color: var(--text); color: var(--card-bg);">PLAY AGAIN</button>
-
-    </div>
-  </div>
-</div>
-
 <div id="adminModal" class="modal">
     <div class="modal-content">
         <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('adminModal')">&times;</span></div>
         <div class="modal-header">ADMIN MENU</div>
         <div class="modal-body" style="text-align: center;">
-            <p>Enter Admin Code to Wipe Leaderboard:</p>
+            <p style="color: var(--text);">Enter Admin Code to Wipe Leaderboard:</p>
             <input type="password" id="admin-code-input" style="padding: 10px; font-size: 1rem; width: 200px; text-align: center; border: 2px solid var(--card-border); border-radius: 6px; margin-bottom: 15px;">
             <button id="admin-clear-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 0 auto;">CLEAR LEADERBOARD</button>
             <p id="admin-message" style="margin-top: 15px; font-weight: bold;"></p>
@@ -1574,8 +1616,10 @@
           quoteModal = document.getElementById("quoteModal"),
           tribeModal = document.getElementById("tribeModal"),
           idolModal = document.getElementById("idolModal"),
-          fireGameModal = document.getElementById("fireGameModal"),
           adminModal = document.getElementById("adminModal");
+          
+    const fireGamePage = document.getElementById("fire-game-page");
+    const mainDashboard = document.getElementById("main-dashboard");
 
     const rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
@@ -1774,7 +1818,6 @@
     const modeHrdBtn = document.getElementById('mode-hrd-btn');
     
     // SFX Elements
-    const sfxStrike = document.getElementById('sfx-strike');
     const sfxWin = document.getElementById('sfx-win');
     const sfxLose = document.getElementById('sfx-lose');
     
@@ -1865,10 +1908,37 @@
         resetFireGame();
     }
 
+    // Opens the full-page mini game
     fireGameBtn.onclick = function() {
         resetFireGame();
-        fireGameModal.style.display = "block";
-        document.body.classList.add('modal-open');
+        mainDashboard.style.display = "none";
+        fireGamePage.style.display = "flex";
+        
+        // Anti-Zoom Global Event Listener ONLY active while game is open
+        document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+    }
+
+    // Function to close the full-page mini game
+    function closeFireGamePage() {
+        fireGamePage.style.display = "none";
+        mainDashboard.style.display = "flex";
+        
+        // Remove the anti-zoom listener so normal app functions return
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        
+        // Remove Firebase listeners to save memory
+        if (currentFirebaseRef) {
+            currentFirebaseRef.off();
+            isLeaderboardListening = false;
+        }
+    }
+    
+    // Global Double-Tap Zoom Preventer (attached when modal opens)
+    function preventDoubleTapZoom(e) {
+        // If they tap more than 1 finger, or tap too fast, block the browser action
+        if (e.touches.length > 1) {
+             e.preventDefault();
+        }
     }
 
     startFireBtn.onclick = function() { startFireGame(); }
@@ -1877,19 +1947,13 @@
     // Use touchstart to intercept mobile taps BEFORE the browser interprets a double-tap zoom
     function handleStrikeEvent(e) {
         if (e && e.cancelable) {
-            e.preventDefault(); // CRITICAL: This stops double-tap zooming entirely!
+            e.preventDefault(); // CRITICAL: This stops double-tap zooming entirely on the button!
         }
         
         if (!fireGameActive) return;
         
-        // --- SFX Logic ---
-        if (sfxStrike) {
-            sfxStrike.currentTime = 0; // Rewind to start for rapid playback
-            sfxStrike.play().catch(err => {});
-        }
-        
         // Progressive Resistance: Heat gained decreases, and wind decay increases as the fire grows!
-        let tapGain = isHardMode ? 5 : 8; 
+        let tapGain = isHardMode ? 4 : 8; 
         fireHeat += tapGain; 
         
         if (fireHeat >= 100) {
@@ -1938,7 +2002,7 @@
         fireEmoji.innerText = "🪵";
         
         fireInstructions.style.display = "block";
-        fireInstructions.innerText = "Your torch is on the line (wink). Tap the button as fast as you can to build your fire before the 10-second timer runs out!";
+        fireInstructions.innerHTML = "Your torch is on the line (wink). <br><br><strong>TAP THE BUTTON AS FAST AS YOU CAN</strong><br>to build your fire before the 10-second timer runs out!";
         
         startFireBtn.style.display = "block";
         startFireBtn.innerText = "START CHALLENGE";
@@ -1957,7 +2021,7 @@
         fireGameActive = true;
         startFireBtn.style.display = "none";
         strikeBtn.style.display = "block";
-        fireInstructions.innerText = "KEEP TAPPING!";
+        fireInstructions.innerHTML = "<strong>KEEP TAPPING!</strong>";
 
         fireStartTime = Date.now();
 
@@ -1967,8 +2031,9 @@
             fireTimeLeft = 10.00 - elapsed;
             
             // Progressive Wind Decay: The fire decays faster the hotter it gets.
-            let baseDecay = isHardMode ? 0.8 : 0.4;
-            let scalingDecay = (fireHeat / 100) * (isHardMode ? 0.8 : 0.4);
+            // Hard Mode Wind is brutal! 
+            let baseDecay = isHardMode ? 1.0 : 0.4;
+            let scalingDecay = (fireHeat / 100) * (isHardMode ? 1.5 : 0.4);
             fireHeat -= (baseDecay + scalingDecay);
 
             if (fireHeat < 0) fireHeat = 0;
@@ -2077,6 +2142,7 @@
             }
 
         } else {
+            fireInstructions.style.display = "block";
             fireInstructions.innerHTML = "<strong>💀 YOUR FLAME DIED 💀</strong><br>The tribe has spoken. You failed to make fire in time.";
             fireTimerDisplay.style.color = "var(--low-score)";
             fireProgress.style.width = "0%";
@@ -2273,9 +2339,6 @@
         if (modalId === 'stakesModal') {
              resetStakesModal();
         }
-        if (modalId === 'fireGameModal') {
-             resetFireGame();
-        }
         if (modalId === 'adminModal') {
             adminCodeInput.value = "";
             adminMessage.innerText = "";
@@ -2290,9 +2353,6 @@
             
             if (event.target.id === 'stakesModal') {
                  resetStakesModal();
-            }
-            if (event.target.id === 'fireGameModal') {
-                 resetFireGame();
             }
             if (event.target.id === 'adminModal') {
                 adminCodeInput.value = "";
