@@ -911,6 +911,15 @@
 <audio id="themeSound" loop preload="auto" crossorigin="anonymous">
     <source src="theme.mp3" type="audio/mpeg">
 </audio>
+<audio id="sfx-strike" preload="auto">
+    <source src="strike.mp3" type="audio/mpeg">
+</audio>
+<audio id="sfx-win" preload="auto">
+    <source src="win.mp3" type="audio/mpeg">
+</audio>
+<audio id="sfx-lose" preload="auto">
+    <source src="lose.mp3" type="audio/mpeg">
+</audio>
 
 <div class="fire-glow"></div>
 
@@ -1737,6 +1746,11 @@
     const leaderboardList = document.getElementById('fire-leaderboard-list');
     const localOnlyWarning = document.getElementById('local-only-warning');
     
+    // SFX Elements
+    const sfxStrike = document.getElementById('sfx-strike');
+    const sfxWin = document.getElementById('sfx-win');
+    const sfxLose = document.getElementById('sfx-lose');
+    
     // Reaction elements
     const endGameReaction = document.getElementById('end-game-reaction');
     const reactionBubble = document.getElementById('reaction-bubble');
@@ -1820,6 +1834,14 @@
         }
         
         if (!fireGameActive) return;
+        
+        // --- SFX Logic ---
+        // We clone the node so rapid taps don't clip the previous sound
+        if (sfxStrike) {
+            const strikeClone = sfxStrike.cloneNode();
+            strikeClone.volume = 0.5; // Optional: soften the rapid sparking slightly
+            strikeClone.play().catch(err => { console.log("SFX autoplay prevented"); });
+        }
         
         fireHeat += 8; // Gain per tap
         
@@ -1960,6 +1982,9 @@
         void reactionFaceImg.offsetWidth; // Force a DOM reflow to restart animation
 
         if (won) {
+            if (sfxWin) {
+                sfxWin.play().catch(err => { console.log("SFX autoplay prevented"); });
+            }
             let timeTaken = winningTime.toFixed(2);
             
             fireInstructions.style.display = "none"; 
@@ -1983,6 +2008,9 @@
             }
 
         } else {
+            if (sfxLose) {
+                sfxLose.play().catch(err => { console.log("SFX autoplay prevented"); });
+            }
             fireInstructions.innerHTML = "<strong>💀 YOUR FLAME DIED 💀</strong><br>The tribe has spoken. You failed to make fire in time.";
             fireTimerDisplay.style.color = "var(--low-score)";
             fireProgress.style.width = "0%";
