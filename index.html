@@ -1888,8 +1888,8 @@
             sfxStrike.play().catch(err => {});
         }
         
-        // Hard Mode makes taps weaker!
-        let tapGain = isHardMode ? 6 : 8; 
+        // Progressive Resistance: Heat gained decreases, and wind decay increases as the fire grows!
+        let tapGain = isHardMode ? 5 : 8; 
         fireHeat += tapGain; 
         
         if (fireHeat >= 100) {
@@ -1966,9 +1966,10 @@
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimeLeft = 10.00 - elapsed;
             
-            // Hard Mode Wind is brutal! Standard is normal.
-            let windDecay = isHardMode ? 1.0 : 0.5; 
-            fireHeat -= windDecay; 
+            // Progressive Wind Decay: The fire decays faster the hotter it gets.
+            let baseDecay = isHardMode ? 0.8 : 0.4;
+            let scalingDecay = (fireHeat / 100) * (isHardMode ? 0.8 : 0.4);
+            fireHeat -= (baseDecay + scalingDecay);
 
             if (fireHeat < 0) fireHeat = 0;
 
