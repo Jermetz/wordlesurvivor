@@ -1189,6 +1189,7 @@
             <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
             <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
             <button id="fire-game-btn" class="action-btn">🔥 MINI-GAME</button>
+            <button id="confessional-btn" class="action-btn" style="grid-column: 1 / -1; background: var(--accent); color: white;">🎥 CONFESSIONALS</button>
             <button id="tribe-btn" class="action-btn" style="grid-column: 1 / -1;">TRIBE COLORS</button>
         </div>
     </div>
@@ -1408,6 +1409,19 @@
             <p id="admin-message" style="margin-top: 15px; font-weight: bold;"></p>
         </div>
     </div>
+</div>
+
+    <div id="confessionalModal" class="modal">
+  <div class="modal-content">
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('confessionalModal')">&times;</span></div>
+    <div class="modal-header">THE CONFESSIONAL 🎥</div>
+    <div class="modal-body" style="text-align: center; margin-top: 15px;">
+        <textarea id="confessional-text" placeholder="Tell the camera how you really feel..." style="width: 100%; height: 80px; padding: 12px; border-radius: 8px; border: 2px solid var(--accent); font-family: 'Arial Black', sans-serif; box-sizing: border-box; margin-bottom: 10px;"></textarea>
+        <button id="post-confessional-btn" class="action-btn" style="width: 100%; margin-bottom: 20px;">POST TO THE TRIBE</button>
+        <div id="confessional-wall" style="width: 100%; display: flex; flex-direction: column; gap: 10px; max-height: 40vh; overflow-y: auto; text-align: left;">
+            </div>
+    </div>
+  </div>
 </div>
 
 
@@ -1633,7 +1647,8 @@
         activePlayers.forEach((player, index) => {
             const card = document.createElement('div');
             card.className = 'player-card';
-            card.addEventListener('click', () => {
+card.addEventListener('click', () => {
+                if (navigator.vibrate) navigator.vibrate(15);
                 card.classList.toggle('expanded');
             });
             
@@ -1708,7 +1723,10 @@
             deadPlayers.forEach(player => {
                 const card = document.createElement('div');
                 card.className = 'player-card';
-                card.addEventListener('click', () => { card.classList.toggle('expanded'); });
+                card.addEventListener('click', () => { 
+                if (navigator.vibrate) navigator.vibrate(15);
+                card.classList.toggle('expanded'); 
+            });
                 
                 let changeDisplay = '-';
                 let changeClass = 'change-neutral';
@@ -1802,7 +1820,8 @@
           quoteModal = document.getElementById("quoteModal"),
           tribeModal = document.getElementById("tribeModal"),
           idolModal = document.getElementById("idolModal"),
-          adminModal = document.getElementById("adminModal");
+          adminModal = document.getElementById("adminModal"),
+          confessionalModal = document.getElementById("confessionalModal");
           
     const fireGamePage = document.getElementById("fire-game-page");
     const mainDashboard = document.getElementById("main-dashboard");
@@ -1821,7 +1840,11 @@
           dynamicLeaderboardHeader = document.getElementById("dynamic-leaderboard-header"),
           adminClearBtn = document.getElementById("admin-clear-btn"),
           adminCodeInput = document.getElementById("admin-code-input"),
-          adminMessage = document.getElementById("admin-message");
+        adminMessage = document.getElementById("admin-message"),
+          confessionalBtn = document.getElementById("confessional-btn"),
+          postConfessionalBtn = document.getElementById("post-confessional-btn"),
+          confessionalText = document.getElementById("confessional-text"),
+          confessionalWall = document.getElementById("confessional-wall");
 
     const quoteText = document.getElementById("quote-text");
 
@@ -1869,6 +1892,20 @@
     }
 
     // Buttons inside the Camp Menu Drawer
+    notifyBtn.onclick = async function() {
+        if ('Notification' in window) {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                alert("Tree Mail alerts enabled!");
+                this.style.display = 'none'; 
+            } else {
+                alert("Notifications were denied.");
+            }
+        } else {
+            alert("Push notifications not supported on this device/browser.");
+        }
+    }
+    
     rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
     stakesBtn.onclick = function() { stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
     
