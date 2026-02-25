@@ -1,5363 +1,549 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
     <title>Survivor Scoreboard</title>
-
     <link rel="manifest" href="manifest.json">
-
-    
-
     <link rel="apple-touch-icon" href="icon.png">
-
     <link rel="icon" type="image/png" href="icon.png">
-
-    
-
     <meta name="apple-mobile-web-app-capable" content="yes">
-
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-
-
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-
-
     <style>
-
         :root {
-
             /* Tagi Orange is the default accent, but this can now be overridden by the user! */
-
             --bg-color: #1a1a1a; 
-
             --card-bg: #f4e4bc; 
-
             --card-border: #c7b299; 
-
             --accent: #d95100; 
-
             --text: #2b1d0e; 
-
             --text-shadow: 1px 1px 1px rgba(0,0,0,0.2); 
-
             --low-score: #eb4034;
-
             --leaf-green: #2e7d32; 
-
         }
-
-
 
         /* --- GLOBAL ANTI-ZOOM RULES --- */
-
         html, body {
-
             touch-action: manipulation;
-
             -webkit-text-size-adjust: none;
-
         }
-
-
 
         body {
-
             background-color: var(--bg-color);
-
             background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('bg-pattern.jpg');
-
             background-repeat: repeat;
-
             background-size: 200px; 
-
             background-attachment: fixed;
-
             color: var(--text);
-
             font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
-
             margin: 0;
-
             padding: 20px;
-
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
-
             min-height: 100vh;
-
             overscroll-behavior-y: contain; 
-
         }
-
-
 
         /* --- BACKGROUND SCROLL LOCK (Applied via JS) --- */
-
         body.modal-open {
-
             overflow: hidden; 
-
         }
-
-
 
         /* --- FIRE BACKGROUND EFFECTS --- */
-
         .fire-glow {
-
             position: fixed;
-
             bottom: 0; left: 0; width: 100%; height: 55%;
-
             background: radial-gradient(circle at 50% 110%, rgba(255, 140, 0, 0.6) 0%, rgba(217, 81, 0, 0.4) 30%, transparent 70%);
-
             pointer-events: none;
-
             z-index: -2;
-
             animation: flicker 4s infinite alternate;
-
         }
-
-        
 
         .ember {
-
             position: fixed;
-
             bottom: -20px;
-
             background: #ff7300;
-
             border-radius: 50%;
-
             opacity: 0.8;
-
             pointer-events: none;
-
             z-index: -1;
-
             animation: floatUp linear infinite;
-
             box-shadow: 0 0 8px #ff7300, 0 0 15px #ff2a00;
-
         }
-
-
 
         @keyframes flicker {
-
             0% { opacity: 0.8; transform: scale(1); }
-
             25% { opacity: 1; transform: scale(1.02); }
-
             50% { opacity: 0.9; transform: scale(1); }
-
             75% { opacity: 1; transform: scale(1.01); }
-
             100% { opacity: 0.9; transform: scale(1); }
-
         }
-
-
 
         @keyframes floatUp {
-
             0% { transform: translateY(0) scale(1) translateX(0); opacity: 1; }
-
             50% { transform: translateY(-50vh) scale(0.8) translateX(20px); opacity: 0.8; }
-
             100% { transform: translateY(-100vh) scale(0) translateX(-20px); opacity: 0; }
-
         }
-
-
 
         /* HEADER STYLES FOR IMAGE BANNER */
-
         header {
-
             text-align: center;
-
             margin-bottom: 25px;
-
             padding-top: 10px;
-
             width: 100%;
-
             display: flex;
-
             justify-content: center;
-
             position: relative;
-
         }
-
-
 
         .banner-image {
-
             max-width: 90%;
-
             width: 380px;
-
             height: auto;
-
             border-radius: 12px;
-
             box-shadow: 0 8px 20px rgba(0,0,0,0.7);
-
             border: 3px solid var(--card-border);
-
         }
-
-
 
         p { 
-
             font-size: 1rem;
-
             margin: 5px 0; 
-
             color: var(--text);
-
             font-weight: bold;
-
         }
-
-
 
         /* --- FLAWLESS INFINITE SCROLLING MARQUEE --- */
-
         .marquee-wrapper {
-
             background: var(--accent);
-
             color: white;
-
             width: 100%;
-
             max-width: 450px;
-
             border-radius: 8px;
-
             margin-bottom: 15px;
-
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-
             border: 2px solid #fff;
-
             overflow: hidden;
-
             display: flex;
-
             align-items: center;
-
             height: 40px; 
-
             box-sizing: border-box;
-
             transition: background 0.3s ease; /* Smooth transition for color swaps */
-
         }
-
-
 
         .marquee-track {
-
             display: flex;
-
             width: max-content;
-
             animation: marquee-scroll 20s linear infinite;
-
             will-change: transform; 
-
         }
-
-
 
         .marquee-content {
-
             padding-right: 40px; 
-
             font-weight: 900;
-
             font-size: 0.9rem;
-
             letter-spacing: 0.5px;
-
             white-space: nowrap;
-
             text-transform: uppercase;
-
         }
-
-
 
         @keyframes marquee-scroll {
-
             0% { transform: translateX(0); }
-
             100% { transform: translateX(-50%); }
-
         }
-
-
 
         /* --- STYLED AUDIO INTERFACE --- */
-
         .audio-wrapper {
-
             position: fixed;
-
             bottom: 20px;
-
             right: 20px;
-
             display: flex;
-
             align-items: center;
-
             gap: 12px;
-
             z-index: 1000;
-
         }
-
-
 
         .toggle-btn {
-
             background: var(--card-bg);
-
             border: 2px solid var(--accent);
-
             width: 45px;
-
             height: 45px;
-
             border-radius: 50%;
-
             cursor: pointer;
-
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             transition: all 0.3s ease;
-
             font-size: 1.2rem;
-
         }
-
-
 
         .toggle-btn svg {
-
             fill: var(--accent);
-
             width: 20px;
-
             height: 20px;
-
             transition: fill 0.3s ease;
-
         }
-
-
 
         .toggle-btn.playing {
-
             background: var(--accent);
-
             transform: scale(1.1);
-
         }
-
-
 
         .toggle-btn.playing svg {
-
             fill: white;
-
         }
-
-
 
         /* --- BEST WORDLE BANNER MAKEOVER --- */
-
         #best-wordle-banner {
-
             display: none;
-
             background: linear-gradient(135deg, #2b1d0e 0%, #4a2e15 100%);
-
             border: 3px solid #ffd700;
-
             color: #ffd700;
-
             padding: 18px 15px;
-
             text-align: center;
-
             width: 100%;
-
             max-width: 450px;
-
             border-radius: 12px;
-
             margin-bottom: 25px;
-
             box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-
             animation: gold-pulse 2s infinite alternate;
-
             box-sizing: border-box;
-
         }
-
-
 
         @keyframes gold-pulse {
-
             0% { box-shadow: 0 0 8px rgba(217, 81, 0, 0.6); border-color: var(--accent); }
-
             100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.9); border-color: #ffd700; }
-
         }
-
-
 
         #best-wordle-banner.visible {
-
             display: block;
-
         }
-
-
 
         .banner-title {
-
             color: #f4e4bc;
-
             text-transform: uppercase;
-
             font-size: 0.8rem;
-
             margin-bottom: 10px;
-
             letter-spacing: 2px;
-
             font-weight: 900;
-
             opacity: 0.9;
-
         }
-
-
 
         .banner-content {
-
             font-size: 1.6rem;
-
             font-family: 'Arial Black', sans-serif;
-
             font-weight: 900;
-
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-
             color: #ffd700;
-
             letter-spacing: 1px;
-
         }
-
-
 
         /* --- NEW VIEW TOGGLE BUTTONS --- */
-
         .view-toggle-container {
-
             display: flex;
-
             width: 100%;
-
             max-width: 450px;
-
             background: var(--card-bg);
-
             border: 2px solid var(--accent);
-
             border-radius: 25px;
-
             overflow: hidden;
-
             margin-bottom: 15px;
-
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-
             transition: border-color 0.3s ease;
-
         }
-
-
 
         .toggle-tab {
-
             flex: 1;
-
             padding: 12px 0;
-
             text-align: center;
-
             font-family: 'Arial Black', sans-serif;
-
             font-size: 0.9rem;
-
             color: var(--accent);
-
             background: transparent;
-
             border: none;
-
             cursor: pointer;
-
             text-transform: uppercase;
-
             transition: all 0.2s ease;
-
         }
-
-
 
         .toggle-tab.active {
-
             background: var(--accent);
-
             color: white;
-
         }
-
-
 
         /* --- NEW LEADERBOARD HEADER --- */
-
         .leaderboard-header {
-
             color: var(--accent);
-
             text-align: center;
-
             font-size: 1.4rem;
-
             text-transform: uppercase;
-
             letter-spacing: 1px;
-
             margin: 10px 0 15px 0;
-
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-
             width: 100%;
-
             max-width: 450px;
-
             border-bottom: 2px solid var(--accent);
-
             padding-bottom: 8px;
-
             transition: all 0.3s ease;
-
         }
-
-
 
         .leaderboard-header span {
-
             color: var(--card-bg);
-
             font-size: 0.85rem;
-
             display: block;
-
             margin-top: 5px;
-
             letter-spacing: 0.5px;
-
             text-transform: none; /* Keeps exactly what you typed */
-
         }
-
-
 
         /* --- EDGE OF EXTINCTION HEADER --- */
-
         #extinction-header {
-
             display: none;
-
             color: #888;
-
             border-bottom: 2px solid #555;
-
             text-shadow: none;
-
             margin-top: 35px;
-
         }
-
         #extinction-header span {
-
             color: #888;
-
         }
-
-
 
         /* --- LEADERBOARD & CARDS --- */
-
         #leaderboard, #extinction-board {
-
             width: 100%;
-
             max-width: 450px;
-
             display: flex;
-
             flex-direction: column;
-
             gap: 15px;
-
             flex-grow: 1;
-
         }
-
-
 
         .player-card {
-
             background: var(--card-bg);
-
             border: 2px solid var(--card-border);
-
             border-radius: 12px;
-
             display: flex;
-
             flex-direction: column;
-
             border-left: 8px solid var(--accent);
-
             box-shadow: 0 6px 10px rgba(0,0,0,0.4);
-
             color: var(--text);
-
             cursor: pointer;
-
             transition: all 0.2s ease-in-out;
-
             overflow: hidden;
-
         }
-
-
 
         /* Edge of Extinction Card Styles */
-
         #extinction-board .player-card {
-
             background: #ccc;
-
             border-left: 8px solid #555;
-
             filter: grayscale(100%);
-
             opacity: 0.8;
-
             color: #333;
-
         }
-
         #extinction-board .rank { color: #333; font-size: 1.2rem; }
-
         #extinction-board .score { color: #333; }
-
         #extinction-board .drawer-status { border-color: #555; background: rgba(0,0,0,0.05); color: #333; }
-
         #extinction-board .drawer-asterisk { color: #333; }
 
-
-
         .card-main {
-
             padding: 18px; 
-
             display: flex;
-
             justify-content: space-between;
-
             align-items: center;
-
         }
-
-
 
         .rank { 
-
             font-size: 1.4rem;
-
             margin-right: 15px; 
-
             color: var(--accent); 
-
             width: 35px;
-
             text-align: center;
-
             text-shadow: var(--text-shadow);
-
             transition: color 0.3s ease;
-
         }
-
-        
 
         .name { 
-
             flex-grow: 1; 
-
             font-size: 1.3rem;
-
             text-shadow: var(--text-shadow);
-
             letter-spacing: 0.5px;
-
             display: flex;
-
             align-items: center;
-
             flex-wrap: wrap;
-
             gap: 5px;
-
         }
-
-
 
         .change-container {
-
             text-align: right;
-
             margin-right: 15px;
-
             min-width: 50px;
-
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
-
         }
-
-        
 
         .change-label {
-
             font-size: 0.65rem;
-
             color: #666;
-
             text-transform: uppercase;
-
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-
             font-weight: bold;
-
             margin-bottom: 2px;
-
         }
-
-
 
         .change-positive { color: #2e7d32; font-weight: 900; font-size: 1.1rem; text-shadow: var(--text-shadow); }
-
         .change-negative { color: #d32f2f; font-weight: 900; font-size: 1.1rem; text-shadow: var(--text-shadow); }
-
         .change-neutral { color: #666; font-weight: bold; font-size: 1.1rem; }
 
-
-
         .score-container {
-
             display: flex;
-
             align-items: center;
-
             gap: 2px;
-
         }
-
-
 
         .score { 
-
             font-size: 1.6rem;
-
             font-weight: 900;
-
             text-shadow: var(--text-shadow);
-
             color: var(--accent);
-
             min-width: 45px;
-
             text-align: right;
-
             transition: color 0.3s ease;
-
         }
-
-
 
         .history-drawer {
-
             display: none;
-
             background: rgba(0,0,0,0.06);
-
             border-top: 2px solid var(--card-border);
-
             padding: 15px 18px;
-
         }
-
-
 
         .player-card.expanded .history-drawer {
-
             display: block;
-
         }
-
-
 
         /* --- UNIFIED DRAWER STATUS PANEL --- */
-
         .drawer-status {
-
             text-align: center;
-
             font-size: 0.85rem;
-
             color: var(--accent);
-
             margin-bottom: 12px;
-
             font-weight: bold;
-
             background: rgba(0,0,0, 0.05); 
-
             padding: 8px;
-
             border-radius: 6px;
-
             border: 1px dashed var(--accent);
-
             display: flex;
-
             flex-direction: column;
-
             gap: 5px;
-
             transition: all 0.3s ease;
-
         }
-
-
 
         /* Customized large orange asterisk for the drawer */
-
         .drawer-asterisk {
-
             color: var(--accent);
-
             font-size: 1.6rem;
-
             font-weight: 900;
-
             line-height: 0.5;
-
             vertical-align: middle;
-
             display: inline-block;
-
             transform: translateY(2px);
-
             transition: color 0.3s ease;
-
         }
-
-
 
         .history-title {
-
             text-align: center;
-
             font-size: 0.8rem;
-
             color: var(--text);
-
             margin-bottom: 10px;
-
             text-transform: uppercase;
-
             letter-spacing: 1px;
-
         }
-
-
 
         .history-grid {
-
             display: flex;
-
             justify-content: space-between;
-
         }
-
-
 
         .history-day {
-
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
-
             flex: 1;
-
         }
-
-
 
         .history-label {
-
             font-size: 0.65rem;
-
             color: #666;
-
             margin-bottom: 5px;
-
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-
         }
-
-
 
         .history-value {
-
             font-size: 1.1rem;
-
             font-weight: 900;
-
             color: var(--text);
-
         }
-
-
 
         .legacy-tag {
-
             font-size: 0.8rem;
-
             background: var(--accent);
-
             color: white;
-
             padding: 4px 8px;
-
             border-radius: 4px;
-
             vertical-align: middle;
-
             text-shadow: none;
-
             box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-
             transition: background 0.3s ease;
-
         }
-
-
 
         /* --- CONTROL PANEL ACTION GRID --- */
-
         .action-grid {
-
             display: grid;
-
             grid-template-columns: 1fr 1fr;
-
             gap: 12px;
-
             margin-top: 30px;
-
             margin-bottom: 80px; /* Space for the floating audio controls */
-
             width: 100%;
-
             max-width: 450px;
-
         }
-
-
 
         .action-btn {
-
             background: var(--card-bg);
-
             border: 3px solid var(--accent);
-
             color: var(--accent);
-
             padding: 14px 8px;
-
             border-radius: 12px; 
-
             font-size: 0.95rem; 
-
             cursor: pointer;
-
             font-family: 'Arial Black', sans-serif;
-
             text-transform: uppercase;
-
             font-weight: 900;
-
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-
             text-decoration: none;
-
             text-align: center;
-
             box-sizing: border-box;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             line-height: 1.2;
-
             transition: all 0.3s ease;
-
             
-
             /* Stops iOS from zooming in when double tapping quickly */
-
             touch-action: manipulation;
-
             -webkit-user-select: none;
-
             user-select: none;
-
         }
-
-        
 
         .action-btn:active {
-
             transform: scale(0.96);
-
         }
-
-
 
         /* Camp Menu Button spans the full bottom row */
-
         #menu-btn {
-
-            grid-column: 1 / -1; 
-
-        }
-
-
-
-        /* Drawer for the Camp Menu */
-
-        .camp-menu-drawer {
-
-            display: none;
-
             grid-column: 1 / -1;
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 12px;
-
-            background: rgba(0,0,0,0.15);
-
-            border: 2px solid var(--accent);
-
-            border-radius: 12px;
-
-            padding: 15px;
-
-            margin-top: -5px; /* Pull it slightly up to feel visually connected to the button */
-
-        }
-
-
-
-        .camp-menu-drawer.open {
-
-            display: grid;
-
-        }
-
-
-
-        /* Rules modal standalone button */
-
-        .text-btn {
-
-            display: block;
-
-            background: var(--card-bg);
-
-            border: 3px solid var(--accent);
-
-            color: var(--accent);
-
-            padding: 14px 10px; 
-
-            border-radius: 25px;
-
-            /* Clamp scales the font smoothly between small and large screens */
-
-            font-size: clamp(0.75rem, 4vw, 1.1rem); 
-
-            white-space: nowrap; 
-
-            cursor: pointer;
-
-            font-family: 'Arial Black', sans-serif;
-
-            text-transform: uppercase;
-
-            font-weight: 900;
-
-            text-align: center;
-
-            text-decoration: none;
-
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-
-            margin: 25px auto 10px auto;
-
-            width: 100%; 
-
-            box-sizing: border-box;
-
-            transition: all 0.3s ease;
-
-            
-
-            touch-action: manipulation;
-
-            -webkit-user-select: none;
-
-            user-select: none;
-
-        }
-
-
-
-        /* Tribe Theme Swatches */
-
-        .color-swatch {
-
-            display: block;
-
-            width: 100%;
-
-            padding: 15px;
-
-            margin-bottom: 10px;
-
-            border: 2px solid var(--card-border);
-
-            border-radius: 8px;
-
-            font-family: 'Arial Black', sans-serif;
-
-            color: white;
-
-            cursor: pointer;
-
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-
-            font-size: 1.1rem;
-
-            text-transform: uppercase;
-
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-
-            transition: transform 0.1s ease;
-
-        }
-
-
-
-        .color-swatch:active {
-
-            transform: scale(0.98);
-
-        }
-
-
-
-        /* --- FIRE MINI GAME CSS --- */
-
-        
-
-        /* Dedicated Full Page for Minigame */
-
-        .full-page {
-
-            display: none; /* Hidden by default */
-
-            position: fixed;
-
-            top: 0; left: 0; right: 0; bottom: 0;
-
-            background-color: var(--bg-color);
-
-            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('bg-pattern.jpg');
-
-            background-size: 200px;
-
-            z-index: 3000; /* Ensure it's on top of everything */
-
-            overflow-y: auto; 
-
-            padding: 0; /* Remove padding to stretch edge to edge */
-
-            box-sizing: border-box;
-
-            /* RE-ENABLED SCROLLING: Changed from none to pan-y to allow scrolling but block double-tap zoom */
-
-            touch-action: pan-y !important; 
-
-            -webkit-user-select: none;
-
-            user-select: none;
-
-        }
-
-
-
-        /* Container for content within the full page */
-
-        .full-page-content {
-
-            background-color: transparent; /* Remove card look for true full-page immersion */
-
-            border: none;
-
-            border-radius: 0;
-
-            padding: 25px 20px;
-
-            width: 100%;
-
-            max-width: 600px;
-
-            margin: 0 auto;
-
-            box-shadow: none;
-
-            box-sizing: border-box;
-
-            margin-bottom: 40px;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            text-align: center;
-
-            min-height: 100%;
-
-        }
-
-
-
-        .full-page-header {
-
-            font-family: 'Arial Black', sans-serif;
-
-            color: var(--accent);
-
-            text-transform: uppercase;
-
-            text-align: center;
-
-            margin-bottom: 20px;
-
-            font-size: 1.5rem;
-
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-
-            text-decoration: underline;
-
-            width: 100%;
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-        }
-
-
-
-        .close-btn-full {
-
-            color: var(--card-bg);
-
-            background-color: var(--accent);
-
-            width: 32px;
-
-            height: 32px;
-
-            border-radius: 50%;
-
-            text-align: center;
-
-            line-height: 28px;
-
-            font-size: 24px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-
-            flex-shrink: 0;
-
-        }
-
-
-
-        /* THE VISUAL CHALLENGE RIG */
-
-        .challenge-container {
-
-            position: relative;
-
-            height: 300px;
-
-            width: 100%;
-
-            max-width: 320px;
-
-            margin: 15px auto;
-
-            overflow: visible;
-
-        }
-
-
-
-        /* The Wooden Crate Base */
-
-        .crate {
-
-            position: absolute;
-
-            bottom: 0;
-
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            width: 180px;
-
-            height: 100px;
-
-            background: #6b4226;
-
-            border: 3px solid #3e2723;
-
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 10px rgba(0,0,0,0.5);
-
-            z-index: 2;
-
-            border-radius: 2px;
-
-        }
-
-
-
-        /* Create slats/X pattern for the crate */
-
-        .crate::before {
-
-            content: '';
-
-            position: absolute;
-
-            top: -3px; left: -3px; right: -3px; bottom: -3px;
-
-            background-image: 
-
-                linear-gradient(to bottom right, transparent 48%, #3e2723 48%, #3e2723 52%, transparent 52%),
-
-                linear-gradient(to top right, transparent 48%, #3e2723 48%, #3e2723 52%, transparent 52%);
-
-            z-index: 3;
-
-        }
-
-
-
-        /* The Vertical Sticks (Sitting EXACTLY ON TOP of the crate) */
-
-        .stick {
-
-            position: absolute;
-
-            bottom: 100px; /* Aligned exactly with top of 100px crate */
-
-            width: 14px;
-
-            height: 160px;
-
-            background: linear-gradient(to right, #4a2e15, #8b5a2b, #4a2e15);
-
-            border: 1px solid #2b1d0e;
-
-            border-radius: 4px;
-
-            z-index: 1;
-
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-
-        }
-
-        .stick-left { left: 70px; }
-
-        .stick-right { right: 70px; }
-
-
-
-        /* The Hemp Rope */
-
-        .hemp-rope {
-
-            position: absolute;
-
-            top: 38px; /* Perfectly overlaps the top rim of the sticks */
-
-            height: 6px;
-
-            background: repeating-linear-gradient(45deg, #d4b886, #d4b886 4px, #8b5a2b 4px, #8b5a2b 8px);
-
-            border-radius: 3px;
-
-            z-index: 4;
-
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-
-            transition: transform 0.4s cubic-bezier(0.5, 0, 1, 1);
-
-        }
-
-        .rope-full {
-
-            left: 70px; /* Covers the outer edge of the left stick */
-
-            right: 70px; /* Covers the outer edge of the right stick */
-
-            width: auto;
-
-        }
-
-        .rope-left {
-
-            left: 70px;
-
-            width: calc(50% - 70px);
-
-            transform-origin: left top; /* Falls DOWN and left */
-
-        }
-
-        .rope-right {
-
-            right: 70px;
-
-            width: calc(50% - 70px);
-
-            transform-origin: right top; /* Falls DOWN and right */
-
-        }
-
-
-
-        /* The Pop-up Win Flag Mechanism */
-
-        .flag-mechanism {
-
-            position: absolute;
-
-            bottom: 100px; /* Matches top of crate */
-
-            right: 62px;   /* Sits extremely close to the right stick with a 2px gap */
-
-            height: 160px; /* Matches stick height exactly */
-
-            width: 6px;
-
-            display: none; /* Hidden by default */
-
-            z-index: 0; /* Behind main stick */
-
-            transform: translateY(160px); /* Hidden down behind the crate initially */
-
-            opacity: 0;
-
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
-
-        }
-
-
-
-        .flag-pole {
-
-            width: 100%;
-
-            height: 100%;
-
-            background: repeating-linear-gradient(90deg, #8b5a2b, #8b5a2b 2px, #6b4226 2px, #6b4226 4px);
-
-            border: 1px solid #3e2723; 
-
-            border-radius: 3px;
-
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-
-        }
-
-
-
-        .flag-triangle {
-
-            position: absolute;
-
-            top: 0; /* Aligned EXACTLY with the very top of the pole */
-
-            left: 5px; /* Attached to the right side of the skinny pole */
-
-            width: 70px;
-
-            height: 45px;
-
-            background: #d32f2f;
-
-            clip-path: polygon(0 0, 100% 50%, 0 100%); /* Makes it a triangle pointing right */
-
-            color: white;
-
-            font-family: 'Arial Black', sans-serif;
-
-            font-size: 0.9rem;
-
-            line-height: 45px;
-
-            text-align: left;
-
-            padding-left: 6px;
-
-            box-sizing: border-box;
-
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-
-        }
-
-
-
-        /* The Growing Flame */
-
-        .fire-base {
-
-            position: absolute;
-
-            bottom: 95px; /* Sits directly on the crate */
-
-            left: 50%;
-
-            /* TranslateX keeps it centered, Scale makes it grow TALLER towards the rope */
-
-            transform: translateX(-50%) scaleX(1) scaleY(1);
-
-            font-size: 3rem; 
-
-            transform-origin: bottom center; 
-
-            transition: transform 0.1s linear;
-
-            z-index: 3;
-
-            text-shadow: none; 
-
-        }
-
-
-
-        .progress-bar-bg {
-
-            width: 100%;
-
-            height: 30px;
-
-            background: rgba(0,0,0,0.3);
-
-            border-radius: 15px;
-
-            overflow: hidden;
-
-            border: 3px solid #fff;
-
-            margin-bottom: 15px;
-
-            box-sizing: border-box;
-
-        }
-
-        .progress-bar-fill {
-
-            width: 0%;
-
-            height: 100%;
-
-            background: linear-gradient(90deg, #d95100 0%, #ffd700 100%);
-
-            /* Eased out transition makes the jump to 100% look silky smooth */
-
-            transition: width 0.15s ease-out; 
-
-        }
-
-        
-
-        /* Stop double tap zoom on the strike button */
-
-        #strike-btn {
-
-            touch-action: none !important;
-
-        }
-
-
-
-        /* --- FIRE MINI GAME REACTION --- */
-
-        #end-game-reaction {
-
-            display: none;
-
-            align-items: center;
-
-            justify-content: center;
-
-            margin: 20px auto;
-
-        }
-
-        .reaction-face {
-
-            width: 90px;
-
-            height: auto;
-
-            border-radius: 8px;
-
-            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
-
-        }
-
-
-
-        /* THE SHAKE ANIMATION FOR INSULTS */
-
-        @keyframes shake {
-
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-
-        }
-
-        .shake-anim {
-
-            animation: shake 0.4s;
-
-            animation-iteration-count: 2; /* Shakes twice to show real attitude */
-
-        }
-
-
-
-        .speech-bubble {
-
-            position: relative;
-
-            background: #fff;
-
-            color: #000;
-
-            border-radius: 15px;
-
-            padding: 12px 15px;
-
-            font-family: 'Arial Black', sans-serif;
-
-            font-size: 0.9rem;
-
-            max-width: 160px;
-
-            margin-left: 15px;
-
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-
-            text-transform: uppercase;
-
-            text-align: left;
-
-        }
-
-        .speech-bubble::before {
-
-            content: '';
-
-            position: absolute;
-
-            left: -12px;
-
-            top: 60%; /* Align with the mouth in the specific picture */
-
-            transform: translateY(-50%);
-
-            border-width: 10px 15px 10px 0;
-
-            border-style: solid;
-
-            border-color: transparent #fff transparent transparent;
-
-        }
-
-
-
-        /* --- MODAL UPDATES --- */
-
-        .modal {
-
-            display: none; 
-
-            position: fixed; 
-
-            z-index: 2000; 
-
-            left: 0;
-
-            top: 0;
-
-            width: 100%; 
-
-            height: 100%; 
-
-            overflow: auto; 
-
-            background-color: rgba(0,0,0,0.65); 
-
-            backdrop-filter: blur(3px); 
-
-            -webkit-backdrop-filter: blur(3px);
-
-            padding-top: 60px;
-
-        }
-
-
-
-        .modal-content {
-
-            background-color: var(--card-bg);
-
-            margin: 5% auto; 
-
-            padding: 25px 20px;
-
-            border: 3px solid var(--accent);
-
-            width: 90%; 
-
-            max-width: 800px; /* INCREASED MAX-WIDTH */
-
-            border-radius: 12px;
-
-            color: var(--text);
-
-            font-family: 'Arial Black', sans-serif; 
-
-            font-weight: normal;
-
-            max-height: 90vh; /* INCREASED MAX-HEIGHT */
-
-            overflow-y: auto;
-
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-
-            box-sizing: border-box;
-
-            position: relative;
-
-            overscroll-behavior-y: contain;
-
-            -webkit-overflow-scrolling: touch;
-
-            transition: border-color 0.3s ease;
-
-        }
-
-
-
-        /* --- ZERO-HEIGHT STICKY WRAPPER FOR CLOSE BUTTON --- */
-
-        .sticky-close-wrapper {
-
-            position: -webkit-sticky;
-
-            position: sticky;
-
-            top: 10px;
-
-            z-index: 1000;
-
-            display: flex;
-
-            justify-content: flex-end; 
-
-            height: 0; 
-
-        }
-
-
-
-        .close {
-
-            color: var(--card-bg);
-
-            background-color: var(--accent);
-
-            width: 32px;
-
-            height: 32px;
-
-            border-radius: 50%;
-
-            text-align: center;
-
-            line-height: 28px;
-
-            font-size: 24px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-
-            transform: translate(10px, -15px); 
-
-            transition: background-color 0.3s ease;
-
-        }
-
-
-
-        /* --- CENTERED MODALS (Quotes, Idol) FIX --- */
-
-        #quoteModal, #idolModal { padding-top: 0; }
-
-        #quoteModal .modal-content, #idolModal .modal-content {
-
-            margin: 0; 
-
-            position: absolute;
-
-            top: 50%;
-
-            left: 50%;
-
-            transform: translate(-50%, -50%);
-
-            width: 90%;
-
-            max-width: 800px; /* INCREASED MAX-WIDTH */
-
-        }
-
-
-
-        .modal-header {
-
-            font-family: 'Arial Black', sans-serif;
-
-            color: var(--accent);
-
-            text-transform: uppercase;
-
-            text-align: center;
-
-            margin-bottom: 20px;
-
-            font-size: 1.5rem;
-
-            text-shadow: var(--text-shadow);
-
-            text-decoration: underline;
-
-            padding-top: 5px;
-
-            padding-left: 20px;
-
-            padding-right: 20px;
-
-            transition: color 0.3s ease;
-
-        }
-
-
-
-        .modal-body h3 {
-
-            color: var(--accent);
-
-            margin-top: 20px;
-
-            margin-bottom: 10px;
-
-            font-size: 1.2rem;
-
-             text-shadow: var(--text-shadow);
-
-             transition: color 0.3s ease;
-
-        }
-
-
-
-        #rulesModal .modal-body p,
-
-        #rulesModal .modal-body li {
-
-            font-weight: bold;
-
-            color: var(--text);
-
-            font-size: 1.1rem;
-
-            line-height: 1.5;
-
-        }
-
-
-
-        /* --- DAILY STAKES VIEWER --- */
-
-        .stakes-viewer {
-
-            height: 400px; 
-
-            max-height: 55vh; 
-
-            width: 100%;
-
-            border-radius: 8px;
-
-            border: 3px solid var(--text);
-
-            overflow: auto; 
-
-            -webkit-overflow-scrolling: touch;
-
-            margin-bottom: 15px;
-
-            background-color: rgba(0,0,0,0.05); 
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            position: relative;
-
-        }
-
-
-
-        /* --- DASHBOARD WRAPPER FOR RESPONSIVENESS --- */
-
-        .dashboard-layout {
-
-            display: flex;
-
-            flex-direction: column;
-
-            width: 100%;
-
-            align-items: center;
-
-        }
-
-
-
-        .right-panel {
-
-            width: 100%;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-        }
-
-
-
-        /* --- IPAD / DESKTOP TWO-COLUMN LAYOUT --- */
-
-        @media (min-width: 820px) {
-
-            .dashboard-layout {
-
-                display: grid;
-
-                grid-template-columns: 350px 1fr;
-
-                grid-template-rows: auto auto auto 1fr;
-
-                gap: 20px 45px;
-
-                max-width: 1050px;
-
-                align-items: start;
-
-            }
-
-
-
-            header { grid-column: 1; grid-row: 1; margin-bottom: 0; }
-
-            .marquee-wrapper { grid-column: 1; grid-row: 2; margin-bottom: 0; }
-
-            #best-wordle-banner { grid-column: 1; grid-row: 3; margin-bottom: 0; }
-
-            
-
-            .action-grid { 
-
-                grid-column: 1; 
-
-                grid-row: 4; 
-
-                grid-template-columns: 1fr; /* Expand buttons to a single column */
-
-                margin-top: 10px; 
-
-            }
-
-
-
-            /* Stack drawer buttons single column on iPad to match action grid */
-
-            .camp-menu-drawer {
-
-                grid-template-columns: 1fr; 
-
-            }
-
-
-
-            .right-panel {
-
-                grid-column: 2;
-
-                grid-row: 1 / span 4; /* Spans all rows perfectly flush to the top */
-
-                max-width: 100%;
-
-                height: 100%;
-
-            }
-
-
-
-            .view-toggle-container { max-width: 100%; } /* Stretches nicely on iPad */
-
-            .leaderboard-header, #leaderboard, #extinction-board, #extinction-header {
-
-                max-width: 100%; /* Lets it stretch completely on iPad */
-
-                margin-top: 0;
-
-            }
-
-            #extinction-header { margin-top: 40px; }
-
-        }
-
-
-
-    /* --- DAILY STREAK STYLING --- */
-
-.streak-display {
-
-    font-size: 1rem;
-
-    font-weight: 900;
-
-    color: var(--accent);
-
-    padding: 6px 10px;
-
-    border-radius: 4px;
-
-    background: rgba(217, 81, 0, 0.15);
-
-    margin-bottom: 8px;
-
-}
-
-
-
-.streak-hot {
-
-    background: linear-gradient(90deg, rgba(255, 140, 0, 0.3), rgba(255, 215, 0, 0.3));
-
-    animation: streak-pulse 1.5s infinite alternate;
-
-}
-
-
-
-@keyframes streak-pulse {
-
-    0% { box-shadow: 0 0 5px rgba(255, 140, 0, 0.5); }
-
-    100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-
-
-<script>
-
-    // Clearing the old storage key so everyone is forced to see the Welcome Prompt again!
-
-    localStorage.removeItem('survivorTribeColor'); 
-
-
-
-    const savedTribeColor = localStorage.getItem('survivorTribeColor_v2');
-
-    if(savedTribeColor) {
-
-        document.documentElement.style.setProperty('--accent', savedTribeColor);
-
-    }
-
-</script>
-
-
-
-<audio id="fireSound" loop preload="auto" crossorigin="anonymous">
-
-    <source src="fire.mp3" type="audio/mpeg">
-
-</audio>
-
-<audio id="themeSound" loop preload="auto" crossorigin="anonymous">
-
-    <source src="theme.mp3" type="audio/mpeg">
-
-</audio>
-
-<audio id="sfx-win" preload="auto">
-
-    <source src="win.mp3" type="audio/mpeg">
-
-</audio>
-
-<audio id="sfx-lose" preload="auto">
-
-    <source src="lose.mp3" type="audio/mpeg">
-
-</audio>
-
-
-
-<div class="fire-glow"></div>
-
-
-
-<div id="hidden-idol-trigger" style="position: fixed; top: 0; left: 0; width: 50px; height: 50px; z-index: 9999;"></div>
-
-
-
-<div class="dashboard-layout" id="main-dashboard">
-
-    <header>
-
-        <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image">
-
-    </header>
-
-
-
-    <div class="marquee-wrapper" id="marquee-wrapper">
-
-        <div class="marquee-track" id="marquee-track">
-
-            <div class="marquee-content" id="marquee-1">CALCULATING NEXT TRIBAL...</div>
-
-            <div class="marquee-content" id="marquee-2">CALCULATING NEXT TRIBAL...</div>
-
-        </div>
-
-    </div>
-
-
-
-    <div id="best-wordle-banner">
-
-        <div class="banner-title">👑 BEST WORDLE OF THE WEEK 👑</div>
-
-        <div class="banner-content" id="best-wordle-text"></div>
-
-    </div>
-
-
-
-    <div class="right-panel">
-
-        
-
-        <div class="view-toggle-container">
-
-            <button id="view-total-btn" class="toggle-tab active">TOTAL POINTS</button>
-
-            <button id="view-hot-btn" class="toggle-tab">🔥 WHO'S HOT?</button>
-
-        </div>
-
-
-
-        <div class="leaderboard-header" id="dynamic-leaderboard-header">
-
-            LEADERBOARD
-
-            <span>(Ranked by Total Life Pts)</span>
-
-        </div>
-
-
-
-        <div id="leaderboard">
-
-            <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
-
-        </div>
-
-
-
-        <div class="leaderboard-header" id="extinction-header">
-
-            EDGE OF EXTINCTION 💀
-
-            <span>(Eliminated Players)</span>
-
-        </div>
-
-        <div id="extinction-board"></div>
-
-
-
-    </div>
-
-
-
-    <div class="action-grid">
-
-        <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn" style="background: var(--leaf-green); color: white; border-color: var(--leaf-green);">PLAY WORDLE</a>
-
-        <button id="group-chat-btn" class="action-btn">GROUP CHAT</button>
-
-        
-
-        <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
-
-        <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
-
-
-
-        <button id="menu-btn" class="action-btn" style="background: var(--text); color: var(--card-bg); border-color: var(--text);">⛺ CAMP MENU</button>
-
-        
-
-        <div id="camp-menu-drawer" class="camp-menu-drawer">
-
-            <button id="rules-btn" class="action-btn">VIEW RULES</button>
-
-            <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
-
-            <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
-
-            <button id="fire-game-btn" class="action-btn">🔥 MINI-GAME</button>
-
-            <button id="tribe-btn" class="action-btn" style="grid-column: 1 / -1;">TRIBE COLORS</button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<div class="audio-wrapper">
-
-    <button id="fire-toggle-btn" class="toggle-btn" title="Toggle Fire Sounds">🔥</button>
-
-    <button id="theme-toggle-btn" class="toggle-btn" title="Toggle Theme Music">
-
-        <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-
-    </button>
-
-</div>
-
-
-
-<div id="fire-game-page" class="full-page">
-
-    <div class="full-page-content">
-
-        <div class="full-page-header">
-
-            <span></span> <span>HOW FAST CAN YOU MAKE FIRE?</span>
-
-            <span class="close-btn-full" onclick="closeFireGamePage()">&times;</span>
-
-        </div>
-
-        
-
-        <div style="width: 100%;">
-
-            <div class="view-toggle-container" style="max-width: 280px; margin: 0 auto 15px auto; height: 35px; border-radius: 8px;">
-
-                <button id="mode-std-btn" class="toggle-tab active" style="padding: 5px 0;">STANDARD</button>
-
-                <button id="mode-hrd-btn" class="toggle-tab" style="padding: 5px 0;">HARD MODE</button>
-
-            </div>
-
-
-
-            <p id="fire-instructions" style="font-size: 1rem; margin-bottom: 15px; color: #fff; text-shadow: 1px 1px 2px #000;">Your torch is on the line (wink). <br><br><strong>TAP THE BUTTON AS FAST AS YOU CAN</strong><br>to build your fire before the 10-second timer runs out!</p>
-
-
-
-            <div class="challenge-container">
-
-                <div class="stick stick-left"></div>
-
-                <div class="stick stick-right"></div>
-
-                
-
-                <div id="flag-mechanism" class="flag-mechanism">
-
-                    <div class="flag-pole"></div>
-
-                    <div class="flag-triangle">WIN</div>
-
-                </div>
-
-
-
-                <div id="rope-full" class="hemp-rope rope-full"></div>
-
-                
-
-                <div id="rope-left" class="hemp-rope rope-left" style="display: none;"></div>
-
-                <div id="rope-right" class="hemp-rope rope-right" style="display: none;"></div>
-
-                
-
-                <div id="fire-emoji" class="fire-base">🪵</div>
-
-
-
-                <div class="crate"></div>
-
-            </div>
-
-
-
-            <div class="progress-bar-bg">
-
-                <div id="fire-progress" class="progress-bar-fill"></div>
-
-            </div>
-
-
-
-            <h2 id="fire-timer" style="color: #fff; font-size: 2.2rem; margin-top: 0; font-family: monospace; text-shadow: 2px 2px 4px #000;">10.00s</h2>
-
-
-
-            <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px; background-color: var(--accent); color: white;">TAP FAST TO STRIKE!</button>
-
-            <button id="start-fire-btn" class="text-btn" style="background-color: var(--accent); color: white;">START CHALLENGE</button>
-
-            
-
-            <div id="end-game-reaction">
-
-                <img src="ultimate_survivor.png" alt="Ultimate Survivor" class="reaction-face">
-
-                <div id="reaction-bubble" class="speech-bubble"></div>
-
-            </div>
-
-
-
-            <div id="save-score-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--accent);">
-
-                <h3 id="win-status-text" style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🔥 FIRE MADE! 🔥</h3>
-
-                <p style="font-size: 1.1rem; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px #000;">Time: <span id="final-time-display"></span>s</p>
-
-                
-
-                <div id="top-10-input-area" style="margin-top: 15px; display: none;">
-
-                    <input type="text" id="player-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
-
-                    <button id="save-score-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
-
-                </div>
-
-                
-
-                <p id="not-top-10-message" style="display: none; color: var(--low-score); font-weight: bold; margin-top: 10px; text-shadow: 1px 1px 2px #000;">Not fast enough for the Top 10!</p>
-
-            </div>
-
-
-
-            <div id="fire-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
-
-                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🔥 FASTEST FIRE MAKERS</h3>
-
-                
-
-                <p id="local-only-warning" style="color: var(--low-score); text-align: center; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">(Scores saved to your local device only. Database offline.)</p>
-
-
-
-                <ol id="fire-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
-
-                </ol>
-
-            </div>
-
-
-
-            <button id="play-again-btn" class="text-btn" style="display: none; margin-top: 30px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<div id="rulesModal" class="modal">
-
-  <div class="modal-content">
-
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('rulesModal')">&times;</span></div>
-
-    <div class="modal-header">ATTENTION CASTAWAYS!</div>
-
-    <div class="modal-body">
-
-        <p>In honor of Survivor Season 50, we are officially kicking off: <strong>WORDLE: EDGE OF EXTINCTION</strong>.</p>
-
-        <p>You just play Wordle daily per usual but now there’s running points, pride and survivor themed stakes involved :)</p>
-
-        <p><strong>WE START:</strong> The 1st day of Survivor 50: Wed. Feb. 25th. (The season is approx 14 weeks long)</p>
-
-        <p>I’ll be your “Jeff Probst”, come on in survivors!</p>
-
-
-
-        <h3 style="text-align: center; font-size: 1.4rem;">THE SETUP (FINE PRINT)</h3>
-
-        <p>Everyone starts with 50 Life Points. The "Sole Wordler" is whoever has the most points remaining after the Survivor 50 Finale night.</p>
-
-        <p>I will keep track of all points and post daily updates via the Survivor web app.</p>
-
-        
-
-        <h3>HARD MODE BONUS</h3>
-
-        <p>Hard Mode (*) players get +1 Point to offset any scoring penalty.</p>
-
-        <p><em>Note: This only applies to negative scores (it doesn't boost a 4/6 or better).</em></p>
-
-
-
-        <h3>HONOR SYSTEM</h3>
-
-        <p>No cheating. No using free hints or multiple devices. We play fair or your torch gets snuffed.</p>
-
-
-
-        <h3>THE DEADLINE</h3>
-
-        <p>Post by 11:59 PM ET. Miss a day? -5 Point Penalty (unless you use a Shot in the Dark, or an advantage saves you).</p>
-
-
-
-        <h3>SHOT IN THE DARK</h3>
-
-        <p>You have the power to erase your 5 worst scores. Reply "Playing my Shot in the Dark!" to wipe a terrible score (or a missed day) from your record.</p>
-
-
-
-        <h3>IDOLS & ADVANTAGES</h3>
-
-        <ul>
-
-            <li><strong>2/6 (Hidden Immunity Idol):</strong> You immediately score +2 points AND bank an idol. To use it, shout "PLAYING MY IDOL!" on a future bad day. It will negate that day's penalty, bringing your score to a safe 0.</li>
-
-            <li><strong>1/6 (Legacy Advantage):</strong> Did you guess it on the first try?! You earn +3 points and a Permanent, Automatic Idol. You don't even have to declare it—this advantage permanently sits in your inventory and will automatically deploy to save you from your next fatal penalty (like an X/6 or a missed day).</li>
-
-            <li><strong>Bank Rule:</strong> You can only hold 2 standard Idols at a time. All standard idols expire 1 week before the finale.</li>
-
-        </ul>
-
-
-
-        <h3>EDGE OF EXTINCTION</h3>
-
-        <p>Hit 0 Points? You're out. To return to the game, you must score 4/6 or better for 3 days in a row.</p>
-
-
-
-        <h3>SURVIVOR WEDNESDAYS</h3>
-
-        <p>On episode nights, all gains and losses are DOUBLED. Hard mode bonus (+1 pt) still applies to negative scores only.</p>
-
-        
-
-        <p style="text-align:center; margin-top: 20px;"><strong>Outwit, Outplay, Outwordle! Who will be the Sole Wordler?</strong></p>
-
-
-
-        <a href="sms:12676002525" class="text-btn">RULE QUESTION? TEXT JEFF PROBST</a>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<div id="stakesModal" class="modal">
-
-  <div class="modal-content">
-
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('stakesModal')">&times;</span></div>
-
-    <div class="modal-header">THE DAILY STAKES</div>
-
-    <div class="modal-body" style="text-align: center;">
-
-        
-
-        <div id="stakes-viewer" class="stakes-viewer">
-
-            <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-
-        </div>
-
-        
-
-        <p style="font-size: 0.9rem; font-weight: bold; color: var(--text); font-style: italic; margin: 10px 0;">*Hard Mode grants +1 pt to offset negative scores.</p>
-
-        
-
-        <button id="stakes-zoom-btn" class="text-btn">ZOOM</button>
-
-        
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<div id="bigrModal" class="modal">
-
-  <div class="modal-content">
-
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('bigrModal')">&times;</span></div>
-
-    <div class="modal-header">BIG R</div>
-
-    <div class="modal-body" style="text-align: center; margin-top: 15px;">
-
-        <img src="bigr.jpg?v=1" alt="Big R Ultimate Survivor" style="display: block; margin: 0 auto; max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<div id="quoteModal" class="modal">
-
-  <div class="modal-content">
-
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('quoteModal')">&times;</span></div>
-
-    <div class="modal-header">JEFF SAYS...</div>
-
-    <div class="modal-body" style="text-align: center; margin-top: 25px; margin-bottom: 15px;">
-
-        <p id="quote-text" style="font-size: 1.5rem; color: var(--accent); font-style: italic; line-height: 1.4;"></p>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<div id="tribeModal" class="modal">
-
-  <div class="modal-content">
-
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('tribeModal')">&times;</span></div>
-
-    <div class="modal-header">CHOOSE YOUR TRIBE</div>
-
-    <div class="modal-body" style="text-align: center; margin-top: 15px;">
-
-        
-
-        <div id="welcome-blurb" style="display: none; margin-bottom: 20px;">
-
-            <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 10px; font-size: 1.4rem;">WELCOME TO SURVIVOR WORDLE!</h3>
-
-            <p style="font-size: 1.05rem; color: var(--text); line-height: 1.4;">Your 14-week adventure begins now. First things first...</p>
-
-        </div>
-
-
-
-        <p style="margin-bottom: 5px; font-weight: bold; font-size: 1.1rem; color: var(--text);">Personalize your app by choosing your buff color.</p>
-
-        <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px; font-style: italic;">(You can always change this later in the ⛺ Camp Menu)</p>
-
-        <button class="color-swatch" style="background-color: #d95100;" onclick="setThemeColor('#d95100')">Tagi Orange (Default)</button>
-
-        <button class="color-swatch" style="background-color: #2e7d32;" onclick="setThemeColor('#2e7d32')">Pagong Green</button>
-
-        <button class="color-swatch" style="background-color: #1976d2;" onclick="setThemeColor('#1976d2')">Heroes Blue</button>
-
-        <button class="color-swatch" style="background-color: #d32f2f;" onclick="setThemeColor('#d32f2f')">Villains Red</button>
-
-        <button class="color-swatch" style="background-color: #7b1fa2;" onclick="setThemeColor('#7b1fa2')">Goliath Purple</button>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<div id="idolModal" class="modal">
-
-  <div class="modal-content">
-
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('idolModal')">&times;</span></div>
-
-    <div class="modal-header">💎 YOU FOUND IT! 💎</div>
-
-    <div class="modal-body" style="text-align: center; margin-top: 15px;">
-
-        <h3 style="font-size: 1.6rem; color: var(--text);">Hidden Immunity Idol Clue</h3>
-
-        <p style="font-size: 1.2rem; margin-top: 15px;">Congratulations. You scoured the island and found the secret.</p>
-
-        <p style="font-size: 1.2rem; margin-top: 15px; margin-bottom: 25px;">To claim your advantage, tap the button below to text Jeff the secret phrase:</p>
-
-        <div style="background: var(--text); color: var(--card-bg); padding: 15px; border-radius: 8px; font-size: 2rem; font-weight: 900; letter-spacing: 2px;">BLIND SIDE</div>
-
-        
-
-        <a href="sms:12676002525?body=Blind%20side" class="text-btn" style="margin-top: 25px;">TEXT JEFF TO CLAIM IDOL</a>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<div id="adminModal" class="modal">
-
-    <div class="modal-content">
-
-        <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('adminModal')">&times;</span></div>
-
-        <div class="modal-header">ADMIN MENU</div>
-
-        <div class="modal-body" style="text-align: center;">
-
-            <p style="color: var(--text);">Enter Admin Code to Wipe Leaderboard:</p>
-
-            <input type="password" id="admin-code-input" style="padding: 10px; font-size: 1rem; width: 200px; text-align: center; border: 2px solid var(--card-border); border-radius: 6px; margin-bottom: 15px;">
-
-            <button id="admin-clear-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 0 auto;">CLEAR LEADERBOARD</button>
-
-            <p id="admin-message" style="margin-top: 15px; font-weight: bold;"></p>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-
-
-<script>
-
-    const firebaseConfig = {
-
-        apiKey: "AIzaSyBD8mxHYfg04Y1p103bmGfW249XYpDcO5A",
-
-        authDomain: "survivor-scoreboard-c9c77.firebaseapp.com",
-
-        databaseURL: "https://survivor-scoreboard-c9c77-default-rtdb.firebaseio.com",
-
-        projectId: "survivor-scoreboard-c9c77",
-
-        storageBucket: "survivor-scoreboard-c9c77.firebasestorage.app",
-
-        messagingSenderId: "348219232826",
-
-        appId: "1:348219232826:web:e16f4da27d4be72aae5b03"
-
-    };
-
-
-
-    let fireDb = null;
-
-    let usingGlobalLeaderboard = false;
-
-
-
-    // Check if the user has added their Firebase API key yet
-
-    if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
-
-        firebase.initializeApp(firebaseConfig);
-
-        fireDb = firebase.database();
-
-        usingGlobalLeaderboard = true;
-
-    }
-
-</script>
-
-
-
-<script>
-
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
-
-
-
-    // Default hint built right into the variable
-
-    let customTreeMail = "RUMOR HAS IT... AN ADVANTAGE IS HIDDEN SOMEWHERE AT CAMP. LEAVE NO STONE UNTURNED... OR PIXEL UN-TAPPED."; 
-
-    
-
-    // Global variable to hold all players data so we can dynamically re-sort it without fetching
-
-    let allPlayersData = []; 
-
-    // State to track which view is currently selected ('total' or 'hot')
-
-    let currentSortView = 'total'; 
-
-
-
-    function updateCountdown() {
-
-        const now = new Date();
-
-        const target = new Date();
-
-        let baseText = "";
-
-        
-
-        // Find days until next Wednesday (0=Sun, 3=Wed)
-
-        let daysUntilWed = (3 - now.getDay() + 7) % 7;
-
-        
-
-        if (daysUntilWed === 0) {
-
-            target.setHours(20, 0, 0, 0); // 8:00 PM EST target
-
-            const diff = target.getTime() - now.getTime();
-
-            
-
-            if (diff > 0) {
-
-                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-                baseText = `SURVIVOR IS TONIGHT IN: ${h}H ${m}M`;
-
-            } else {
-
-                baseText = "SURVIVOR IS LIVE!";
-
-            }
-
-        } else {
-
-            target.setDate(now.getDate() + daysUntilWed);
-
-            target.setHours(0, 0, 0, 0); 
-
-            const diff = target.getTime() - now.getTime();
-
-            
-
-            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-            baseText = `DAYS UNTIL WEDNESDAY (DOUBLE PTS): ${d}D ${h}H ${m}M`;
-
-        }
-
-
-
-        const m1 = document.getElementById('marquee-1');
-
-        const m2 = document.getElementById('marquee-2');
-
-        const track = document.getElementById('marquee-track');
-
-        const wrapper = document.getElementById('marquee-wrapper');
-
-        
-
-        if (m1 && m2 && track && wrapper) {
-
-            baseText = baseText.toUpperCase();
-
-            let finalText = `🌴 ${baseText} 🌴`;
-
-            
-
-            if (customTreeMail) {
-
-                finalText += ` TREE MAIL: ${customTreeMail.toUpperCase()} 🌴`;
-
-            }
-
-            
-
-            // Only update DOM if text changed to avoid interrupting the animation
-
-            if (m1.innerText !== finalText) {
-
-                m1.innerText = finalText;
-
-                m2.innerText = finalText;
-
-                
-
-                // Smart Speed Control: 0.18 seconds per character, minimum of 12 seconds
-
-                const animDuration = Math.max(12, finalText.length * 0.18);
-
-                track.style.animationDuration = `${animDuration}s`;
-
-            }
-
-            
-
-            // Bulletproof sizing: Ensures elements are ALWAYS at least the width of the screen
-
-            // so the -50% CSS animation NEVER snaps abruptly.
-
-            const wWidth = wrapper.offsetWidth;
-
-            if (wWidth > 0) {
-
-                m1.style.minWidth = `${wWidth}px`;
-
-                m2.style.minWidth = `${wWidth}px`;
-
-            }
-
-        }
-
-    }
-
-    
-
-    updateCountdown();
-
-    setInterval(updateCountdown, 60000); 
-
-
-
-    // Helper function to extract a momentum value out of a Wordle string (e.g. "3/6" or "X/6")
-
-    function getWordleValue(scoreStr) {
-
-        if (!scoreStr || typeof scoreStr !== 'string') return 0;
-
-        const match = scoreStr.match(/([1-6X])\/6/i);
-
-        if (match) {
-
-            if (match[1].toUpperCase() === 'X') return 0;
-
-            // 1/6 gets 6 momentum points, 6/6 gets 1 momentum point
-
-            return 7 - parseInt(match[1], 10);
-
-        }
-
-        return 0; // Covers missed days "-"
-
-    }
-
-
-
-    async function loadScores() {
-
-        try {
-
-            const timestamp = new Date().getTime();
-
-            const response = await fetch(SHEET_URL + '&nocache=' + timestamp, { cache: 'no-store' });
-
-            const data = await response.text();
-
-            const allRows = data.split('\n');
-
-            const headerRow = allRows[0].split(',');
-
-
-
-            // Updated Column Indices based on inserting the new columns
-
-            const bannerText = headerRow[9] ? headerRow[9].trim() : '';
-
-            const bannerContainer = document.getElementById('best-wordle-banner');
-
-            const bannerTextEl = document.getElementById('best-wordle-text');
-
-            
-
-            if (bannerText && bannerText.length > 0) {
-
-                bannerTextEl.innerText = bannerText;
-
-                bannerContainer.classList.add('visible');
-
-            } else {
-
-                bannerContainer.classList.remove('visible');
-
-            }
-
-
-
-            // Updated Column Index for Tree Mail, keeping the default hint if empty
-
-            const treeMailText = headerRow[10] ? headerRow[10].trim() : '';
-
-            if (treeMailText) {
-
-                customTreeMail = treeMailText;
-
-            } else {
-
-                customTreeMail = "RUMOR HAS IT... AN ADVANTAGE IS HIDDEN SOMEWHERE AT CAMP. LEAVE NO STONE UNTURNED... OR PIXEL UN-TAPPED.";
-
-            }
-
-            
-
-            updateCountdown(); 
-
-
-
-            const rows = allRows.slice(1);
-
-
-
-            allPlayersData = rows.map(row => {
-
-                // Now fetching the 8th (index 7) for Hard Mode, and 9th (index 8) for Shot in the Dark
-
-             const [name, score, change, idols, hist1, hist2, hist3, hardModeCol, shotInDarkCol, streakCol] = row.split(',');
-
-                
-
-                // Parse strings safely
-
-                const safeHist1 = hist1 ? hist1.trim() : '-';
-
-                const safeHist2 = hist2 ? hist2.trim() : '-';
-
-                const safeHist3 = hist3 ? hist3.trim() : '-';
-
-
-
-                // Calculate momentum behind the scenes
-
-                const calculatedHotScore = getWordleValue(safeHist1) + getWordleValue(safeHist2) + getWordleValue(safeHist3);
-
-
-
-                return { 
-
-    name: name ? name.trim() : '', 
-
-    score: parseInt(score) || 0,
-
-    change: parseInt(change) || 0,
-
-    idols: parseInt(idols) || 0,
-
-    hist1: safeHist1,
-
-    hist2: safeHist2,
-
-    hist3: safeHist3,
-
-    hardMode: hardModeCol ? hardModeCol.trim() : '',
-
-    shotInDark: shotInDarkCol ? shotInDarkCol.trim() : '0',
-
-    streak: parseInt(streakCol) || 0,
-
-    hotScore: calculatedHotScore
-
-};
-
-
-
-            }).filter(player => player.name !== ''); // Filter out empty names
-
-
-
-            // Now that data is loaded and mapped, render the leaderboard
-
-            renderLeaderboard();
-
-
-
-        } catch (e) {
-
-            document.getElementById('leaderboard').innerHTML = '<p style="color:white; font-size:1.2rem;">The tribe has spoken (Error loading data).</p>';
-
-        }
-
-    }
-
-
-
-    function renderLeaderboard() {
-
-        const container = document.getElementById('leaderboard');
-
-        const extinctionContainer = document.getElementById('extinction-board');
-
-        const extinctionHeader = document.getElementById('extinction-header');
-
-        const headerEl = document.getElementById('dynamic-leaderboard-header');
-
-        
-
-        container.innerHTML = '';
-
-        extinctionContainer.innerHTML = '';
-
-        
-
-        let sortedPlayers = [...allPlayersData]; 
-
-
-
-        // Split active players (> 0 points) and extinguished players (<= 0 points)
-
-        const activePlayers = [];
-
-        const deadPlayers = [];
-
-        
-
-        sortedPlayers.forEach(p => {
-
-            if (p.score <= 0) {
-
-                deadPlayers.push(p);
-
-            } else {
-
-                activePlayers.push(p);
-
-            }
-
-        });
-
-
-
-        // Sort Active Players based on the current toggle view
-
-        if (currentSortView === 'hot') {
-
-            activePlayers.sort((a, b) => b.hotScore - a.hotScore || b.score - a.score);
-
-            headerEl.innerHTML = '🔥 WHO\'S HOT? 🔥<span>(Ranked by 3-Day Momentum)</span>';
-
-        } else {
-
-            activePlayers.sort((a, b) => b.score - a.score);
-
-            headerEl.innerHTML = 'LEADERBOARD<span>(Ranked by Total Life Pts)</span>';
-
-        }
-
-        
-
-        // Sort Dead Players strictly by their total score (lowest negative at bottom)
-
-        deadPlayers.sort((a, b) => b.score - a.score);
-
-
-
-        const allUnranked = activePlayers.every(p => p.score === 50);
-
-        let currentRank = 1;
-
-        let previousScore = null;
-
-
-
-        // Render Active Players to Main Board
-
-        activePlayers.forEach((player, index) => {
-
-            const card = document.createElement('div');
-
-            card.className = 'player-card';
-
-            card.addEventListener('click', () => {
-
-                card.classList.toggle('expanded');
-
-            });
-
-            
-
-            const currentCompareVal = currentSortView === 'hot' ? player.hotScore : player.score;
-
-            if (previousScore !== null && currentCompareVal < previousScore) {
-
-                currentRank++;
-
-            }
-
-            previousScore = currentCompareVal;
-
-            
-
-            const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
-
-            
-
-            let changeDisplay = '-';
-
-            let changeClass = 'change-neutral';
-
-            if (player.change > 0) {
-
-                changeDisplay = `+${player.change}`;
-
-                changeClass = 'change-positive';
-
-            } else if (player.change < 0) {
-
-                changeDisplay = `${player.change}`;
-
-                changeClass = 'change-negative';
-
-            }
-
-
-
-            const isHardMode = player.hardMode.includes('*');
-
-            const hardModeText = isHardMode ? '✅' : '❌';
-
-            const mainScoreDisplay = currentSortView === 'hot' ? player.hotScore : player.score;
-
-
-
-            card.innerHTML = `
-
-                <div class="card-main">
-
-                    <div class="rank">${rankDisplay}</div>
-
-                    <div class="name">
-
-                        ${player.name}
-
-                        ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
-
-                    </div>
-
-                    <div class="change-container">
-
-                        <span class="change-label">Change</span>
-
-                        <span class="${changeClass}">${changeDisplay}</span>
-
-                    </div>
-
-                    <div class="score-container">
-
-                        <div class="score">${mainScoreDisplay}</div>
-
-                    </div>
-
-                </div>
-
-                <div class="history-drawer">
-
-<div class="drawer-status">
-
-    <div class="streak-display ${player.streak >= 7 ? 'streak-hot' : ''}">🔥 Daily Streak: ${player.streak} day${player.streak !== 1 ? 's' : ''}</div>
-
-    <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
-
-    <div>📿 Immunity Idols Banked: ${player.idols}</div>
-
-    <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
-
-</div>
-
-
-
-                    <div class="history-title"><strong>Wordle History</strong></div>
-
-                    <div class="history-grid">
-
-                        <div class="history-day">
-
-                            <span class="history-label">YESTERDAY</span>
-
-                            <span class="history-value">${player.hist1}</span>
-
-                        </div>
-
-                        <div class="history-day">
-
-                            <span class="history-label">2 DAYS AGO</span>
-
-                            <span class="history-value">${player.hist2}</span>
-
-                        </div>
-
-                        <div class="history-day">
-
-                            <span class="history-label">3 DAYS AGO</span>
-
-                            <span class="history-value">${player.hist3}</span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `;
-
-            container.appendChild(card);
-
-        });
-
-
-
-        // Render Extinguished Players to the Graveyard
-
-        if (deadPlayers.length > 0) {
-
-            extinctionHeader.style.display = 'block';
-
-            deadPlayers.forEach(player => {
-
-                const card = document.createElement('div');
-
-                card.className = 'player-card';
-
-                card.addEventListener('click', () => { card.classList.toggle('expanded'); });
-
-                
-
-                let changeDisplay = '-';
-
-                let changeClass = 'change-neutral';
-
-                if (player.change > 0) {
-
-                    changeDisplay = `+${player.change}`;
-
-                    changeClass = 'change-positive';
-
-                } else if (player.change < 0) {
-
-                    changeDisplay = `${player.change}`;
-
-                    changeClass = 'change-negative';
-
-                }
-
-
-
-                const isHardMode = player.hardMode.includes('*');
-
-                const hardModeText = isHardMode ? '✅' : '❌';
-
-
-
-                card.innerHTML = `
-
-                    <div class="card-main">
-
-                        <div class="rank">💀</div>
-
-                        <div class="name">${player.name}</div>
-
-                        <div class="change-container">
-
-                            <span class="change-label">Change</span>
-
-                            <span class="${changeClass}">${changeDisplay}</span>
-
-                        </div>
-
-                        <div class="score-container">
-
-                            <div class="score">${player.score}</div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="history-drawer">
-
- <div class="drawer-status">
-
-    <div class="streak-display ${player.streak >= 7 ? 'streak-hot' : ''}">🔥 Daily Streak: ${player.streak} day${player.streak !== 1 ? 's' : ''}</div>
-
-    <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
-
-    <div>📿 Immunity Idols Banked: ${player.idols}</div>
-
-    <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
-
-</div>
-
-
-
-                        <div class="history-title"><strong>Wordle History</strong></div>
-
-                        <div class="history-grid">
-
-                            <div class="history-day">
-
-                                <span class="history-label">YESTERDAY</span>
-
-                                <span class="history-value">${player.hist1}</span>
-
-                            </div>
-
-                            <div class="history-day">
-
-                                <span class="history-label">2 DAYS AGO</span>
-
-                                <span class="history-value">${player.hist2}</span>
-
-                            </div>
-
-                            <div class="history-day">
-
-                                <span class="history-label">3 DAYS AGO</span>
-
-                                <span class="history-value">${player.hist3}</span>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-                extinctionContainer.appendChild(card);
-
-            });
-
-        } else {
-
-            extinctionHeader.style.display = 'none';
-
-        }
-
-    }
-
-
-
-    // Toggle Button Listeners
-
-    document.getElementById('view-total-btn').addEventListener('click', function() {
-
-        if(currentSortView === 'total') return; 
-
-        currentSortView = 'total';
-
-        this.classList.add('active');
-
-        document.getElementById('view-hot-btn').classList.remove('active');
-
-        renderLeaderboard();
-
-    });
-
-
-
-    document.getElementById('view-hot-btn').addEventListener('click', function() {
-
-        if(currentSortView === 'hot') return; 
-
-        currentSortView = 'hot';
-
-        this.classList.add('active');
-
-        document.getElementById('view-total-btn').classList.remove('active');
-
-        renderLeaderboard();
-
-    });
-
-
-
-    // Boot up the app by loading data
-
-    loadScores();
-
-
-
-    // --- First-time Tribe Color Prompt ---
-
-    // If they don't have the new v2 save key, prompt them immediately and show welcome message.
-
-    if (!localStorage.getItem('survivorTribeColor_v2')) {
-
-        document.getElementById("welcome-blurb").style.display = "block";
-
-        document.getElementById("tribeModal").style.display = "block";
-
-        document.body.classList.add('modal-open');
-
-    }
-
-
-
-    // MODAL AND BUTTON LOGIC
-
-    const rulesModal = document.getElementById("rulesModal"), 
-
-          stakesModal = document.getElementById("stakesModal"), 
-
-          bigrModal = document.getElementById("bigrModal"),
-
-          quoteModal = document.getElementById("quoteModal"),
-
-          tribeModal = document.getElementById("tribeModal"),
-
-          idolModal = document.getElementById("idolModal"),
-
-          adminModal = document.getElementById("adminModal");
-
-          
-
-    const fireGamePage = document.getElementById("fire-game-page");
-
-    const mainDashboard = document.getElementById("main-dashboard");
-
-
-
-    const rulesBtn = document.getElementById("rules-btn"), 
-
-          stakesBtn = document.getElementById("stakes-btn"), 
-
-          bigrBtn = document.getElementById("bigr-btn"), 
-
-          refreshBtn = document.getElementById("refresh-btn"),
-
-          quoteBtn = document.getElementById("quote-btn"),
-
-          tribeBtn = document.getElementById("tribe-btn"),
-
-          groupChatBtn = document.getElementById("group-chat-btn"),
-
-          hiddenIdolTrigger = document.getElementById("hidden-idol-trigger"),
-
-          menuBtn = document.getElementById("menu-btn"),
-
-          fireGameBtn = document.getElementById("fire-game-btn"),
-
-          campMenuDrawer = document.getElementById("camp-menu-drawer"),
-
-          dynamicLeaderboardHeader = document.getElementById("dynamic-leaderboard-header"),
-
-          adminClearBtn = document.getElementById("admin-clear-btn"),
-
-          adminCodeInput = document.getElementById("admin-code-input"),
-
-          adminMessage = document.getElementById("admin-message");
-
-
-
-    const quoteText = document.getElementById("quote-text");
-
-
-
-    // Array of 25 random Jeff Probst Quotes
-
-    const jeffQuotes = [
-
-        "The tribe has spoken.",
-
-        "Got nothing for ya. Head back to camp.",
-
-        "Survivors ready? Go!",
-
-        "Dig deep!",
-
-        "Come on in, guys!",
-
-        "Fire represents your life. When your fire is gone, so are you.",
-
-        "You gotta earn it every day.",
-
-        "That is how you do it on Survivor!",
-
-        "In this game, fire is your life.",
-
-        "Wanna know what you're playing for?",
-
-        "Drop your buffs.",
-
-        "This is a hidden immunity idol.",
-
-        "Once the votes are read, the decision is final. The person voted out will be asked to leave the Tribal Council area immediately.",
-
-        "I'll go tally the votes.",
-
-        "If anybody has a hidden immunity idol and you want to play it, now would be the time to do so.",
-
-        "Worth playing for?",
-
-        "It is a huge advantage in this game.",
-
-        "A blindside!",
-
-        "Outwit, Outplay, Outlast.",
-
-        "You are playing for reward!",
-
-        "Immunity is back up for grabs.",
-
-        "You have to outwit, outplay, and outlast.",
-
-        "Does not count.",
-
-        "All the fixin's!",
-
-        "Grab your torches, head back to camp. Goodnight."
-
-    ];
-
-
-
-    // JS Update: Open Camp Menu Drawer and scroll fully to the bottom
-
-    menuBtn.onclick = function() { 
-
-        const isOpen = campMenuDrawer.classList.toggle('open'); 
-
-        if (isOpen) {
-
-            // Slight delay allows the browser to render the new height before scrolling
-
-            setTimeout(() => {
-
-                window.scrollTo({
-
-                    top: document.body.scrollHeight,
-
-                    behavior: 'smooth'
-
-                });
-
-            }, 100);
-
-        }
-
-    }
-
-
-
-    // Buttons inside the Camp Menu Drawer
-
-    rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-
-    stakesBtn.onclick = function() { stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-
-    
-
-    // Explicitly hide the welcome blurb if opening from the menu later
-
-    tribeBtn.onclick = function() { 
-
-        document.getElementById("welcome-blurb").style.display = "none";
-
-        tribeModal.style.display = "block"; 
-
-        document.body.classList.add('modal-open'); 
-
-    }
-
-    
-
-    // Logic for Random Quote Button (inside Menu Drawer)
-
-    quoteBtn.onclick = function() {
-
-        const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
-
-        quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
-
-        quoteModal.style.display = "block";
-
-        document.body.classList.add('modal-open'); 
-
-    }
-
-
-
-    // Buttons on Main Screen
-
-    bigrBtn.onclick = function() { bigrModal.style.display = "block"; document.body.classList.add('modal-open'); }
-
-
-
-    // Hidden Idol Scavenger Hunt Logic
-
-    hiddenIdolTrigger.onclick = function() {
-
-        idolModal.style.display = "block";
-
-        document.body.classList.add('modal-open');
-
-    }
-
-
-
-    // Group Chat Button Logic: Main Screen
-
-    groupChatBtn.onclick = async function() {
-
-        if (navigator.share) {
-
-            try {
-
-                await navigator.share({
-
-                    title: 'SW',
-
-                    text: 'SW' 
-
-                });
-
-                return; 
-
-            } catch (err) {
-
-                console.log("Share sheet dismissed or failed, attempting fallback.");
-
-            }
-
-        } else {
-
-            const otherMembers = "12676002525,12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350";
-
-            window.location.href = `sms://open?addresses=${otherMembers}`;
-
-        }
-
-    }
-
-
-
-    // Refresh Button Logic: Main Screen
-
-    refreshBtn.onclick = function() { 
-
-        document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
-
-        loadScores(); 
-
-    }
-
-
-
-    // Secret Admin Menu Logic
-
-    let adminTapCount = 0;
-
-    let adminTapTimer;
-
-
-
-    dynamicLeaderboardHeader.onclick = function() {
-
-        adminTapCount++;
-
-        clearTimeout(adminTapTimer);
-
-        adminTapTimer = setTimeout(() => {
-
-            adminTapCount = 0;
-
-        }, 1000); // Reset count after 1 second of inactivity
-
-
-
-        if (adminTapCount === 5) {
-
-            adminTapCount = 0;
-
-            adminModal.style.display = "block";
-
-            document.body.classList.add('modal-open');
-
-            adminCodeInput.value = "";
-
-            adminMessage.innerText = "";
-
-            adminMessage.style.color = "var(--text)";
-
-        }
-
-    }
-
-
-
-    // Updated Admin Clear button to clear the currently selected mode
-
-    adminClearBtn.onclick = function() {
-
-        const code = adminCodeInput.value;
-
-        const currentFirebaseKey = isHardMode ? 'fireLeaderboard_hard' : 'fireLeaderboard';
-
-        
-
-        if (code === "PRIDE12") {
-
-            if (usingGlobalLeaderboard) {
-
-                fireDb.ref(currentFirebaseKey).remove()
-
-                    .then(() => {
-
-                        adminMessage.innerText = `${isHardMode ? "Hard" : "Standard"} Leaderboard Cleared!`;
-
-                        adminMessage.style.color = "var(--leaf-green)";
-
-                        setTimeout(() => {
-
-                            closeModal('adminModal');
-
-                        }, 1500);
-
-                    })
-
-                    .catch((error) => {
-
-                        adminMessage.innerText = "Error Clearing: " + error.message;
-
-                        adminMessage.style.color = "var(--low-score)";
-
-                    });
-
-            } else {
-
-                localStorage.removeItem(currentFirebaseKey);
-
-                renderFireLeaderboard();
-
-                adminMessage.innerText = `Local ${isHardMode ? "Hard" : "Standard"} Leaderboard Cleared!`;
-
-                adminMessage.style.color = "var(--leaf-green)";
-
-                setTimeout(() => {
-
-                    closeModal('adminModal');
-
-                }, 1500);
-
-            }
-
-        } else {
-
-            adminMessage.innerText = "Invalid Code.";
-
-            adminMessage.style.color = "var(--low-score)";
-
-        }
-
-    }
-
-
-
-
-
-    // --- MINI-GAME LOGIC: FIRE TIEBREAKER ---
-
-    const startFireBtn = document.getElementById('start-fire-btn');
-
-    const strikeBtn = document.getElementById('strike-btn');
-
-    const playAgainBtn = document.getElementById('play-again-btn');
-
-    const fireProgress = document.getElementById('fire-progress');
-
-    const fireTimerDisplay = document.getElementById('fire-timer');
-
-    const fireEmoji = document.getElementById('fire-emoji');
-
-    const fireInstructions = document.getElementById('fire-instructions');
-
-    
-
-    // Save UI
-
-    const saveScoreSection = document.getElementById('save-score-section');
-
-    const finalTimeDisplay = document.getElementById('final-time-display');
-
-    const playerInitials = document.getElementById('player-initials');
-
-    const saveScoreBtn = document.getElementById('save-score-btn');
-
-    const top10InputArea = document.getElementById('top-10-input-area');
-
-    const notTop10Message = document.getElementById('not-top-10-message');
-
-    const winStatusText = document.getElementById('win-status-text');
-
-    
-
-    // Board UI
-
-    const leaderboardSection = document.getElementById('fire-leaderboard-section');
-
-    const leaderboardList = document.getElementById('fire-leaderboard-list');
-
-    const localOnlyWarning = document.getElementById('local-only-warning');
-
-    
-
-    // Difficulty Toggles
-
-    const modeStdBtn = document.getElementById('mode-std-btn');
-
-    const modeHrdBtn = document.getElementById('mode-hrd-btn');
-
-    
-
-    // Visual Rope Challenge Elements
-
-    const ropeFull = document.getElementById('rope-full');
-
-    const ropeLeft = document.getElementById('rope-left');
-
-    const ropeRight = document.getElementById('rope-right');
-
-    const flagMechanism = document.getElementById('flag-mechanism');
-
-
-
-    // SFX Elements
-
-    const sfxWin = document.getElementById('sfx-win');
-
-    const sfxLose = document.getElementById('sfx-lose');
-
-    
-
-    // Reaction elements
-
-    const endGameReaction = document.getElementById('end-game-reaction');
-
-    const reactionBubble = document.getElementById('reaction-bubble');
-
-
-
-    const fireInsults = [
-
-        "You can do better than that!",
-
-        "What was that?",
-
-        "You tap like a girl!",
-
-        "My grandma makes fire faster!",
-
-        "Is your screen broken, or just your fingers?",
-
-        "A wet match has more spark than you.",
-
-        "Pathetic.",
-
-        "The tribe has spoken... and they're laughing at you.",
-
-        "I've seen sloths tap faster.",
-
-        "Did you fall asleep?",
-
-        "You're definitely first boot material.",
-
-        "Are you trying to make fire or pet the wood?",
-
-        "Stick to puzzles.",
-
-        "Your torch is snuffed. Forever.",
-
-        "That was painful to watch.",
-
-        "Do you need a medic?",
-
-        "Absolute garbage.",
-
-        "I'd rather take a goat to the end than you.",
-
-        "Even a rock could beat that time.",
-
-        "Get off my island.",
-
-        "Zero chance of winning the game.",
-
-        "You're a literal liability to the tribe.",
-
-        "You must be doing this with your nose.",
-
-        "Is it your first time using a phone?",
-
-        "My blind grandma could strike flint better.",
-
-        "Go sit on the Edge of Extinction.",
-
-        "Not even an idol could save that performance.",
-
-        "You're literally dead weight.",
-
-        "You call that tapping?",
-
-        "That was a million-dollar mistake.",
-
-        "You just lost my jury vote.",
-
-        "Jeff Probst is shaking his head right now.",
-
-        "I'm embarrassed for you.",
-
-        "Might as well give up your necklace now.",
-
-        "Boston Rob is laughing at you.",
-
-        "Russell Hantz would eat you alive.",
-
-        "The medical team is on standby for your broken ego.",
-
-        "You play like a pre-merger.",
-
-        "Got nothing for ya. Head back to camp.",
-
-        "Come on in, guys! ...Wait, stay out.",
-
-        "Dig deep! Because that was shallow as hell.",
-
-        "You're officially the goat of this season.",
-
-        "This is why you don't get chosen for rewards.",
-
-        "I've seen better fire-making from a wet noodle.",
-
-        "You're about to be blindsided by how bad that was.",
-
-        "A literal actual child could beat you.",
-
-        "Please tell me you were lagging.",
-
-        "Just hand over your torch.",
-
-        "Don't quit your day job.",
-
-        "You're drawing dead.",
-
-        "We're voting you out at tribal tonight.",
-
-        "Worst performance in Survivor history.",
-
-        "That time is a tragedy."
-
-    ];
-
-
-
-    let fireHeat = 0;
-
-    let fireTimeLeft = 10.00;
-
-    let fireInterval;
-
-    let fireGameActive = false;
-
-    let fireStartTime = 0;
-
-    let isHardMode = false;
-
-    
-
-    // Allows us to turn off previous firebase listeners when switching modes
-
-    let currentFirebaseRef = null; 
-
-
-
-    // Mode Switcher Logic
-
-    modeStdBtn.onclick = function() {
-
-        if (!isHardMode) return;
-
-        isHardMode = false;
-
-        modeStdBtn.classList.add('active');
-
-        modeHrdBtn.classList.remove('active');
-
-        resetFireGame();
-
-    }
-
-
-
-    modeHrdBtn.onclick = function() {
-
-        if (isHardMode) return;
-
-        isHardMode = true;
-
-        modeHrdBtn.classList.add('active');
-
-        modeStdBtn.classList.remove('active');
-
-        resetFireGame();
-
-    }
-
-
-
-    // Opens the full-page mini game
-
-    fireGameBtn.onclick = function() {
-
-        resetFireGame();
-
-        mainDashboard.style.display = "none";
-
-        fireGamePage.style.display = "flex";
-
-        
-
-        // Anti-Zoom Global Event Listener ONLY active while game is open
-
-        // Adding passive: false allows preventDefault to work properly
-
-        document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-
-    }
-
-
-
-    // Function to close the full-page mini game
-
-    function closeFireGamePage() {
-
-        fireGamePage.style.display = "none";
-
-        mainDashboard.style.display = ""; // Let CSS grid handle iPad layout
-
-        
-
-        // Remove the anti-zoom listener so normal app functions return
-
-        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
-
-        
-
-        // Remove Firebase listeners to save memory
-
-        if (currentFirebaseRef) {
-
-            currentFirebaseRef.off();
-
-            isLeaderboardListening = false;
-
-        }
-
-    }
-
-    
-
-    // Global Double-Tap Zoom Preventer (attached when modal opens)
-
-    // By keeping track of touch times, we block rapid successive taps anywhere on the screen
-
-    let lastTouchTime = 0;
-
-    function preventDoubleTapZoom(e) {
-
-        const currentTime = new Date().getTime();
-
-        const tapLength = currentTime - lastTouchTime;
-
-        if (tapLength < 500 && tapLength > 0) {
-
-            e.preventDefault();
-
-        }
-
-        lastTouchTime = currentTime;
-
-    }
-
-
-
-    startFireBtn.onclick = function() { startFireGame(); }
-
-    playAgainBtn.onclick = function() { resetFireGame(); }
-
-
-
-    // Use touchstart to intercept mobile taps BEFORE the browser interprets a double-tap zoom
-
-    function handleStrikeEvent(e) {
-
-        if (e && e.cancelable) {
-
-            e.preventDefault(); // CRITICAL: This stops double-tap zooming entirely on the button!
-
-        }
-
-        
-
-        if (!fireGameActive) return;
-
-        
-
-        // Progressive Resistance: Heat gained decreases, and wind decay increases as the fire grows!
-
-        let tapGain = isHardMode ? 6 : 8; 
-
-        fireHeat += tapGain; 
-
-        
-
-        if (fireHeat >= 100) {
-
-            fireHeat = 100;
-
-            fireGameActive = false;
-
-            clearInterval(fireInterval); // Instantly stop the clock
-
-            
-
-            // Record the exact time of the winning tap
-
-            let elapsed = (Date.now() - fireStartTime) / 1000;
-
-            fireTimerDisplay.innerText = elapsed.toFixed(2) + "s";
-
-            updateFireVisuals();
-
-
-
-            // Wait 250ms to allow the progress bar CSS transition to finish before triggering win state
-
-            setTimeout(() => {
-
-                endFireGame(true, elapsed);
-
-            }, 250);
-
-
-
-        } else {
-
-            updateFireVisuals();
-
-        }
-
-    }
-
-
-
-    // Attach native touch events to the strike button to make it infinitely spammable
-
-    strikeBtn.addEventListener('touchstart', handleStrikeEvent, { passive: false });
-
-    
-
-    // Fallback for desktop testing with a mouse
-
-    strikeBtn.addEventListener('mousedown', function(e) {
-
-        if (e.button === 0) handleStrikeEvent(e);
-
-    });
-
-
-
-    function resetFireGame() {
-
-        clearInterval(fireInterval);
-
-        fireGameActive = false;
-
-        fireHeat = 0;
-
-        fireTimeLeft = 10.00;
-
-        
-
-        // Reset Visual Rope Challenge Elements
-
-        ropeFull.style.display = "block";
-
-        ropeLeft.style.display = "none";
-
-        ropeLeft.style.transform = "rotate(0deg)";
-
-        ropeRight.style.display = "none";
-
-        ropeRight.style.transform = "rotate(0deg)";
-
-        
-
-        // Reset Flag
-
-        flagMechanism.style.opacity = "0";
-
-        flagMechanism.style.display = "none";
-
-        flagMechanism.style.transform = "translateY(160px)"; 
-
-
-
-        updateFireVisuals();
-
-        
-
-        fireTimerDisplay.innerText = "10.00s";
-
-        fireTimerDisplay.style.color = "#fff";
-
-        fireEmoji.innerText = "🪵";
-
-        
-
-        fireInstructions.style.display = "block";
-
-        fireInstructions.innerHTML = "Your torch is on the line (wink). <br><br><strong>TAP THE BUTTON AS FAST AS YOU CAN</strong><br>to build your fire before the 10-second timer runs out!";
-
-        
-
-        startFireBtn.style.display = "block";
-
-        startFireBtn.innerText = "START CHALLENGE";
-
-        
-
-        strikeBtn.style.display = "none";
-
-        playAgainBtn.style.display = "none";
-
-        saveScoreSection.style.display = "none";
-
-        endGameReaction.style.display = "none"; 
-
-        playerInitials.value = "";
-
-        
-
-        renderFireLeaderboard();
-
-    }
-
-
-
-    function startFireGame() {
-
-        resetFireGame();
-
-        fireGameActive = true;
-
-        startFireBtn.style.display = "none";
-
-        strikeBtn.style.display = "block";
-
-        fireInstructions.innerHTML = "<strong>KEEP TAPPING!</strong>";
-
-
-
-        fireStartTime = Date.now();
-
-
-
-        // High precision interval using accurate Date math
-
-        fireInterval = setInterval(() => {
-
-            let elapsed = (Date.now() - fireStartTime) / 1000;
-
-            fireTimeLeft = 10.00 - elapsed;
-
-            
-
-            // Reverted back to the manageable decay
-
-            let baseDecay = isHardMode ? 0.8 : 0.4;
-
-            let scalingDecay = (fireHeat / 100) * (isHardMode ? 0.8 : 0.4);
-
-            fireHeat -= (baseDecay + scalingDecay);
-
-
-
-            if (fireHeat < 0) fireHeat = 0;
-
-
-
-            if (fireTimeLeft <= 0) {
-
-                fireTimeLeft = 0;
-
-                fireGameActive = false;
-
-                clearInterval(fireInterval);
-
-                fireTimerDisplay.innerText = "0.00s";
-
-                updateFireVisuals();
-
-                
-
-                if (sfxLose) {
-
-                    sfxLose.currentTime = 0;
-
-                    sfxLose.play().catch(err => {});
-
-                }
-
-
-
-                // Allow the CSS transition to finish before flipping UI
-
-                setTimeout(() => {
-
-                    endFireGame(false);
-
-                }, 100);
-
-            } else {
-
-                fireTimerDisplay.innerText = fireTimeLeft.toFixed(2) + "s";
-
-                updateFireVisuals();
-
-            }
-
-        }, 20);
-
-    }
-
-
-
-    function updateFireVisuals() {
-
-        fireProgress.style.width = fireHeat + "%";
-
-
-
-        if (fireHeat < 15) {
-
-            fireEmoji.innerText = "🪵";
-
-        } else if (fireHeat < 50) {
-
-            fireEmoji.innerText = "💨";
-
-        } else {
-
-            fireEmoji.innerText = "🔥";
-
-        }
-
-
-
-        // Scale the fire up physically towards the rope. 
-
-        // Max scale ~3.5 reaches the rope perfectly based on CSS dimensions.
-
-        let scaleHeight = 1 + (fireHeat / 100) * 2.5;
-
-        let scaleWidth = 1 + (fireHeat / 100) * 1.5;
-
-        fireEmoji.style.transform = `translateX(-50%) scaleX(${scaleWidth}) scaleY(${scaleHeight})`;
-
-    }
-
-
-
-    function endFireGame(won, winningTime = 0) {
-
-        strikeBtn.style.display = "none";
-
-        playAgainBtn.style.display = "block";
-
-        
-
-        const reactionFaceImg = endGameReaction.querySelector('.reaction-face');
-
-        reactionFaceImg.classList.remove('shake-anim');
-
-        void reactionFaceImg.offsetWidth; 
-
-
-
-        // 1. Check current leaderboard times directly from the UI elements
-
-        let currentTimes = [];
-
-        let boardElems = leaderboardList.querySelectorAll('li');
-
-        boardElems.forEach(li => {
-
-            let match = li.innerText.match(/-\s*([0-9.]+)/);
-
-            if (match) currentTimes.push(parseFloat(match[1]));
-
-        });
-
-
-
-        // 2. Logic for Top 10 and #1 Spot
-
-        let isHighScore = false;
-
-        let qualifiesForTop10 = false;
-
-        
-
-        if (won) {
-
-            if (currentTimes.length === 0) {
-
-                isHighScore = true;
-
-                qualifiesForTop10 = true;
-
-            } else {
-
-                if (winningTime < currentTimes[0]) isHighScore = true;
-
-                
-
-                if (currentTimes.length < 10) {
-
-                    qualifiesForTop10 = true;
-
-                } else if (winningTime < currentTimes[currentTimes.length - 1]) {
-
-                    qualifiesForTop10 = true;
-
-                }
-
-            }
-
-        }
-
-
-
-        if (won) {
-
-            // Trigger Visual Rope Snap
-
-            ropeFull.style.display = "none";
-
-            ropeLeft.style.display = "block";
-
-            ropeRight.style.display = "block";
-
-            
-
-            flagMechanism.style.display = "block";
-
-            
-
-            // Allow display:block to register before dropping ropes and popping flag
-
-            setTimeout(() => {
-
-                ropeLeft.style.transform = "rotate(85deg)"; // Falls down left
-
-                ropeRight.style.transform = "rotate(-85deg)"; // Falls down right
-
-                
-
-                flagMechanism.style.opacity = "1";
-
-                flagMechanism.style.transform = "translateY(0px)"; // Springs straight up!
-
-            }, 10);
-
-            
-
-            if (sfxWin) {
-
-                sfxWin.currentTime = 0;
-
-                sfxWin.play().catch(err => {});
-
-            }
-
-            
-
-            let timeTaken = winningTime.toFixed(2);
-
-            
-
-            fireInstructions.style.display = "none"; 
-
-            fireTimerDisplay.style.color = "var(--leaf-green)";
-
-            
-
-            saveScoreSection.style.display = "block";
-
-            finalTimeDisplay.innerText = timeTaken;
-
-            
-
-            // Adjust save UI based on Top 10 qualification
-
-            if (qualifiesForTop10) {
-
-                winStatusText.innerText = "🔥 FIRE MADE! 🔥";
-
-                top10InputArea.style.display = "block";
-
-                notTop10Message.style.display = "none";
-
-            } else {
-
-                winStatusText.innerText = "👍 YOU SURVIVED";
-
-                top10InputArea.style.display = "none";
-
-                notTop10Message.style.display = "block";
-
-            }
-
-
-
-            // Trigger Reaction Picture + Bubble
-
-            endGameReaction.style.display = "flex";
-
-            if (isHighScore) {
-
-                reactionBubble.innerText = "NEW LEADER!";
-
-                reactionBubble.style.color = "var(--leaf-green)";
-
-            } else {
-
-                reactionBubble.innerText = fireInsults[Math.floor(Math.random() * fireInsults.length)];
-
-                reactionBubble.style.color = "var(--text)";
-
-                reactionFaceImg.classList.add('shake-anim');
-
-            }
-
-
-
-        } else {
-
-            fireInstructions.style.display = "block";
-
-            fireInstructions.innerHTML = "<strong>💀 YOUR FLAME DIED 💀</strong><br>The tribe has spoken. You failed to make fire in time.";
-
-            fireTimerDisplay.style.color = "var(--low-score)";
-
-            fireProgress.style.width = "0%";
-
-            fireEmoji.innerText = "💨";
-
-            fireEmoji.style.transform = `translateX(-50%) scale(1)`;
-
-            
-
-            saveScoreSection.style.display = "none";
-
-
-
-            // Show insult reaction on lose
-
-            endGameReaction.style.display = "flex";
-
-            reactionBubble.innerText = fireInsults[Math.floor(Math.random() * fireInsults.length)];
-
-            reactionBubble.style.color = "var(--low-score)";
-
-            reactionFaceImg.classList.add('shake-anim');
-
-        }
-
-    }
-
-
-
-    saveScoreBtn.onclick = function() {
-
-        let initials = playerInitials.value.trim().toUpperCase();
-
-        if(initials === "") initials = "???";
-
-        let timeTaken = parseFloat(finalTimeDisplay.innerText);
-
-        
-
-        let targetKey = isHardMode ? 'fireLeaderboard_hard' : 'fireLeaderboard';
-
-
-
-        if (usingGlobalLeaderboard) {
-
-            fireDb.ref(targetKey).push({
-
-                name: initials,
-
-                time: timeTaken,
-
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-
-            });
-
-            saveScoreSection.style.display = "none";
-
-        } else {
-
-            let board = JSON.parse(localStorage.getItem(targetKey)) || [];
-
-            board.push({ name: initials, time: timeTaken });
-
-            board.sort((a, b) => a.time - b.time);
-
-            board = board.slice(0, 10); 
-
-            localStorage.setItem(targetKey, JSON.stringify(board));
-
-            saveScoreSection.style.display = "none";
-
-            renderFireLeaderboard();
-
-        }
-
-    }
-
-
-
-    function renderFireLeaderboard() {
-
-        let targetKey = isHardMode ? 'fireLeaderboard_hard' : 'fireLeaderboard';
-
-        
-
-        if (usingGlobalLeaderboard) {
-
-            localOnlyWarning.style.display = "none";
-
-            
-
-            // Unbind previous listener if switching between Hard/Standard
-
-            if (currentFirebaseRef) {
-
-                currentFirebaseRef.off();
-
-            }
-
-            
-
-            currentFirebaseRef = fireDb.ref(targetKey).orderByChild('time').limitToFirst(10);
-
-            
-
-            currentFirebaseRef.on('value', (snapshot) => {
-
-                let board = [];
-
-                snapshot.forEach((childSnapshot) => {
-
-                    board.push(childSnapshot.val());
-
-                });
-
-                
-
-                if(board.length > 0) {
-
-                    leaderboardSection.style.display = "block";
-
-                    leaderboardList.innerHTML = "";
-
-                    board.forEach(entry => {
-
-                        let li = document.createElement('li');
-
-                        li.style.marginBottom = "8px";
-
-                        li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
-
-                        leaderboardList.appendChild(li);
-
-                    });
-
-                } else {
-
-                    leaderboardSection.style.display = "none";
-
-                    leaderboardList.innerHTML = "";
-
-                }
-
-            });
-
-            
-
-        } else {
-
-            // Render from LocalStorage (Fallback)
-
-            localOnlyWarning.style.display = "block";
-
-            let board = JSON.parse(localStorage.getItem(targetKey)) || [];
-
-            if(board.length > 0) {
-
-                leaderboardSection.style.display = "block";
-
-                leaderboardList.innerHTML = "";
-
-                board.forEach(entry => {
-
-                    let li = document.createElement('li');
-
-                    li.style.marginBottom = "8px";
-
-                    li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
-
-                    leaderboardList.appendChild(li);
-
-                });
-
-            } else {
-
-                leaderboardSection.style.display = "none";
-
-                leaderboardList.innerHTML = "";
-
-            }
-
-        }
-
-    }
-
-
-
-
-
-    // --- TRIBE THEME LOGIC ---
-
-    function setThemeColor(hexColor) {
-
-        document.documentElement.style.setProperty('--accent', hexColor);
-
-        localStorage.setItem('survivorTribeColor_v2', hexColor);
-
-        closeModal('tribeModal');
-
-    }
-
-
-
-    // --- DAILY STAKES IMAGE TOGGLE & CUSTOM PINCH-ZOOM LOGIC ---
-
-    const stakesViewer = document.getElementById('stakes-viewer');
-
-    const stakesImg = document.getElementById('stakes-img');
-
-    const stakesZoomBtn = document.getElementById('stakes-zoom-btn');
-
-    
-
-    let isStakesZoomed = false;
-
-    let initialDistance = 0;
-
-    let initialWidth = 0;
-
-
-
-    stakesZoomBtn.onclick = function() {
-
-        isStakesZoomed = !isStakesZoomed;
-
-        if (isStakesZoomed) {
-
-            stakesImg.src = 'IMG_0879.jpeg';
-
-            stakesZoomBtn.innerText = 'BACK';
-
-            
-
-            stakesImg.style.maxWidth = '100%';
-
-            stakesImg.style.maxHeight = '100%';
-
-            stakesImg.style.width = '100%'; 
-
-            stakesImg.style.height = '100%'; 
-
-            stakesImg.style.objectFit = 'contain';
-
-            
-
-            stakesViewer.style.display = 'flex'; 
-
-            stakesViewer.scrollTop = 0; 
-
-            stakesViewer.scrollLeft = 0;
-
-        } else {
-
-            resetStakesModal();
-
-        }
-
-    };
-
-
-
-    // Custom Pinch-To-Zoom Gesture Listener for the Stakes Image
-
-    stakesViewer.addEventListener('touchstart', (e) => {
-
-        if (isStakesZoomed && e.touches.length === 2) {
-
-            initialDistance = Math.hypot(
-
-                e.touches[0].pageX - e.touches[1].pageX,
-
-                e.touches[0].pageY - e.touches[1].pageY
-
-            );
-
-            initialWidth = stakesImg.getBoundingClientRect().width;
-
-        }
-
-    });
-
-
-
-    stakesViewer.addEventListener('touchmove', (e) => {
-
-        if (isStakesZoomed && e.touches.length === 2 && initialDistance > 0) {
-
-            e.preventDefault(); 
-
-            const currentDistance = Math.hypot(
-
-                e.touches[0].pageX - e.touches[1].pageX,
-
-                e.touches[0].pageY - e.touches[1].pageY
-
-            );
-
-            
-
-            let scaleRatio = currentDistance / initialDistance;
-
-            let newWidth = initialWidth * scaleRatio;
-
-            
-
-            if (newWidth < stakesViewer.clientWidth) {
-
-                newWidth = stakesViewer.clientWidth;
-
-            }
-
-            
-
-            stakesImg.style.maxWidth = 'none';
-
-            stakesImg.style.maxHeight = 'none';
-
-            stakesImg.style.width = `${newWidth}px`;
-
-            stakesImg.style.height = 'auto'; 
-
-            
-
-            if (newWidth > stakesViewer.clientWidth) {
-
-                stakesViewer.style.display = 'block';
-
-            } else {
-
-                stakesViewer.style.display = 'flex';
-
-            }
-
-        }
-
-    }, { passive: false });
-
-
-
-    // Helper function to cleanly reset stakes modal back to default
-
-    function resetStakesModal() {
-
-        isStakesZoomed = false;
-
-        stakesImg.src = "dailystakes.png";
-
-        stakesZoomBtn.innerText = "ZOOM";
-
-        
-
-        stakesImg.style.maxWidth = '100%';
-
-        stakesImg.style.maxHeight = '100%';
-
-        stakesImg.style.width = 'auto';
-
-        stakesImg.style.height = 'auto';
-
-        stakesImg.style.objectFit = 'contain';
-
-        
-
-        stakesViewer.style.display = 'flex';
-
-        stakesViewer.scrollTop = 0;
-
-        stakesViewer.scrollLeft = 0;
-
-    }
-
-
-
-    // JS Update: Removes 'modal-open' class and resets Stakes modal state when closed
-
-    function closeModal(modalId) {
-
-        document.getElementById(modalId).style.display = "none";
-
-        document.body.classList.remove('modal-open'); 
-
-        
-
-        if (modalId === 'stakesModal') {
-
-             resetStakesModal();
-
-        }
-
-        if (modalId === 'adminModal') {
-
-            adminCodeInput.value = "";
-
-            adminMessage.innerText = "";
-
-        }
-
-    }
-
-
-
-    // Close Modals dynamically by checking for the 'modal' class
-
-    window.onclick = function(event) {
-
-        if (event.target.classList.contains('modal')) {
-
-            event.target.style.display = "none";
-
-            document.body.classList.remove('modal-open'); 
-
-            
-
-            if (event.target.id === 'stakesModal') {
-
-                 resetStakesModal();
-
-            }
-
-            if (event.target.id === 'adminModal') {
-
-                adminCodeInput.value = "";
-
-                adminMessage.innerText = "";
-
-            }
-
-        }
-
-    }
-
-
-
-    function createEmbers() {
-
-        const body = document.body;
-
-        for(let i = 0; i < 80; i++) {
-
-            let ember = document.createElement('div');
-
-            ember.className = 'ember';
-
-            ember.style.left = Math.random() * 100 + 'vw';
-
-            ember.style.animationDuration = (Math.random() * 6 + 2) + 's'; 
-
-            ember.style.animationDelay = Math.random() * 10 + 's';
-
-            let size = Math.random() * 7 + 1; 
-
-            ember.style.width = size + 'px';
-
-            ember.style.height = size + 'px';
-
-            body.appendChild(ember);
-
-        }
-
-    }
-
-    createEmbers();
-
-
-
-    // --- iOS BYPASS AUDIO LOGIC ---
-
-    const fireAudio = document.getElementById('fireSound');
-
-    const themeAudio = document.getElementById('themeSound');
-
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
-
-    const fireToggleBtn = document.getElementById('fire-toggle-btn');
-
-
-
-    let audioCtx;
-
-    let themeSource;
-
-    let themeGainNode;
-
-    let audioInitialized = false;
-
-
-
-    function initAudioContext() {
-
-        if (audioInitialized) return;
-
-        
-
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-
-        audioCtx = new AudioContext();
-
-
-
-        // Route Theme Audio through a Gain Node (Virtual Mixer)
-
-        themeSource = audioCtx.createMediaElementSource(themeAudio);
-
-        themeGainNode = audioCtx.createGain();
-
-        
-
-        // HARDCODE THEME VOLUME HERE (0.1 = 10% volume)
-
-        themeGainNode.gain.value = 0.1; 
-
-        
-
-        themeSource.connect(themeGainNode);
-
-        themeGainNode.connect(audioCtx.destination);
-
-
-
-        audioInitialized = true;
-
-    }
-
-
-
-    // Try to auto-play fire on load
-
-    fireAudio.play().then(() => {
-
-        fireToggleBtn.classList.add('playing');
-
-    }).catch(() => {
-
-        console.log("Autoplay blocked. Waiting for interaction.");
-
-    });
-
-
-
-    // Fire Toggle Button Logic
-
-    fireToggleBtn.addEventListener('click', () => {
-
-        if (fireAudio.paused) {
-
-            fireAudio.play();
-
-            fireToggleBtn.classList.add('playing');
-
-        } else {
-
-            fireAudio.pause();
-
-            fireToggleBtn.classList.remove('playing');
-
-        }
-
-    });
-
-
-
-    // Theme Toggle Button Logic
-
-    themeToggleBtn.addEventListener('click', () => {
-
-        initAudioContext(); // Ensure virtual mixer is ready
-
-        
-
-        // Resume context if suspended by iOS
-
-        if (audioCtx.state === 'suspended') {
-
-            audioCtx.resume();
-
-        }
-
-
-
-        if (themeAudio.paused) {
-
-            themeAudio.play();
-
-            themeToggleBtn.classList.add('playing');
-
-        } else {
-
-            themeAudio.pause();
-
-            themeAudio.currentTime = 0;
-
-            themeToggleBtn.classList.remove('playing');
-
-        }
-
-    });
-
-
-
-    // Fallback logic to start audio context on first screen tap
-
-    document.addEventListener('touchstart', () => {
-
-        if(!audioInitialized) { initAudioContext(); }
-
-    }, {once: true});
-
-
-
-</script>
-
-</body>
-
-</html>
