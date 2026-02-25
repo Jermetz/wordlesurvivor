@@ -134,7 +134,7 @@
             align-items: center;
             height: 40px; 
             box-sizing: border-box;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease; /* Smooth transition for color swaps */
         }
 
         .marquee-track {
@@ -300,7 +300,7 @@
             display: block;
             margin-top: 5px;
             letter-spacing: 0.5px;
-            text-transform: none;
+            text-transform: none; /* Keeps exactly what you typed */
         }
 
         /* --- EDGE OF EXTINCTION HEADER --- */
@@ -510,7 +510,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-top: 30px;
-            margin-bottom: 80px;
+            margin-bottom: 80px; /* Space for the floating audio controls */
             width: 100%;
             max-width: 450px;
         }
@@ -535,6 +535,8 @@
             justify-content: center;
             line-height: 1.2;
             transition: all 0.3s ease;
+            
+            /* Stops iOS from zooming in when double tapping quickly */
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
@@ -559,7 +561,7 @@
             border: 2px solid var(--accent);
             border-radius: 12px;
             padding: 15px;
-            margin-top: -5px;
+            margin-top: -5px; /* Pull it slightly up to feel visually connected to the button */
         }
 
         .camp-menu-drawer.open {
@@ -574,6 +576,7 @@
             color: var(--accent);
             padding: 14px 10px; 
             border-radius: 25px;
+            /* Clamp scales the font smoothly between small and large screens */
             font-size: clamp(0.75rem, 4vw, 1.1rem); 
             white-space: nowrap; 
             cursor: pointer;
@@ -587,6 +590,7 @@
             width: 100%; 
             box-sizing: border-box;
             transition: all 0.3s ease;
+            
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
@@ -618,16 +622,17 @@
         
         /* Dedicated Full Page for Minigame */
         .full-page {
-            display: none;
+            display: none; /* Hidden by default */
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: var(--bg-color);
             background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('bg-pattern.jpg');
             background-size: 200px;
-            z-index: 3000;
+            z-index: 3000; /* Ensure it's on top of everything */
             overflow-y: auto; 
-            padding: 0;
+            padding: 0; /* Remove padding to stretch edge to edge */
             box-sizing: border-box;
+            /* RE-ENABLED SCROLLING: Changed from none to pan-y to allow scrolling but block double-tap zoom */
             touch-action: pan-y !important; 
             -webkit-user-select: none;
             user-select: none;
@@ -635,7 +640,7 @@
 
         /* Container for content within the full page */
         .full-page-content {
-            background-color: transparent;
+            background-color: transparent; /* Remove card look for true full-page immersion */
             border: none;
             border-radius: 0;
             padding: 25px 20px;
@@ -718,10 +723,10 @@
             z-index: 3;
         }
 
-        /* The Vertical Sticks */
+        /* The Vertical Sticks (Sitting EXACTLY ON TOP of the crate) */
         .stick {
             position: absolute;
-            bottom: 100px;
+            bottom: 100px; /* Aligned exactly with top of 100px crate */
             width: 14px;
             height: 160px;
             background: linear-gradient(to right, #4a2e15, #8b5a2b, #4a2e15);
@@ -736,7 +741,7 @@
         /* The Hemp Rope */
         .hemp-rope {
             position: absolute;
-            top: 38px;
+            top: 38px; /* Perfectly overlaps the top rim of the sticks */
             height: 6px;
             background: repeating-linear-gradient(45deg, #d4b886, #d4b886 4px, #8b5a2b 4px, #8b5a2b 8px);
             border-radius: 3px;
@@ -745,31 +750,31 @@
             transition: transform 0.4s cubic-bezier(0.5, 0, 1, 1);
         }
         .rope-full {
-            left: 70px;
-            right: 70px;
+            left: 70px; /* Covers the outer edge of the left stick */
+            right: 70px; /* Covers the outer edge of the right stick */
             width: auto;
         }
         .rope-left {
             left: 70px;
             width: calc(50% - 70px);
-            transform-origin: left top;
+            transform-origin: left top; /* Falls DOWN and left */
         }
         .rope-right {
             right: 70px;
             width: calc(50% - 70px);
-            transform-origin: right top;
+            transform-origin: right top; /* Falls DOWN and right */
         }
 
         /* The Pop-up Win Flag Mechanism */
         .flag-mechanism {
             position: absolute;
-            bottom: 100px;
-            right: 62px;
-            height: 160px;
+            bottom: 100px; /* Matches top of crate */
+            right: 62px;   /* Sits extremely close to the right stick with a 2px gap */
+            height: 160px; /* Matches stick height exactly */
             width: 6px;
-            display: none;
-            z-index: 0;
-            transform: translateY(160px);
+            display: none; /* Hidden by default */
+            z-index: 0; /* Behind main stick */
+            transform: translateY(160px); /* Hidden down behind the crate initially */
             opacity: 0;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
         }
@@ -785,12 +790,12 @@
 
         .flag-triangle {
             position: absolute;
-            top: 0;
-            left: 5px;
+            top: 0; /* Aligned EXACTLY with the very top of the pole */
+            left: 5px; /* Attached to the right side of the skinny pole */
             width: 70px;
             height: 45px;
             background: #d32f2f;
-            clip-path: polygon(0 0, 100% 50%, 0 100%);
+            clip-path: polygon(0 0, 100% 50%, 0 100%); /* Makes it a triangle pointing right */
             color: white;
             font-family: 'Arial Black', sans-serif;
             font-size: 0.9rem;
@@ -804,8 +809,9 @@
         /* The Growing Flame */
         .fire-base {
             position: absolute;
-            bottom: 95px;
+            bottom: 95px; /* Sits directly on the crate */
             left: 50%;
+            /* TranslateX keeps it centered, Scale makes it grow TALLER towards the rope */
             transform: translateX(-50%) scaleX(1) scaleY(1);
             font-size: 3rem; 
             transform-origin: bottom center; 
@@ -828,6 +834,7 @@
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #d95100 0%, #ffd700 100%);
+            /* Eased out transition makes the jump to 100% look silky smooth */
             transition: width 0.15s ease-out; 
         }
         
@@ -866,7 +873,7 @@
         }
         .shake-anim {
             animation: shake 0.4s;
-            animation-iteration-count: 2;
+            animation-iteration-count: 2; /* Shakes twice to show real attitude */
         }
 
         .speech-bubble {
@@ -887,7 +894,7 @@
             content: '';
             position: absolute;
             left: -12px;
-            top: 60%;
+            top: 60%; /* Align with the mouth in the specific picture */
             transform: translateY(-50%);
             border-width: 10px 15px 10px 0;
             border-style: solid;
@@ -916,12 +923,12 @@
             padding: 25px 20px;
             border: 3px solid var(--accent);
             width: 90%; 
-            max-width: 800px;
+            max-width: 800px; /* INCREASED MAX-WIDTH */
             border-radius: 12px;
             color: var(--text);
             font-family: 'Arial Black', sans-serif; 
             font-weight: normal;
-            max-height: 90vh;
+            max-height: 90vh; /* INCREASED MAX-HEIGHT */
             overflow-y: auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
@@ -967,7 +974,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 800px;
+            max-width: 800px; /* INCREASED MAX-WIDTH */
         }
 
         .modal-header {
@@ -1052,173 +1059,30 @@
             .action-grid { 
                 grid-column: 1; 
                 grid-row: 4; 
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; /* Expand buttons to a single column */
                 margin-top: 10px; 
             }
 
+            /* Stack drawer buttons single column on iPad to match action grid */
             .camp-menu-drawer {
                 grid-template-columns: 1fr; 
             }
 
             .right-panel {
                 grid-column: 2;
-                grid-row: 1 / span 4;
+                grid-row: 1 / span 4; /* Spans all rows perfectly flush to the top */
                 max-width: 100%;
                 height: 100%;
             }
 
-            .view-toggle-container { max-width: 100%; }
+            .view-toggle-container { max-width: 100%; } /* Stretches nicely on iPad */
             .leaderboard-header, #leaderboard, #extinction-board, #extinction-header {
-                max-width: 100%;
+                max-width: 100%; /* Lets it stretch completely on iPad */
                 margin-top: 0;
             }
             #extinction-header { margin-top: 40px; }
         }
 
-        /* ==================== DEMO/WALKTHROUGH STYLES ==================== */
-        .demo-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            display: none;
-            pointer-events: none;
-        }
-        
-        .demo-highlight {
-            position: relative;
-            z-index: 10001 !important;
-            box-shadow: 0 0 0 4px #ffd700, 0 0 20px 5px #d95100 !important;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            pointer-events: auto !important;
-            transform: scale(1.02);
-            animation: demo-pulse 1.5s infinite;
-        }
-        
-        @keyframes demo-pulse {
-            0% { box-shadow: 0 0 0 4px #ffd700, 0 0 20px 5px #d95100; }
-            50% { box-shadow: 0 0 0 8px #ffd700, 0 0 30px 10px #d95100; }
-            100% { box-shadow: 0 0 0 4px #ffd700, 0 0 20px 5px #d95100; }
-        }
-        
-        .demo-card {
-            position: fixed;
-            background: var(--card-bg);
-            border: 3px solid var(--accent);
-            border-radius: 16px;
-            padding: 20px;
-            max-width: 300px;
-            width: 280px;
-            z-index: 10002;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            pointer-events: auto;
-            animation: demo-slide 0.3s ease;
-        }
-        
-        @keyframes demo-slide {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .demo-card-title {
-            color: var(--accent);
-            font-size: 1.2rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            text-align: center;
-        }
-        
-        .demo-card-description {
-            color: var(--text);
-            font-size: 0.95rem;
-            line-height: 1.4;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .demo-card-buttons {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        
-        .demo-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Arial Black', sans-serif;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .demo-btn-next {
-            background: var(--accent);
-            color: white;
-        }
-        
-        .demo-btn-skip {
-            background: #ccc;
-            color: #666;
-        }
-        
-        .demo-btn-prev {
-            background: var(--text);
-            color: var(--card-bg);
-        }
-        
-        .demo-progress {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            z-index: 10002;
-            pointer-events: none;
-            border: 1px solid var(--accent);
-        }
-        
-        .demo-tap-indicator {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 215, 0, 0.3);
-            border: 2px solid #ffd700;
-            animation: demo-tap 1s infinite;
-            pointer-events: none;
-            z-index: 10003;
-        }
-        
-        @keyframes demo-tap {
-            0% { transform: scale(0.8); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0; }
-        }
-
-        @keyframes toast-slide {
-            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-        @keyframes toast-fade {
-            to { transform: translateX(-50%) translateY(100px); opacity: 0; }
-        }
-
-        .demo-btn-prev:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        /* ==================== END DEMO STYLES ==================== */
     </style>
 </head>
 <body>
@@ -1292,7 +1156,7 @@
     </div>
 
     <div class="action-grid">
-        <a href="https://www.nytimes.com/games/wordle/index.html" target="_blank" class="action-btn" style="background: var(--leaf-green); color: white; border-color: var(--leaf-green);">PLAY WORDLE</a>
+        <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn" style="background: var(--leaf-green); color: white; border-color: var(--leaf-green);">PLAY WORDLE</a>
         <button id="group-chat-btn" class="action-btn">GROUP CHAT</button>
         
         <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
@@ -1397,9 +1261,9 @@
     <div class="modal-header">ATTENTION CASTAWAYS!</div>
     <div class="modal-body">
         <p>In honor of Survivor Season 50, we are officially kicking off: <strong>WORDLE: EDGE OF EXTINCTION</strong>.</p>
-        <p>You just play Wordle daily per usual but now there's running points, pride and survivor themed stakes involved :)</p>
+        <p>You just play Wordle daily per usual but now there’s running points, pride and survivor themed stakes involved :)</p>
         <p><strong>WE START:</strong> The 1st day of Survivor 50: Wed. Feb. 25th. (The season is approx 14 weeks long)</p>
-        <p>I'll be your "Jeff Probst", come on in survivors!</p>
+        <p>I’ll be your “Jeff Probst”, come on in survivors!</p>
 
         <h3 style="text-align: center; font-size: 1.4rem;">THE SETUP (FINE PRINT)</h3>
         <p>Everyone starts with 50 Life Points. The "Sole Wordler" is whoever has the most points remaining after the Survivor 50 Finale night.</p>
@@ -2232,6 +2096,7 @@
         // Remove Firebase listeners to save memory
         if (currentFirebaseRef) {
             currentFirebaseRef.off();
+            isLeaderboardListening = false;
         }
     }
     
@@ -2786,556 +2651,6 @@
         if(!audioInitialized) { initAudioContext(); }
     }, {once: true});
 
-    // ==================== DEMO/WALKTHROUGH FEATURE ====================
-    let demoActive = false;
-    let demoStep = 0;
-    let demoHighlightedElement = null;
-    let originalScrollPosition = 0;
-
-    const demoSteps = [
-        {
-            title: "👋 WELCOME TO SURVIVOR WORDLE!",
-            description: "Let's take a quick tour of the app so you know how to play. Tap next to continue!",
-            target: null,
-            position: 'center'
-        },
-        {
-            title: "📊 THE LEADERBOARD",
-            description: "This is where you'll see all players ranked by their total Life Points. Tap any card to see their Wordle history!",
-            target: '#leaderboard .player-card:first-child',
-            position: 'bottom',
-            action: 'tap'
-        },
-        {
-            title: "🔥 WHO'S HOT?",
-            description: "Switch between 'Total Points' and 'Who's Hot?' to see players on a streak based on their last 3 Wordle scores!",
-            target: '.view-toggle-container',
-            position: 'bottom',
-            action: 'toggle'
-        },
-        {
-            title: "💀 EDGE OF EXTINCTION",
-            description: "Players who hit 0 points go here. They can return by scoring 4/6 or better for 3 days straight!",
-            target: '#extinction-header',
-            position: 'top',
-            condition: () => document.getElementById('extinction-board').children.length > 0
-        },
-        {
-            title: "🏆 BEST WORDLE OF THE WEEK",
-            description: "See who had the most impressive solve this week! This updates automatically from our Google Sheet.",
-            target: '#best-wordle-banner',
-            position: 'bottom'
-        },
-        {
-            title: "⏰ SURVIVOR WEDNESDAYS",
-            description: "Watch the countdown! On Wednesdays, all gains and losses are DOUBLED. Plus, check Tree Mail for clues!",
-            target: '.marquee-wrapper',
-            position: 'bottom'
-        },
-        {
-            title: "🎮 CAMP MENU",
-            description: "This is your camp - tap to explore all the features!",
-            target: '#menu-btn',
-            position: 'top',
-            action: 'open-drawer'
-        },
-        {
-            title: "📜 VIEW RULES",
-            description: "All the official rules, scoring, idols, and advantages explained in detail.",
-            target: '#rules-btn',
-            position: 'left',
-            parentDrawer: true
-        },
-        {
-            title: "💰 DAILY STAKES",
-            description: "See what each Wordle score is worth. Pinch to zoom on the image!",
-            target: '#stakes-btn',
-            position: 'left',
-            parentDrawer: true
-        },
-        {
-            title: "🗣️ JEFF QUOTE",
-            description: "Get random Jeff Probst wisdom anytime! The tribe has spoken...",
-            target: '#quote-btn',
-            position: 'left',
-            parentDrawer: true
-        },
-        {
-            title: "🔥 FIRE MINI-GAME",
-            description: "Think you can make fire faster than your tribemates? Play this tiebreaker game and save your fastest times!",
-            target: '#fire-game-btn',
-            position: 'left',
-            parentDrawer: true,
-            action: 'open-game'
-        },
-        {
-            title: "🎨 TRIBE COLORS",
-            description: "Personalize your app with your favorite tribe's color!",
-            target: '#tribe-btn',
-            position: 'top',
-            parentDrawer: true
-        },
-        {
-            title: "🎵 AUDIO CONTROLS",
-            description: "Toggle campfire ambience and theme music anytime. Perfect for setting the Survivor mood!",
-            target: '.audio-wrapper',
-            position: 'left'
-        },
-        {
-            title: "📱 QUICK ACTIONS",
-            description: "Play Wordle, join the group chat, refresh scores, and see the Ultimate Survivor - all from here!",
-            target: '.action-grid',
-            position: 'top'
-        },
-        {
-            title: "🔍 HIDDEN IDOL HUNT",
-            description: "Keep an eye out... there's a hidden immunity idol somewhere on this screen. Tap it if you find it!",
-            target: '#hidden-idol-trigger',
-            position: 'center',
-            special: 'idol'
-        },
-        {
-            title: "🎲 SHOT IN THE DARK",
-            description: "Check player cards - see how many Shots in the Dark each player has left to erase their worst scores!",
-            target: '#leaderboard .player-card:first-child .drawer-status',
-            position: 'top'
-        },
-        {
-            title: "✨ YOU'RE READY!",
-            description: "That's all the features! Now go outwit, outplay, and outwordle your tribemates. The Sole Wordler awaits!",
-            target: null,
-            position: 'center',
-            final: true
-        }
-    ];
-
-    // Add demo button to the action grid
-    function addDemoButton() {
-        const actionGrid = document.querySelector('.action-grid');
-        if (actionGrid && !document.getElementById('demo-btn')) {
-            const demoBtn = document.createElement('button');
-            demoBtn.id = 'demo-btn';
-            demoBtn.className = 'action-btn';
-            demoBtn.style.background = 'linear-gradient(135deg, #ffd700, #d95100)';
-            demoBtn.style.color = 'white';
-            demoBtn.style.borderColor = '#ffd700';
-            demoBtn.style.gridColumn = '1 / -1';
-            demoBtn.style.marginTop = '10px';
-            demoBtn.innerHTML = '🎓 TAKE THE TOUR';
-            demoBtn.onclick = startDemo;
-            actionGrid.appendChild(demoBtn);
-        }
-    }
-
-    // Create demo overlay and card
-    const demoOverlay = document.createElement('div');
-    demoOverlay.className = 'demo-overlay';
-    demoOverlay.id = 'demo-overlay';
-    document.body.appendChild(demoOverlay);
-
-    const demoCard = document.createElement('div');
-    demoCard.className = 'demo-card';
-    demoCard.id = 'demo-card';
-    demoCard.style.display = 'none';
-    document.body.appendChild(demoCard);
-
-    const demoProgress = document.createElement('div');
-    demoProgress.className = 'demo-progress';
-    demoProgress.id = 'demo-progress';
-    demoProgress.style.display = 'none';
-    document.body.appendChild(demoProgress);
-
-    // Main demo function
-    function startDemo() {
-        if (demoActive) return;
-        
-        demoActive = true;
-        demoStep = 0;
-        originalScrollPosition = window.scrollY;
-        
-        // Close any open modals/drawers
-        closeAllModals();
-        if (campMenuDrawer) campMenuDrawer.classList.remove('open');
-        if (fireGamePage) fireGamePage.style.display = 'none';
-        mainDashboard.style.display = '';
-        
-        // Show overlay and progress
-        demoOverlay.style.display = 'block';
-        demoProgress.style.display = 'block';
-        document.body.classList.add('modal-open');
-        
-        // Prevent actual clicks during demo (except on demo UI)
-        document.addEventListener('click', preventDemoClick, true);
-        
-        showDemoStep();
-    }
-
-    function preventDemoClick(e) {
-        if (!demoActive) return;
-        
-        // Allow clicks on demo UI elements
-        if (e.target.closest('.demo-card') || 
-            e.target.closest('.demo-progress') ||
-            e.target.closest('#demo-btn')) {
-            return;
-        }
-        
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // If the clicked element is the highlighted one and has an action, trigger it
-        if (demoHighlightedElement && e.target.closest('.demo-highlight')) {
-            const step = demoSteps[demoStep];
-            if (step.action) {
-                handleDemoAction(step.action);
-            }
-        }
-    }
-
-    function handleDemoAction(action) {
-        switch(action) {
-            case 'tap':
-                // Simulate tap on highlighted element
-                if (demoHighlightedElement) {
-                    demoHighlightedElement.click();
-                }
-                break;
-            case 'toggle':
-                // Show toggle hint
-                const toggleHint = document.createElement('div');
-                toggleHint.className = 'demo-tap-indicator';
-                const btnRect = demoHighlightedElement.getBoundingClientRect();
-                toggleHint.style.left = (btnRect.left + btnRect.width/2 - 20) + 'px';
-                toggleHint.style.top = (btnRect.top - 30) + 'px';
-                document.body.appendChild(toggleHint);
-                setTimeout(() => toggleHint.remove(), 1500);
-                break;
-            case 'open-drawer':
-                // Open the camp menu drawer
-                if (campMenuDrawer) {
-                    campMenuDrawer.classList.add('open');
-                    setTimeout(() => {
-                        window.scrollTo({
-                            top: document.body.scrollHeight,
-                            behavior: 'smooth'
-                        });
-                    }, 100);
-                }
-                break;
-            case 'open-game':
-                // Open fire mini-game briefly then close
-                if (fireGamePage) {
-                    fireGamePage.style.display = 'flex';
-                    setTimeout(() => {
-                        fireGamePage.style.display = 'none';
-                    }, 2000);
-                }
-                break;
-        }
-    }
-
-    function showDemoStep() {
-        if (!demoActive) return;
-        
-        const step = demoSteps[demoStep];
-        
-        // Check if step has a condition that isn't met
-        if (step.condition && !step.condition()) {
-            nextDemoStep();
-            return;
-        }
-        
-        // Remove previous highlight
-        if (demoHighlightedElement) {
-            demoHighlightedElement.classList.remove('demo-highlight');
-        }
-        
-        // Update progress
-        demoProgress.innerHTML = `${demoStep + 1}/${demoSteps.length} • SURVIVOR TOUR`;
-        
-        // Position and show demo card
-        updateDemoCard(step);
-        
-        // Highlight target element if exists
-        if (step.target) {
-            const targetEl = document.querySelector(step.target);
-            if (targetEl) {
-                demoHighlightedElement = targetEl;
-                targetEl.classList.add('demo-highlight');
-                
-                // Scroll element into view if needed - with a small delay
-                setTimeout(() => {
-                    targetEl.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                }, 100);
-            }
-        }
-        
-        // Special handling for drawer steps
-        if (step.parentDrawer && !campMenuDrawer.classList.contains('open')) {
-            campMenuDrawer.classList.add('open');
-        }
-    }
-
-    function updateDemoCard(step) {
-        const card = demoCard;
-        card.style.display = 'block';
-        
-        // Reset any inline styles that might cause issues
-        card.style.top = 'auto';
-        card.style.left = 'auto';
-        card.style.bottom = 'auto';
-        card.style.right = 'auto';
-        card.style.transform = 'none';
-        
-        // Get viewport dimensions
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        const cardWidth = card.offsetWidth || 280;
-        const cardHeight = card.offsetHeight || 200;
-        
-        // Position the card based on step.position
-        if (step.target) {
-            const targetEl = document.querySelector(step.target);
-            if (targetEl) {
-                const targetRect = targetEl.getBoundingClientRect();
-                
-                if (step.position !== 'center') {
-                    let top, left;
-                    
-                    // Calculate position relative to viewport
-                    switch(step.position) {
-                        case 'top':
-                            top = targetRect.top - cardHeight - 20;
-                            left = targetRect.left + (targetRect.width/2) - (cardWidth/2);
-                            break;
-                        case 'bottom':
-                            top = targetRect.bottom + 20;
-                            left = targetRect.left + (targetRect.width/2) - (cardWidth/2);
-                            break;
-                        case 'left':
-                            top = targetRect.top + (targetRect.height/2) - (cardHeight/2);
-                            left = targetRect.left - cardWidth - 20;
-                            break;
-                        case 'right':
-                            top = targetRect.top + (targetRect.height/2) - (cardHeight/2);
-                            left = targetRect.right + 20;
-                            break;
-                        default:
-                            top = targetRect.bottom + 20;
-                            left = targetRect.left + (targetRect.width/2) - (cardWidth/2);
-                    }
-                    
-                    // Ensure card stays within viewport boundaries
-                    // Horizontal boundaries
-                    if (left < 10) {
-                        left = 10;
-                    } else if (left + cardWidth > viewportWidth - 10) {
-                        left = viewportWidth - cardWidth - 10;
-                    }
-                    
-                    // Vertical boundaries
-                    if (top < 10) {
-                        top = 10;
-                    } else if (top + cardHeight > viewportHeight - 10) {
-                        top = viewportHeight - cardHeight - 10;
-                    }
-                    
-                    // Apply position
-                    card.style.position = 'fixed';
-                    card.style.top = top + 'px';
-                    card.style.left = left + 'px';
-                    
-                    // Build card content
-                    let buttons = '';
-                    
-                    if (step.final) {
-                        buttons = `
-                            <div class="demo-card-buttons" style="justify-content: center;">
-                                <button class="demo-btn demo-btn-next" onclick="endDemo()">🎮 START PLAYING</button>
-                            </div>
-                        `;
-                    } else {
-                        buttons = `
-                            <div class="demo-card-buttons">
-                                <button class="demo-btn demo-btn-prev" onclick="prevDemoStep()" ${demoStep === 0 ? 'disabled' : ''}>◀ PREV</button>
-                                <button class="demo-btn demo-btn-next" onclick="nextDemoStep()">NEXT ▶</button>
-                                <button class="demo-btn demo-btn-skip" onclick="endDemo()">SKIP</button>
-                            </div>
-                        `;
-                    }
-                    
-                    card.innerHTML = `
-                        <div class="demo-card-title">${step.title}</div>
-                        <div class="demo-card-description">${step.description}</div>
-                        ${buttons}
-                    `;
-                    return;
-                }
-            }
-        }
-        
-        // Center position (for steps without target or center position)
-        card.style.position = 'fixed';
-        card.style.top = '50%';
-        card.style.left = '50%';
-        card.style.transform = 'translate(-50%, -50%)';
-        
-        // Build card content for center position
-        let buttons = '';
-        if (step.final) {
-            buttons = `
-                <div class="demo-card-buttons" style="justify-content: center;">
-                    <button class="demo-btn demo-btn-next" onclick="endDemo()">🎮 START PLAYING</button>
-                </div>
-            `;
-        } else {
-            buttons = `
-                <div class="demo-card-buttons">
-                    <button class="demo-btn demo-btn-prev" onclick="prevDemoStep()" ${demoStep === 0 ? 'disabled' : ''}>◀ PREV</button>
-                    <button class="demo-btn demo-btn-next" onclick="nextDemoStep()">NEXT ▶</button>
-                    <button class="demo-btn demo-btn-skip" onclick="endDemo()">SKIP</button>
-                </div>
-            `;
-        }
-        
-        card.innerHTML = `
-            <div class="demo-card-title">${step.title}</div>
-            <div class="demo-card-description">${step.description}</div>
-            ${buttons}
-        `;
-    }
-
-    function nextDemoStep() {
-        if (demoStep < demoSteps.length - 1) {
-            demoStep++;
-            showDemoStep();
-        } else {
-            endDemo();
-        }
-    }
-
-    function prevDemoStep() {
-        if (demoStep > 0) {
-            demoStep--;
-            showDemoStep();
-        }
-    }
-
-    function endDemo() {
-        demoActive = false;
-        demoStep = 0;
-        
-        // Remove highlight
-        if (demoHighlightedElement) {
-            demoHighlightedElement.classList.remove('demo-highlight');
-            demoHighlightedElement = null;
-        }
-        
-        // Hide demo UI
-        demoOverlay.style.display = 'none';
-        demoCard.style.display = 'none';
-        demoProgress.style.display = 'none';
-        document.body.classList.remove('modal-open');
-        
-        // Close camp menu drawer if open
-        if (campMenuDrawer) {
-            campMenuDrawer.classList.remove('open');
-        }
-        
-        // Remove click prevention
-        document.removeEventListener('click', preventDemoClick, true);
-        
-        // Scroll back to original position
-        window.scrollTo({
-            top: originalScrollPosition,
-            behavior: 'smooth'
-        });
-        
-        // Show completion message
-        showToast('🎉 You\'re ready to play! Good luck, Survivor!');
-    }
-
-    function closeAllModals() {
-        const modals = ['rulesModal', 'stakesModal', 'bigrModal', 'quoteModal', 'tribeModal', 'idolModal', 'adminModal'];
-        modals.forEach(id => {
-            const modal = document.getElementById(id);
-            if (modal) modal.style.display = 'none';
-        });
-    }
-
-    function showToast(message) {
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: bold;
-            z-index: 10003;
-            animation: toast-slide 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        `;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.animation = 'toast-fade 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-
-    // Auto-show demo for first-time users
-    function checkFirstTimeUser() {
-        const hasSeenDemo = localStorage.getItem('survivorDemoShown_v1');
-        
-        if (!hasSeenDemo) {
-            // Show demo button with pulsing animation
-            setTimeout(() => {
-                const demoBtn = document.getElementById('demo-btn');
-                if (demoBtn) {
-                    demoBtn.style.animation = 'demo-pulse 1.5s infinite';
-                }
-            }, 1000);
-            
-            localStorage.setItem('survivorDemoShown_v1', 'true');
-        }
-    }
-
-    // Add "Restart Tour" option in the camp menu
-    function addTourToCampMenu() {
-        setTimeout(() => {
-            const campDrawer = document.getElementById('camp-menu-drawer');
-            if (campDrawer && !document.getElementById('restart-tour-btn')) {
-                const tourBtn = document.createElement('button');
-                tourBtn.id = 'restart-tour-btn';
-                tourBtn.className = 'action-btn';
-                tourBtn.style.gridColumn = '1 / -1';
-                tourBtn.style.background = 'linear-gradient(135deg, #ffd700, #d95100)';
-                tourBtn.style.color = 'white';
-                tourBtn.innerHTML = '🎓 RESTART TOUR';
-                tourBtn.onclick = () => {
-                    campDrawer.classList.remove('open');
-                    setTimeout(startDemo, 300);
-                };
-                campDrawer.appendChild(tourBtn);
-            }
-        }, 500);
-    }
-
-    // Initialize demo when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        addDemoButton();
-        checkFirstTimeUser();
-        addTourToCampMenu();
-    });
-    // ==================== END DEMO FEATURE ====================
 </script>
 </body>
 </html>
