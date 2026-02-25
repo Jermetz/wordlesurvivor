@@ -1631,6 +1631,10 @@
             const card = document.createElement('div');
             card.className = 'player-card';
             card.addEventListener('click', () => {
+                // Trigger haptic feedback
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(10); // Short 10ms pulse
+                }
                 card.classList.toggle('expanded');
             });
             
@@ -1705,7 +1709,13 @@
             deadPlayers.forEach(player => {
                 const card = document.createElement('div');
                 card.className = 'player-card';
-                card.addEventListener('click', () => { card.classList.toggle('expanded'); });
+                card.addEventListener('click', () => { 
+                    // Trigger haptic feedback
+                    if (window.navigator && window.navigator.vibrate) {
+                        window.navigator.vibrate(10); // Short 10ms pulse
+                    }
+                    card.classList.toggle('expanded'); 
+                });
                 
                 let changeDisplay = '-';
                 let changeClass = 'change-neutral';
