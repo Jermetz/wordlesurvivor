@@ -1083,7 +1083,27 @@
             #extinction-header { margin-top: 40px; }
         }
 
-    </style>
+    /* --- DAILY STREAK STYLING --- */
+.streak-display {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--accent);
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: rgba(217, 81, 0, 0.15);
+    margin-bottom: 8px;
+}
+
+.streak-hot {
+    background: linear-gradient(90deg, rgba(255, 140, 0, 0.3), rgba(255, 215, 0, 0.3));
+    animation: streak-pulse 1.5s infinite alternate;
+}
+
+@keyframes streak-pulse {
+    0% { box-shadow: 0 0 5px rgba(255, 140, 0, 0.5); }
+    100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+}
+</style>
 </head>
 <body>
 
@@ -1536,7 +1556,7 @@
 
             allPlayersData = rows.map(row => {
                 // Now fetching the 8th (index 7) for Hard Mode, and 9th (index 8) for Shot in the Dark
-                const [name, score, change, idols, hist1, hist2, hist3, hardModeCol, shotInDarkCol] = row.split(',');
+             const [name, score, change, idols, hist1, hist2, hist3, hardModeCol, shotInDarkCol, streakCol] = row.split(',');
                 
                 // Parse strings safely
                 const safeHist1 = hist1 ? hist1.trim() : '-';
@@ -1547,17 +1567,19 @@
                 const calculatedHotScore = getWordleValue(safeHist1) + getWordleValue(safeHist2) + getWordleValue(safeHist3);
 
                 return { 
-                    name: name ? name.trim() : '', 
-                    score: parseInt(score) || 0,
-                    change: parseInt(change) || 0,
-                    idols: parseInt(idols) || 0,
-                    hist1: safeHist1,
-                    hist2: safeHist2,
-                    hist3: safeHist3,
-                    hardMode: hardModeCol ? hardModeCol.trim() : '',
-                    shotInDark: shotInDarkCol ? shotInDarkCol.trim() : '0',
-                    hotScore: calculatedHotScore
-                };
+    name: name ? name.trim() : '', 
+    score: parseInt(score) || 0,
+    change: parseInt(change) || 0,
+    idols: parseInt(idols) || 0,
+    hist1: safeHist1,
+    hist2: safeHist2,
+    hist3: safeHist3,
+    hardMode: hardModeCol ? hardModeCol.trim() : '',
+    shotInDark: shotInDarkCol ? shotInDarkCol.trim() : '0',
+    streak: parseInt(streakCol) || 0,
+    hotScore: calculatedHotScore
+};
+
             }).filter(player => player.name !== ''); // Filter out empty names
 
             // Now that data is loaded and mapped, render the leaderboard
@@ -1653,11 +1675,13 @@
                     </div>
                 </div>
                 <div class="history-drawer">
-                    <div class="drawer-status">
-                        <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
-                        <div>📿 Immunity Idols Banked: ${player.idols}</div>
-                        <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
-                    </div>
+<div class="drawer-status">
+    <div class="streak-display ${player.streak >= 7 ? 'streak-hot' : ''}">🔥 Daily Streak: ${player.streak} day${player.streak !== 1 ? 's' : ''}</div>
+    <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
+    <div>📿 Immunity Idols Banked: ${player.idols}</div>
+    <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
+</div>
+
                     <div class="history-title"><strong>Wordle History</strong></div>
                     <div class="history-grid">
                         <div class="history-day">
@@ -1712,11 +1736,13 @@
                         </div>
                     </div>
                     <div class="history-drawer">
-                        <div class="drawer-status">
-                            <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
-                            <div>📿 Immunity Idols Banked: ${player.idols}</div>
-                            <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
-                        </div>
+ <div class="drawer-status">
+    <div class="streak-display ${player.streak >= 7 ? 'streak-hot' : ''}">🔥 Daily Streak: ${player.streak} day${player.streak !== 1 ? 's' : ''}</div>
+    <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
+    <div>📿 Immunity Idols Banked: ${player.idols}</div>
+    <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
+</div>
+
                         <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
                             <div class="history-day">
