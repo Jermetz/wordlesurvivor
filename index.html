@@ -1,6 +1,3 @@
-No problem! Let me give you the complete, updated HTML file with everything integrated. This will be much easier - just replace your entire existing code with this:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1115,6 +1112,7 @@ No problem! Let me give you the complete, updated HTML file with everything inte
             border-radius: 16px;
             padding: 20px;
             max-width: 300px;
+            width: 280px;
             z-index: 10002;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             pointer-events: auto;
@@ -1214,6 +1212,11 @@ No problem! Let me give you the complete, updated HTML file with everything inte
         }
         @keyframes toast-fade {
             to { transform: translateX(-50%) translateY(100px); opacity: 0; }
+        }
+
+        .demo-btn-prev:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         /* ==================== END DEMO STYLES ==================== */
     </style>
@@ -2229,7 +2232,6 @@ No problem! Let me give you the complete, updated HTML file with everything inte
         // Remove Firebase listeners to save memory
         if (currentFirebaseRef) {
             currentFirebaseRef.off();
-            isLeaderboardListening = false;
         }
     }
     
@@ -3061,11 +3063,13 @@ No problem! Let me give you the complete, updated HTML file with everything inte
                 demoHighlightedElement = targetEl;
                 targetEl.classList.add('demo-highlight');
                 
-                // Scroll element into view if needed
-                targetEl.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
+                // Scroll element into view if needed - with a small delay
+                setTimeout(() => {
+                    targetEl.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }, 100);
             }
         }
         
@@ -3079,51 +3083,108 @@ No problem! Let me give you the complete, updated HTML file with everything inte
         const card = demoCard;
         card.style.display = 'block';
         
-        // Position the card based on step.position
-        const targetRect = step.target ? 
-            document.querySelector(step.target)?.getBoundingClientRect() : 
-            null;
+        // Reset any inline styles that might cause issues
+        card.style.top = 'auto';
+        card.style.left = 'auto';
+        card.style.bottom = 'auto';
+        card.style.right = 'auto';
+        card.style.transform = 'none';
         
-        if (targetRect && step.position !== 'center') {
-            let top, left;
-            
-            switch(step.position) {
-                case 'top':
-                    top = targetRect.top - card.offsetHeight - 20;
-                    left = targetRect.left + (targetRect.width/2) - 150;
-                    break;
-                case 'bottom':
-                    top = targetRect.bottom + 20;
-                    left = targetRect.left + (targetRect.width/2) - 150;
-                    break;
-                case 'left':
-                    top = targetRect.top + (targetRect.height/2) - card.offsetHeight/2;
-                    left = targetRect.left - card.offsetWidth - 20;
-                    break;
-                case 'right':
-                    top = targetRect.top + (targetRect.height/2) - card.offsetHeight/2;
-                    left = targetRect.right + 20;
-                    break;
+        // Get viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const cardWidth = card.offsetWidth || 280;
+        const cardHeight = card.offsetHeight || 200;
+        
+        // Position the card based on step.position
+        if (step.target) {
+            const targetEl = document.querySelector(step.target);
+            if (targetEl) {
+                const targetRect = targetEl.getBoundingClientRect();
+                
+                if (step.position !== 'center') {
+                    let top, left;
+                    
+                    // Calculate position relative to viewport
+                    switch(step.position) {
+                        case 'top':
+                            top = targetRect.top - cardHeight - 20;
+                            left = targetRect.left + (targetRect.width/2) - (cardWidth/2);
+                            break;
+                        case 'bottom':
+                            top = targetRect.bottom + 20;
+                            left = targetRect.left + (targetRect.width/2) - (cardWidth/2);
+                            break;
+                        case 'left':
+                            top = targetRect.top + (targetRect.height/2) - (cardHeight/2);
+                            left = targetRect.left - cardWidth - 20;
+                            break;
+                        case 'right':
+                            top = targetRect.top + (targetRect.height/2) - (cardHeight/2);
+                            left = targetRect.right + 20;
+                            break;
+                        default:
+                            top = targetRect.bottom + 20;
+                            left = targetRect.left + (targetRect.width/2) - (cardWidth/2);
+                    }
+                    
+                    // Ensure card stays within viewport boundaries
+                    // Horizontal boundaries
+                    if (left < 10) {
+                        left = 10;
+                    } else if (left + cardWidth > viewportWidth - 10) {
+                        left = viewportWidth - cardWidth - 10;
+                    }
+                    
+                    // Vertical boundaries
+                    if (top < 10) {
+                        top = 10;
+                    } else if (top + cardHeight > viewportHeight - 10) {
+                        top = viewportHeight - cardHeight - 10;
+                    }
+                    
+                    // Apply position
+                    card.style.position = 'fixed';
+                    card.style.top = top + 'px';
+                    card.style.left = left + 'px';
+                    
+                    // Build card content
+                    let buttons = '';
+                    
+                    if (step.final) {
+                        buttons = `
+                            <div class="demo-card-buttons" style="justify-content: center;">
+                                <button class="demo-btn demo-btn-next" onclick="endDemo()">🎮 START PLAYING</button>
+                            </div>
+                        `;
+                    } else {
+                        buttons = `
+                            <div class="demo-card-buttons">
+                                <button class="demo-btn demo-btn-prev" onclick="prevDemoStep()" ${demoStep === 0 ? 'disabled' : ''}>◀ PREV</button>
+                                <button class="demo-btn demo-btn-next" onclick="nextDemoStep()">NEXT ▶</button>
+                                <button class="demo-btn demo-btn-skip" onclick="endDemo()">SKIP</button>
+                            </div>
+                        `;
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="demo-card-title">${step.title}</div>
+                        <div class="demo-card-description">${step.description}</div>
+                        ${buttons}
+                    `;
+                    return;
+                }
             }
-            
-            // Ensure card stays within viewport
-            left = Math.max(10, Math.min(left, window.innerWidth - card.offsetWidth - 10));
-            top = Math.max(10, Math.min(top, window.innerHeight - card.offsetHeight - 10));
-            
-            card.style.top = top + 'px';
-            card.style.left = left + 'px';
-            card.style.bottom = 'auto';
-            card.style.right = 'auto';
-        } else {
-            // Center position
-            card.style.top = '50%';
-            card.style.left = '50%';
-            card.style.transform = 'translate(-50%, -50%)';
         }
         
-        // Build card content
-        let buttons = '';
+        // Center position (for steps without target or center position)
+        card.style.position = 'fixed';
+        card.style.top = '50%';
+        card.style.left = '50%';
+        card.style.transform = 'translate(-50%, -50%)';
         
+        // Build card content for center position
+        let buttons = '';
         if (step.final) {
             buttons = `
                 <div class="demo-card-buttons" style="justify-content: center;">
