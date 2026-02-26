@@ -2362,24 +2362,7 @@
     }
 
     // Function to close the full-page mini game
-    function closeFireGamePage()
-        immunityGameBtn.onclick = function() {
-        mainDashboard.style.display = "none";
-        immunityGamePage.style.display = "flex";
-        document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-        
-                renderImmunityLeaderboard();
-
-    }
-
-    function closeImmunityGamePage() {
-        immunityGamePage.style.display = "none";
-        mainDashboard.style.display = ""; 
-        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
-        if (typeof resetImmunityGame === "function") resetImmunityGame();
-    }
-
-     {
+    function closeFireGamePage() {
         fireGamePage.style.display = "none";
         mainDashboard.style.display = ""; // Let CSS grid handle iPad layout
         
@@ -2392,6 +2375,21 @@
             isLeaderboardListening = false;
         }
     }
+
+    immunityGameBtn.onclick = function() {
+        mainDashboard.style.display = "none";
+        immunityGamePage.style.display = "flex";
+        document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+        renderImmunityLeaderboard();
+    }
+
+    function closeImmunityGamePage() {
+        immunityGamePage.style.display = "none";
+        mainDashboard.style.display = ""; 
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        if (typeof resetImmunityGame === "function") resetImmunityGame();
+    }
+
     
     // Global Double-Tap Zoom Preventer (attached when modal opens)
     // By keeping track of touch times, we block rapid successive taps anywhere on the screen
