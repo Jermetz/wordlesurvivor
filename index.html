@@ -1663,15 +1663,16 @@
     setInterval(updateCountdown, 60000); 
 
     // Helper function to extract a momentum value out of a Wordle string (e.g. "3/6" or "X/6")
+    // Helper function to extract a momentum value out of a Wordle string
     function getWordleValue(scoreStr) {
-        if (!scoreStr || typeof scoreStr !== 'string') return 0;
+        if (!scoreStr || typeof scoreStr !== 'string' || scoreStr.trim() === '-') return -3;
         const match = scoreStr.match(/([1-6X])\/6/i);
         if (match) {
-            if (match[1].toUpperCase() === 'X') return 0;
+            if (match[1].toUpperCase() === 'X') return -3;
             // 1/6 gets 6 momentum points, 6/6 gets 1 momentum point
             return 7 - parseInt(match[1], 10);
         }
-        return 0; // Covers missed days "-"
+        return -3; // Torch Snuffer Penalty: Covers missed days or invalid entries
     }
 
     async function loadScores() {
@@ -1714,8 +1715,15 @@ allPlayersData = rows.map(row => {
                 const safeHist2 = hist2 ? hist2.trim() : '-';
                 const safeHist3 = hist3 ? hist3.trim() : '-';
 
-                // Calculate momentum behind the scenes (4-day window including Today)
-                const calculatedHotScore = getWordleValue(safeHistToday) + getWordleValue(safeHist1) + getWordleValue(safeHist2) + getWordleValue(safeHist3);
+                const parsedStreak = parseInt(streakCol) || 0;
+
+                // Ultimate Momentum Formula: Time-Weighted + Streak Bonus
+                let todayPts = getWordleValue(safeHistToday) * 1.5;
+                let hist1Pts = getWordleValue(safeHist1) * 1.2;
+                let hist2Pts = getWordleValue(safeHist2) * 1.0;
+                let hist3Pts = getWordleValue(safeHist3) * 0.8;
+                
+                const calculatedHotScore = todayPts + hist1Pts + hist2Pts + hist3Pts + parsedStreak;
 
                 return { 
                     name: name ? name.trim() : '', 
@@ -1728,7 +1736,7 @@ allPlayersData = rows.map(row => {
                     hist3: safeHist3,
                     hardMode: hardModeCol ? hardModeCol.trim() : '',
                     shotInDark: shotInDarkCol ? shotInDarkCol.trim() : '0',
-                    streak: parseInt(streakCol) || 0,
+                    streak: parsedStreak,
                     hotScore: calculatedHotScore,
                     freq: [
                         parseInt(f1) || 0, parseInt(f2) || 0, parseInt(f3) || 0, 
@@ -1827,7 +1835,7 @@ let mainScoreDisplay = player.score;
 
             if (currentSortView === 'hot') {
                 changeHtml = ''; // Removes the Change column for Who's Hot to make room
-                if (player.hotScore === 0) mainScoreDisplay = '<span style="font-size: 1.1rem;">ICE COLD 🧊</span>';
+                if (player.hotScore <= 0) mainScoreDisplay = '<span style="font-size: 1.1rem;">ICE COLD 🧊</span>';
                 else if (currentRank <= 3) mainScoreDisplay = '<span style="font-size: 1.1rem;">ON FIRE 🔥</span>';
                 else if (currentRank <= 7) mainScoreDisplay = '<span style="font-size: 1.1rem;">WARMING UP 🪵</span>';
                 else mainScoreDisplay = '<span style="font-size: 1.1rem;">COOLING OFF 💨</span>';
