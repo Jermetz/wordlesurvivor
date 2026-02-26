@@ -1821,7 +1821,7 @@ const isHardMode = player.hardMode.includes('*');
             const hardModeText = isHardMode ? '✅' : '❌';
             
             let mainScoreDisplay = player.score;
-            if (currentSortView === 'hot') {
+           if (currentSortView === 'hot') {
                 if (player.hotScore >= 13) mainScoreDisplay = '<span style="font-size: 0.9rem;">ON FIRE 🔥</span>';
                 else if (player.hotScore >= 9) mainScoreDisplay = '<span style="font-size: 0.9rem;">WARMING UP 🪵</span>';
                 else if (player.hotScore >= 5) mainScoreDisplay = '<span style="font-size: 0.9rem;">COOLING OFF 💨</span>';
@@ -1829,8 +1829,7 @@ const isHardMode = player.hardMode.includes('*');
             }
 
             card.innerHTML = `
-
-            card.innerHTML = `
+                <div class="card-main">
                 <div class="card-main">
                     <div class="rank">${rankDisplay}</div>
                     <div class="name">
