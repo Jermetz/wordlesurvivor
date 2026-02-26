@@ -1828,10 +1828,10 @@ let mainScoreDisplay = player.score;
 
             if (currentSortView === 'hot') {
                 changeHtml = ''; // Removes the Change column for Who's Hot to make room
-                if (player.hotScore >= 13) mainScoreDisplay = '<span style="font-size: 1.1rem;">ON FIRE 🔥</span>';
-                else if (player.hotScore >= 9) mainScoreDisplay = '<span style="font-size: 1.1rem;">WARMING UP 🪵</span>';
-                else if (player.hotScore >= 5) mainScoreDisplay = '<span style="font-size: 1.1rem;">COOLING OFF 💨</span>';
-                else mainScoreDisplay = '<span style="font-size: 1.1rem;">ICE COLD 🧊</span>';
+                if (player.hotScore === 0) mainScoreDisplay = '<span style="font-size: 1.1rem;">ICE COLD 🧊</span>';
+                else if (currentRank <= 3) mainScoreDisplay = '<span style="font-size: 1.1rem;">ON FIRE 🔥</span>';
+                else if (currentRank <= 7) mainScoreDisplay = '<span style="font-size: 1.1rem;">WARMING UP 🪵</span>';
+                else mainScoreDisplay = '<span style="font-size: 1.1rem;">COOLING OFF 💨</span>';
             }
 
             card.innerHTML = `
