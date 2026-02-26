@@ -1834,7 +1834,7 @@ let mainScoreDisplay = player.score;
             `;
 
             if (currentSortView === 'hot') {
-                changeHtml = ''; // Removes the Change column for Who's Hot to make room
+                changeHtml = `<div class="change-container" style="visibility: hidden;"></div>`; // Keeps the box to prevent shifting
                 if (player.hotScore <= 0) mainScoreDisplay = '<span style="font-size: 1.1rem;">ICE COLD 🧊</span>';
                 else if (currentRank <= 3) mainScoreDisplay = '<span style="font-size: 1.1rem;">ON FIRE 🔥</span>';
                 else if (currentRank <= 7) mainScoreDisplay = '<span style="font-size: 1.1rem;">WARMING UP 🪵</span>';
