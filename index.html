@@ -1820,26 +1820,30 @@
 const isHardMode = player.hardMode.includes('*');
             const hardModeText = isHardMode ? '✅' : '❌';
             
-            let mainScoreDisplay = player.score;
-           if (currentSortView === 'hot') {
-                if (player.hotScore >= 13) mainScoreDisplay = '<span style="font-size: 0.9rem;">ON FIRE 🔥</span>';
-                else if (player.hotScore >= 9) mainScoreDisplay = '<span style="font-size: 0.9rem;">WARMING UP 🪵</span>';
-                else if (player.hotScore >= 5) mainScoreDisplay = '<span style="font-size: 0.9rem;">COOLING OFF 💨</span>';
-                else mainScoreDisplay = '<span style="font-size: 0.9rem;">ICE COLD 🧊</span>';
+let mainScoreDisplay = player.score;
+            let changeHtml = `
+                <div class="change-container">
+                    <span class="change-label">Change</span>
+                    <span class="${changeClass}">${changeDisplay}</span>
+                </div>
+            `;
+
+            if (currentSortView === 'hot') {
+                changeHtml = ''; // Removes the Change column for Who's Hot to make room
+                if (player.hotScore >= 13) mainScoreDisplay = '<span style="font-size: 1.1rem;">ON FIRE 🔥</span>';
+                else if (player.hotScore >= 9) mainScoreDisplay = '<span style="font-size: 1.1rem;">WARMING UP 🪵</span>';
+                else if (player.hotScore >= 5) mainScoreDisplay = '<span style="font-size: 1.1rem;">COOLING OFF 💨</span>';
+                else mainScoreDisplay = '<span style="font-size: 1.1rem;">ICE COLD 🧊</span>';
             }
 
             card.innerHTML = `
-                <div class="card-main">
                 <div class="card-main">
                     <div class="rank">${rankDisplay}</div>
                     <div class="name">
                         ${player.name}
                         ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
                     </div>
-                    <div class="change-container">
-                        <span class="change-label">Change</span>
-                        <span class="${changeClass}">${changeDisplay}</span>
-                    </div>
+                    ${changeHtml}
                     <div class="score-container">
                         <div class="score">${mainScoreDisplay}</div>
                     </div>
