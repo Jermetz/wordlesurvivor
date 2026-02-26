@@ -1709,12 +1709,26 @@
             allPlayersData = rows.map(row => {
                 // Now fetching the 8th (index 7) for Hard Mode, and 9th (index 8) for Shot in the Dark
                // Updated to grab the 7 frequency columns (f1, f2, etc.) at the end
-                const [name, score, change, idols, hist1, hist2, hist3, hardModeCol, shotInDarkCol, streakCol, f1, f2, f3, f4, f5, f6, fx] = row.split(',');
+              const [name, score, change, idols, histToday, hist1, hist2, hist3, hardModeCol, shotInDarkCol, streakCol, f1, f2, f3, f4, f5, f6, fx] = row.split(',');
                 
                 // Parse strings safely
+                const safeHistToday = histToday ? histToday.trim() : '-';
                 const safeHist1 = hist1 ? hist1.trim() : '-';
                 const safeHist2 = hist2 ? hist2.trim() : '-';
                 const safeHist3 = hist3 ? hist3.trim() : '-';
+
+                // Calculate momentum behind the scenes (Now a 4-day window including Today)
+                const calculatedHotScore = getWordleValue(safeHistToday) + getWordleValue(safeHist1) + getWordleValue(safeHist2) + getWordleValue(safeHist3);
+
+                return { 
+                    name: name ? name.trim() : '', 
+                    score: parseInt(score) || 0,
+                    change: parseInt(change) || 0,
+                    idols: parseInt(idols) || 0,
+                    histToday: safeHistToday,
+                    hist1: safeHist1,
+                    hist2: safeHist2,
+                    hist3: safeHist3,
 
                 // Calculate momentum behind the scenes
                 const calculatedHotScore = getWordleValue(safeHist1) + getWordleValue(safeHist2) + getWordleValue(safeHist3);
@@ -1856,8 +1870,12 @@ let mainScoreDisplay = player.score;
                         <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
                     </div>
 
-                    <div class="history-title"><strong>Wordle History</strong></div>
+                  <div class="history-title"><strong>Wordle History</strong></div>
                     <div class="history-grid">
+                        <div class="history-day">
+                            <span class="history-label">TODAY</span>
+                            <span class="history-value">${player.histToday}</span>
+                        </div>
                         <div class="history-day">
                             <span class="history-label">YESTERDAY</span>
                             <span class="history-value">${player.hist1}</span>
@@ -1947,8 +1965,12 @@ let mainScoreDisplay = player.score;
                             <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
                         </div>
 
-                        <div class="history-title"><strong>Wordle History</strong></div>
+                       <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
+                            <div class="history-day">
+                                <span class="history-label">TODAY</span>
+                                <span class="history-value">${player.histToday}</span>
+                            </div>
                             <div class="history-day">
                                 <span class="history-label">YESTERDAY</span>
                                 <span class="history-value">${player.hist1}</span>
