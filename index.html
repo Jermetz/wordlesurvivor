@@ -1833,13 +1833,14 @@ let mainScoreDisplay = player.score;
                 </div>
             `;
 
-            if (currentSortView === 'hot') {
-                changeHtml = `<div class="change-container" style="visibility: hidden;"></div>`; // Keeps the box to prevent shifting
-                if (player.hotScore <= 0) mainScoreDisplay = '<span style="font-size: 1.1rem;">ICE COLD 🧊</span>';
-                else if (currentRank <= 3) mainScoreDisplay = '<span style="font-size: 1.1rem;">ON FIRE 🔥</span>';
-                else if (currentRank <= 7) mainScoreDisplay = '<span style="font-size: 1.1rem;">WARMING UP 🪵</span>';
-                else mainScoreDisplay = '<span style="font-size: 1.1rem;">COOLING OFF 💨</span>';
+                        if (currentSortView === 'hot') {
+                changeHtml = ''; // Completely removes the column so names have room to breathe
+                if (player.hotScore <= 0) mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">ICE COLD 🧊</span>';
+                else if (currentRank <= 3) mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">ON FIRE 🔥</span>';
+                else if (currentRank <= 7) mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">WARMING UP 🪵</span>';
+                else mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">COOLING OFF 💨</span>';
             }
+
 
             card.innerHTML = `
                 <div class="card-main">
