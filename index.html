@@ -2753,7 +2753,7 @@ let mainScoreDisplay = player.score;
         setTimeout(() => { strikeBtn.style.transform = "scale(1)"; }, 50);
         
         // Progressive Resistance: Increased base tap gain so progress is more noticeable
-        let tapGain = isHardMode ? 7 : 10;
+      let tapGain = isHardMode ? 5 : 10;
         fireHeat += tapGain; 
         
         if (fireHeat >= 100) {
@@ -2834,8 +2834,8 @@ let mainScoreDisplay = player.score;
             // --- NEW BALANCED DECAY MATH ---
             // Standard: Starts easy, but wind ramps up heavily. Requires ~4.5 taps/sec to cross the finish line.
             // Hard: Brutal wind at the end. Requires ~9 taps/sec to push through the final 20%.
-            let baseDecay = isHardMode ? 0.4 : 0.25;
-            let scalingDecay = (fireHeat / 100) * (isHardMode ? 0.9 : 0.65);
+           let baseDecay = isHardMode ? 0.55 : 0.25;
+           let scalingDecay = (fireHeat / 100) * (isHardMode ? 1.2 : 0.65);
             
             fireHeat -= (baseDecay + scalingDecay);
 
@@ -3497,7 +3497,7 @@ let mainScoreDisplay = player.score;
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-    <div class="app-version" id="app-version">v1.0.3</div>
+  <div class="app-version" id="app-version">v1.0.4</div>
 </div>
 </body>
 </html>
