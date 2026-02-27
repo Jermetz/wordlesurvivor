@@ -2684,16 +2684,17 @@ let mainScoreDisplay = player.score;
         resetFireGame();
     }
 
-    // Opens the full-page mini game
-    fireGameBtn.onclick = function() {
-        resetFireGame();
-        mainDashboard.style.display = "none";
-        fireGamePage.style.display = "flex";
-        
-        // Anti-Zoom Global Event Listener ONLY active while game is open
-        // Adding passive: false allows preventDefault to work properly
-        document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-    }
+   // Opens the full-page mini game
+fireGameBtn.onclick = function() {
+    resetFireGame();
+    mainDashboard.style.display = "none";
+    window.scrollTo(0, 0); // Forces browser to top before rendering game
+    fireGamePage.style.display = "flex";
+
+    // Anti-Zoom Global Event Listener ONLY active while game is open
+    // Adding passive: false allows preventDefault to work properly
+    document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+}
 
     // Function to close the full-page mini game
     function closeFireGamePage() {
