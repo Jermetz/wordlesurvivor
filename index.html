@@ -1207,7 +1207,88 @@
             border: 3px solid #fff;
         }
 
-    
+            /* --- MANDATORY FEEDBACK MODAL --- */
+        #feedbackModal {
+            z-index: 9999; /* Forced high to sit above everything */
+            background-color: rgba(0,0,0,0.9); /* Dark backdrop so they can't ignore it */
+        }
+
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            font-size: 2.5rem;
+            margin: 15px 0;
+            direction: rtl; /* Allows simple CSS hover effects for previous stars */
+        }
+
+        .star-rating span {
+            color: var(--card-border);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .star-rating span:hover,
+        .star-rating span:hover ~ span,
+        .star-rating span.active,
+        .star-rating span.active ~ span {
+            color: #ffd700; /* Gold */
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .suggestion-box {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            background-color: rgba(0,0,0,0.05);
+            color: var(--text);
+            font-family: 'Arial', sans-serif;
+            font-size: 1rem;
+            resize: none;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .suggestion-box:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+
+        #feedback-error {
+            color: var(--low-score);
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: none;
+        }
+        /* --- THANK YOU TOAST NOTIFICATION --- */
+        #thank-you-toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--leaf-green);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 10000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.5s, bottom 0.5s;
+        }
+
+        #thank-you-toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
     </style>
 </head>
 <body>
@@ -1215,6 +1296,8 @@
 <script>
     // Clearing the old storage key so everyone is forced to see the Welcome Prompt again!
     localStorage.removeItem('survivorTribeColor'); 
+    // TEMPORARY: Remove this line after you are done testing!
+    localStorage.removeItem('survivorFeedbackSubmitted');
 
     const savedTribeColor = localStorage.getItem('survivorTribeColor_v2');
     if(savedTribeColor) {
@@ -1546,6 +1629,31 @@
     </div>
   </div>
 </div>
+<div id="feedbackModal" class="modal">
+  <div class="modal-content" style="text-align: center; margin-top: 15%;">
+    <div class="modal-header">🏝️ HEY SURVIVOR! 🏝️</div>
+    <div class="modal-body">
+        <p style="font-size: 1.1rem; color: var(--text); margin-bottom: 5px;">Welcome to the new app! Before we hand over your buff, we'd love a quick rating to kick off the season.</p>
+        
+        <div class="star-rating" id="star-rating-container">
+            <span data-value="5">&#9733;</span>
+            <span data-value="4">&#9733;</span>
+            <span data-value="3">&#9733;</span>
+            <span data-value="2">&#9733;</span>
+            <span data-value="1">&#9733;</span>
+        </div>
+
+        <p style="font-size: 1rem; color: var(--text); margin-top: 15px; margin-bottom: 10px;">Got ideas? If it were possible, it would be amazing if we could...</p>
+        <textarea id="suggestion-input" class="suggestion-box" placeholder="Any fun ideas, enhancements, or thoughts? Share them here!"></textarea>
+        
+        <div id="feedback-error">Please tap a star rating and leave a quick note so we can improve!</div>
+
+        <button id="submit-feedback-btn" class="action-btn" style="background-color: var(--leaf-green); color: white; width: 100%; font-size: 1.2rem; border-color: var(--leaf-green);">SUBMIT FEEDBACK</button>
+    </div>
+  </div>
+</div>
+<div id="thank-you-toast">🌟 Thank you! Your feedback was sent to Jeff.</div>
+
 
 <div id="adminModal" class="modal">
     <div class="modal-content">
@@ -1557,6 +1665,8 @@
             <button id="admin-clear-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 0 auto;">CLEAR LEADERBOARD</button>
             
             <button id="admin-clear-immunity-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 10px auto 0 auto;">CLEAR IMMUNITY BOARD</button>
+            <button id="admin-view-messages-btn" class="action-btn" style="background-color: var(--accent); color: white; border-color: var(--accent); margin: 10px auto 0 auto; width: 100%;">VIEW TRIBE FEEDBACK</button>
+            <div id="admin-messages-container" style="display: none; margin-top: 15px; text-align: left; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--accent);"></div>
 
             <p id="admin-message" style="margin-top: 15px; font-weight: bold;"></p>
         </div>
@@ -2253,7 +2363,135 @@ let mainScoreDisplay = player.score;
         }
     }
 
-    
+        // --- MANDATORY FEEDBACK LOGIC ---
+    const feedbackModal = document.getElementById('feedbackModal');
+    const stars = document.querySelectorAll('.star-rating span');
+    const suggestionInput = document.getElementById('suggestion-input');
+    const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
+    const feedbackError = document.getElementById('feedback-error');
+    let currentRating = 0;
+
+    // Check if they've already submitted feedback
+    if (!localStorage.getItem('survivorFeedbackSubmitted')) {
+        // Show the modal instantly
+        feedbackModal.style.display = "block";
+        document.body.classList.add('modal-open');
+    }
+
+    // Handle Star Clicks
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            stars.forEach(s => s.classList.remove('active'));
+            this.classList.add('active');
+            currentRating = this.getAttribute('data-value');
+        });
+    });
+
+    // Handle Submit
+    submitFeedbackBtn.onclick = function() {
+        const suggestionText = suggestionInput.value.trim();
+
+        if (currentRating === 0 || suggestionText.length === 0) {
+            feedbackError.style.display = "block";
+            return;
+        }
+
+        feedbackError.style.display = "none";
+
+        // Build the Firebase Payload
+        const feedbackData = {
+            rating: currentRating,
+            suggestion: suggestionText,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        // Push to Firebase (or LocalStorage if offline)
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('tribeFeedback').push(feedbackData);
+        } else {
+            let localFeedback = JSON.parse(localStorage.getItem('tribeFeedback')) || [];
+            localFeedback.push({ ...feedbackData, timestamp: Date.now() });
+            localStorage.setItem('tribeFeedback', JSON.stringify(localFeedback));
+        }
+
+        // Mark as submitted
+        localStorage.setItem('survivorFeedbackSubmitted', 'true');
+
+        // Close modal and clean up
+        feedbackModal.style.display = "none";
+        if (document.getElementById("tribeModal").style.display !== "block") {
+            document.body.classList.remove('modal-open');
+        }
+                // Trigger the Thank You Toast
+        const toast = document.getElementById("thank-you-toast");
+        toast.className = "show";
+        
+        // Hide the toast after 3.5 seconds
+        setTimeout(function() {
+            toast.className = toast.className.replace("show", "");
+        }, 3500);
+
+    };
+
+    // --- ADMIN TRIBE FEEDBACK LOGIC ---
+    const adminViewMessagesBtn = document.getElementById('admin-view-messages-btn');
+    const adminMessagesContainer = document.getElementById('admin-messages-container');
+
+    adminViewMessagesBtn.onclick = function() {
+        if (adminMessagesContainer.style.display === "block") {
+            adminMessagesContainer.style.display = "none";
+            return;
+        }
+
+        adminMessagesContainer.style.display = "block";
+        adminMessagesContainer.innerHTML = "<p style='color: white; text-align: center;'>Gathering tree mail...</p>";
+
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('tribeFeedback').orderByChild('timestamp').once('value', (snapshot) => {
+                let messages = [];
+                snapshot.forEach((child) => {
+                    messages.push(child.val());
+                });
+                renderAdminMessages(messages);
+            }).catch(error => {
+                adminMessagesContainer.innerHTML = `<p style='color: var(--low-score);'>Error loading feedback: ${error.message}</p>`;
+            });
+        } else {
+            let localFeedback = JSON.parse(localStorage.getItem('tribeFeedback')) || [];
+            renderAdminMessages(localFeedback);
+        }
+    };
+
+    function renderAdminMessages(messages) {
+        if (messages.length === 0) {
+            adminMessagesContainer.innerHTML = "<p style='color: white; text-align: center;'>No feedback submitted yet.</p>";
+            return;
+        }
+
+        adminMessagesContainer.innerHTML = "";
+        
+        // Reverse to show newest messages at the top
+        messages.reverse().forEach(msg => {
+            let dateStr = "Unknown Date";
+            if (msg.timestamp) {
+                const d = new Date(msg.timestamp);
+                dateStr = d.toLocaleDateString() + ' at ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+
+            adminMessagesContainer.innerHTML += `
+                <div style="border-bottom: 1px dashed var(--card-border); padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span style="color: #ffd700; font-weight: 900; font-size: 1.1rem; text-shadow: 1px 1px 2px #000;">${msg.rating}/5 Stars</span>
+                        <span style="color: #aaa; font-size: 0.75rem;">${dateStr}</span>
+                    </div>
+                    <div style="color: white; font-size: 0.95rem; font-family: 'Arial', sans-serif; line-height: 1.4;">
+                        "${msg.suggestion}"
+                    </div>
+                </div>
+            `;
+        });
+    }
+
     // --- MINI-GAME LOGIC: FIRE TIEBREAKER ---
     const startFireBtn = document.getElementById('start-fire-btn');
     const strikeBtn = document.getElementById('strike-btn');
@@ -2867,7 +3105,8 @@ let mainScoreDisplay = player.score;
 
     // Close Modals dynamically by checking for the 'modal' class
     window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) {
+                if (event.target.classList.contains('modal') && event.target.id !== 'feedbackModal') {
+
             event.target.style.display = "none";
             document.body.classList.remove('modal-open'); 
             
