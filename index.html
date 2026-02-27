@@ -1322,7 +1322,8 @@
         /* --- SIDE MENU PULL TAB --- */
         .floating-menu-btn {
             position: fixed;
-            top: 25%; /* Sits unobtrusively on the upper right edge */
+            top: 50%; 
+            transform: translateY(-50%); /* Perfectly centers it vertically regardless of device size */
             right: 0;
             background: rgba(43, 29, 14, 0.85); /* Semi-transparent dark matching var(--text) */
             backdrop-filter: blur(2px);
@@ -3626,7 +3627,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.9</div>
+<div class="app-version" id="app-version">v1.0.10</div>
 </div>
 </body>
 </html>
