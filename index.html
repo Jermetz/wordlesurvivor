@@ -1630,7 +1630,7 @@
 </div>
 <div id="feedbackModal" class="modal">
   <div class="modal-content" style="text-align: center; margin-top: 15%;">
-    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('feedbackModal')">&times;</span></div>
+    <div id="feedback-close-wrapper" class="sticky-close-wrapper"><span class="close" onclick="closeModal('feedbackModal')">&times;</span></div>
     <div class="modal-header">🏝️ WEEK 1 CHECK-IN! 🏝️</div>
 
     <div class="modal-body">
@@ -2373,20 +2373,22 @@ let mainScoreDisplay = player.score;
     const feedbackError = document.getElementById('feedback-error');
     let currentRating = 0;
 
-        // Auto-popup ONLY ONCE per user, regardless of if they submit or close it
+      // Auto-popup ONLY ONCE per user, regardless of if they submit or close it
     if (!localStorage.getItem('survivorFeedbackSeen')) {
         feedbackModal.style.display = "block";
         document.body.classList.add('modal-open');
+        document.getElementById('feedback-close-wrapper').style.display = "none"; // Hide the X for the mandatory check-in
         // Instantly flag their device so it NEVER auto-pops again
         localStorage.setItem('survivorFeedbackSeen', 'true');
     }
 
-    // Wire up the new Camp Menu button
+   // Wire up the new Camp Menu button
     const openFeedbackBtn = document.getElementById("open-feedback-btn");
     if (openFeedbackBtn) {
         openFeedbackBtn.onclick = function() { 
             feedbackModal.style.display = "block"; 
             document.body.classList.add('modal-open'); 
+            document.getElementById('feedback-close-wrapper').style.display = "flex"; // Show the X for voluntary suggestions
         };
     }
 
