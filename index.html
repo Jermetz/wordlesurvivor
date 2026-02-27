@@ -1319,6 +1319,101 @@
             color: rgba(255, 255, 255, 0.3);
             letter-spacing: 1px;
         }
+        /* --- FLOATING CAMP MENU BUTTON --- */
+        .floating-menu-btn {
+            position: fixed;
+            bottom: 85px; /* Sits perfectly above your audio controls */
+            right: 20px;
+            background: var(--text);
+            border: 3px solid var(--text);
+            color: var(--card-bg);
+            padding: 12px 18px;
+            border-radius: 25px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            z-index: 2500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease;
+            text-transform: uppercase;
+        }
+        .floating-menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* --- SIDE MENU OVERLAY & DRAWER --- */
+        .side-menu-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            z-index: 2999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .side-menu-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .side-menu-drawer {
+            position: fixed;
+            top: 0; right: -320px; /* Hidden off-screen by default */
+            width: 300px;
+            max-width: 80vw;
+            height: 100vh;
+            background: var(--bg-color);
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('bg-pattern.jpg');
+            border-left: 4px solid var(--accent);
+            z-index: 3000;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.8);
+            overflow-y: auto;
+            transition: right 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.05); /* Smooth snap effect */
+            display: flex;
+            flex-direction: column;
+            padding: 25px 20px;
+            box-sizing: border-box;
+        }
+        .side-menu-drawer.open {
+            right: 0;
+        }
+
+        .side-menu-header {
+            font-family: 'Arial Black', sans-serif;
+            color: var(--accent);
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            text-align: center;
+            border-bottom: 2px dashed var(--accent);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .side-menu-close {
+            position: absolute;
+            top: -10px; right: -10px;
+            font-size: 2.2rem;
+            color: var(--card-bg);
+            cursor: pointer;
+            line-height: 1;
+            text-shadow: none;
+            transition: color 0.2s ease;
+        }
+        .side-menu-close:active {
+            color: var(--low-score);
+        }
+
+        /* Restyle action buttons specifically for the side menu layout */
+        .side-menu-drawer .action-btn {
+            width: 100%;
+            margin-bottom: 12px;
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
@@ -1391,27 +1486,41 @@
 
     </div>
 
-    <div class="action-grid">
-        <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn" style="background: var(--leaf-green); color: white; border-color: var(--leaf-green);">PLAY WORDLE</a>
-        <button id="group-chat-btn" class="action-btn">GROUP CHAT</button>
-        
-        <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
-        <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
+    ```
 
-        <button id="menu-btn" class="action-btn" style="background: var(--text); color: var(--card-bg); border-color: var(--text);">⛺ CAMP MENU</button>
-        
-        <div id="camp-menu-drawer" class="camp-menu-drawer">
-            <button id="rules-btn" class="action-btn">VIEW RULES</button>
-            <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
-            <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
-            <button id="fire-game-btn" class="action-btn">🔥 MINI-GAME</button>
-            <button id="immunity-game-btn" class="action-btn">🧩 IMMUNITY</button>
+### Step 3: Insert the New Side Menu Markup
+We need to insert the physical menu and toggle button outside of your dashboard layout so it floats perfectly.
 
-            <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
-            <button id="open-feedback-btn" class="action-btn" style="grid-column: 1 / -1; background-color: var(--leaf-green); color: white; border-color: var(--leaf-green);">📣 DROP A SUGGESTION</button>
+**How to find it:** Look for `<div class="audio-wrapper">` (it should be right beneath the area you just replaced).
+**Where to put your cursor:** Create a new line directly *above* `<div class="audio-wrapper">`.
+**Code to insert:**
+```html
+<button id="floating-menu-btn" class="floating-menu-btn">⛺ CAMP MENU</button>
 
-        </div>
+<div id="side-menu-overlay" class="side-menu-overlay"></div>
+<div id="side-menu-drawer" class="side-menu-drawer">
+    <div class="side-menu-header">
+        YOUR CAMP
+        <span class="side-menu-close" id="side-menu-close">&times;</span>
     </div>
+    
+    <p style="text-align: center; font-weight: bold; font-size: 0.85rem; color: #aaa; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Daily Actions</p>
+    
+    <a href="https://www.google.com/aclk?sa=L&ai=DChsSEwjflIeyhu2SAxUiMggFHaEXFlsYACICCAEQARoCbWQ&co=1&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtCc6sbJhVVhmuknf_YJDBobD9tOzJi_FvR_PpF_EMjLnKbOIASaU0QaAoBbEALw_wcB&sph=&cid=CAASuwHkaM5kkxH1erK72wkD2LQFeMCjiaV6WuUd8aRpEQOhlW8p2cVaStClbS2iCcdwL8MToOVliAR-7h5OiZZbZc2ooOpCEU1gPww64Jz79tEmOyv2bo3D9ZUJJGrlgFulQhf6Tup6dXuXc_zmno3iqxiu1hlUuQWF9-T-0D10KAILO-_8wC-CHQRhzSqkVzJ9n52uPljcuW6E5rayQ-_biDGeAbKND9uSwf4DEkXX8PO5U9Xx5L4xRxN31sFi&cce=2&sig=AOD64_2cZCyIeYx6mdvNjizgH2fdvGB_cQ&q=&ved=2ahUKEwi9pYCyhu2SAxWykYkEHewiEXYQwgUoAXoECBgQEg&nis=8&ch=1&adurl=" target="_blank" class="action-btn" style="background: var(--leaf-green); color: white; border-color: var(--leaf-green);">PLAY WORDLE</a>
+    <button id="group-chat-btn" class="action-btn">GROUP CHAT</button>
+    <button id="refresh-btn" class="action-btn">REFRESH SCORES</button>
+    <button id="bigr-btn" class="action-btn">ULTIMATE SURVIVOR</button>
+    
+    <p style="text-align: center; font-weight: bold; font-size: 0.85rem; color: #aaa; margin-top: 15px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Camp Activities</p>
+    
+    <button id="rules-btn" class="action-btn">VIEW RULES</button>
+    <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
+    <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
+    <button id="fire-game-btn" class="action-btn">🔥 MINI-GAME</button>
+    <button id="immunity-game-btn" class="action-btn">🧩 IMMUNITY</button>
+    <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
+    <button id="open-feedback-btn" class="action-btn" style="background-color: var(--leaf-green); color: white; border-color: var(--leaf-green); margin-bottom: 30px;">📣 DROP A SUGGESTION</button>
+</div>
 </div>
 
 <div class="audio-wrapper">
@@ -2199,11 +2308,13 @@ let mainScoreDisplay = player.score;
           tribeBtn = document.getElementById("tribe-btn"),
           groupChatBtn = document.getElementById("group-chat-btn"),
           hiddenIdolTrigger = document.getElementById("hidden-idol-trigger"),
-          menuBtn = document.getElementById("menu-btn"),
+          floatingMenuBtn = document.getElementById("floating-menu-btn"),
+          sideMenuOverlay = document.getElementById("side-menu-overlay"),
+          sideMenuDrawer = document.getElementById("side-menu-drawer"),
+          sideMenuClose = document.getElementById("side-menu-close"),
           fireGameBtn = document.getElementById("fire-game-btn"),
           immunityGameBtn = document.getElementById("immunity-game-btn"),
           immunityGamePage = document.getElementById("immunity-game-page"),
-          campMenuDrawer = document.getElementById("camp-menu-drawer"),
           dynamicLeaderboardHeader = document.getElementById("dynamic-leaderboard-header"),
           adminClearBtn = document.getElementById("admin-clear-btn"),
                   adminClearImmunityBtn = document.getElementById("admin-clear-immunity-btn"),
@@ -2242,19 +2353,30 @@ let mainScoreDisplay = player.score;
         "Grab your torches, head back to camp. Goodnight."
     ];
 
-    // JS Update: Open Camp Menu Drawer and scroll fully to the bottom
-    menuBtn.onclick = function() { 
-        const isOpen = campMenuDrawer.classList.toggle('open'); 
+    // JS Update: Open/Close Survivor Side Menu
+    function toggleSideMenu() {
+        const isOpen = sideMenuDrawer.classList.contains('open');
         if (isOpen) {
-            // Slight delay allows the browser to render the new height before scrolling
-            setTimeout(() => {
-                window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 100);
+            sideMenuDrawer.classList.remove('open');
+            sideMenuOverlay.classList.remove('open');
+            document.body.classList.remove('modal-open');
+        } else {
+            sideMenuDrawer.classList.add('open');
+            sideMenuOverlay.classList.add('open');
+            document.body.classList.add('modal-open'); // Locks background scrolling
         }
     }
+
+    floatingMenuBtn.onclick = toggleSideMenu;
+    sideMenuClose.onclick = toggleSideMenu;
+    sideMenuOverlay.onclick = toggleSideMenu;
+
+    // Automatically close the side menu if any action button inside it is clicked
+    sideMenuDrawer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('action-btn')) {
+            toggleSideMenu();
+        }
+    });
 
     // Buttons inside the Camp Menu Drawer
     rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
@@ -3500,7 +3622,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
- <div class="app-version" id="app-version">v1.0.6</div>
+<div class="app-version" id="app-version">v1.0.7</div>
 </div>
 </body>
 </html>
