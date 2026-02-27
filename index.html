@@ -1296,8 +1296,6 @@
 <script>
     // Clearing the old storage key so everyone is forced to see the Welcome Prompt again!
     localStorage.removeItem('survivorTribeColor'); 
-    // TEMPORARY: Remove this line after you are done testing!
-    localStorage.removeItem('survivorFeedbackSubmitted');
 
     const savedTribeColor = localStorage.getItem('survivorTribeColor_v2');
     if(savedTribeColor) {
@@ -1380,6 +1378,7 @@
             <button id="immunity-game-btn" class="action-btn">🧩 IMMUNITY</button>
 
             <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
+            <button id="open-feedback-btn" class="action-btn" style="grid-column: 1 / -1; background-color: var(--leaf-green); color: white; border-color: var(--leaf-green);">📣 DROP A SUGGESTION</button>
 
         </div>
     </div>
@@ -1631,7 +1630,9 @@
 </div>
 <div id="feedbackModal" class="modal">
   <div class="modal-content" style="text-align: center; margin-top: 15%;">
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('feedbackModal')">&times;</span></div>
     <div class="modal-header">🏝️ WEEK 1 CHECK-IN! 🏝️</div>
+
     <div class="modal-body">
         <p style="font-size: 1.1rem; color: var(--text); margin-bottom: 5px;">You survived the premiere! Now that we're officially underway, I'd love a quick rating on how the app is running so far.</p>
         
@@ -2372,11 +2373,21 @@ let mainScoreDisplay = player.score;
     const feedbackError = document.getElementById('feedback-error');
     let currentRating = 0;
 
-    // Check if they've already submitted feedback
-    if (!localStorage.getItem('survivorFeedbackSubmitted')) {
-        // Show the modal instantly
+        // Auto-popup ONLY ONCE per user, regardless of if they submit or close it
+    if (!localStorage.getItem('survivorFeedbackSeen')) {
         feedbackModal.style.display = "block";
         document.body.classList.add('modal-open');
+        // Instantly flag their device so it NEVER auto-pops again
+        localStorage.setItem('survivorFeedbackSeen', 'true');
+    }
+
+    // Wire up the new Camp Menu button
+    const openFeedbackBtn = document.getElementById("open-feedback-btn");
+    if (openFeedbackBtn) {
+        openFeedbackBtn.onclick = function() { 
+            feedbackModal.style.display = "block"; 
+            document.body.classList.add('modal-open'); 
+        };
     }
 
     // Handle Star Clicks
@@ -3106,7 +3117,8 @@ let mainScoreDisplay = player.score;
 
     // Close Modals dynamically by checking for the 'modal' class
     window.onclick = function(event) {
-                if (event.target.classList.contains('modal') && event.target.id !== 'feedbackModal') {
+                       if (event.target.classList.contains('modal')) {
+
 
             event.target.style.display = "none";
             document.body.classList.remove('modal-open'); 
