@@ -1501,9 +1501,8 @@
 
 <div id="side-menu-overlay" class="side-menu-overlay"></div>
 <div id="side-menu-drawer" class="side-menu-drawer">
-    <div class="side-menu-header">
+<div class="side-menu-header">
         YOUR CAMP
-        <span class="side-menu-close" id="side-menu-close">&times;</span>
     </div>
     
     <p style="text-align: center; font-weight: bold; font-size: 0.85rem; color: #aaa; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Daily Actions</p>
@@ -2310,11 +2309,10 @@ let mainScoreDisplay = player.score;
           tribeBtn = document.getElementById("tribe-btn"),
           groupChatBtn = document.getElementById("group-chat-btn"),
           hiddenIdolTrigger = document.getElementById("hidden-idol-trigger"),
-          floatingMenuBtn = document.getElementById("floating-menu-btn"),
-          sideMenuOverlay = document.getElementById("side-menu-overlay"),
-          sideMenuDrawer = document.getElementById("side-menu-drawer"),
-          sideMenuClose = document.getElementById("side-menu-close"),
-          fireGameBtn = document.getElementById("fire-game-btn"),
+         floatingMenuBtn = document.getElementById("floating-menu-btn"),
+         sideMenuOverlay = document.getElementById("side-menu-overlay"),
+         sideMenuDrawer = document.getElementById("side-menu-drawer"),
+         fireGameBtn = document.getElementById("fire-game-btn"),
           immunityGameBtn = document.getElementById("immunity-game-btn"),
           immunityGamePage = document.getElementById("immunity-game-page"),
           dynamicLeaderboardHeader = document.getElementById("dynamic-leaderboard-header"),
@@ -2372,7 +2370,6 @@ let mainScoreDisplay = player.score;
     }
 
     floatingMenuBtn.onclick = toggleSideMenu;
-    sideMenuClose.onclick = toggleSideMenu;
     sideMenuOverlay.onclick = toggleSideMenu;
 
     // Automatically close the side menu if any action button inside it is clicked
@@ -3633,7 +3630,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.12</div>
+<div class="app-version" id="app-version">v1.0.13</div>
 </div>
 </body>
 </html>
