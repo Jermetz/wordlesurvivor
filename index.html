@@ -47,6 +47,7 @@
             align-items: center;
             min-height: 100vh;
             overscroll-behavior-y: contain; 
+            position: relative;
         }
 
         /* --- BACKGROUND SCROLL LOCK (Applied via JS) --- */
@@ -1290,14 +1291,17 @@
         }
 /* --- RIPAFIN BRANDING & APP VERSION --- */
         .app-footer {
-            position: fixed;
-            bottom: 8px;
-            left: 10px;
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 5px;
-            z-index: 9000;
-            pointer-events: none; /* Ensures it doesn't block any clicks */
+            z-index: 100;
+            pointer-events: none; 
+            width: 100%;
         }
 
         .ripafin-logo {
