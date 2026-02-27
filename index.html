@@ -2712,11 +2712,12 @@ fireGameBtn.onclick = function() {
     }
 
     immunityGameBtn.onclick = function() {
-        mainDashboard.style.display = "none";
-        immunityGamePage.style.display = "flex";
-        document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-        renderImmunityLeaderboard();
-    }
+    mainDashboard.style.display = "none";
+    window.scrollTo(0, 0); // Forces browser to top before rendering game
+    immunityGamePage.style.display = "flex";
+    document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+    renderImmunityLeaderboard();
+}
 
     function closeImmunityGamePage() {
         immunityGamePage.style.display = "none";
@@ -3498,7 +3499,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-  <div class="app-version" id="app-version">v1.0.4</div>
+  <div class="app-version" id="app-version">v1.0.5</div>
 </div>
 </body>
 </html>
