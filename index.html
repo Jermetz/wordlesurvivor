@@ -2382,32 +2382,36 @@ let mainScoreDisplay = player.score;
         }
     });
 
+ // Helper function to hide tent handle when a modal opens
+    function openModalWithNoTab(modalElement) {
+        modalElement.style.display = "block";
+        document.body.classList.add('modal-open');
+        floatingMenuBtn.style.display = "none"; // Hide tent handle
+    }
+
     // Buttons inside the Camp Menu Drawer
-    rulesBtn.onclick = function() { rulesModal.style.display = "block"; document.body.classList.add('modal-open'); }
-    stakesBtn.onclick = function() { stakesModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    rulesBtn.onclick = function() { openModalWithNoTab(rulesModal); }
+    stakesBtn.onclick = function() { openModalWithNoTab(stakesModal); }
     
     // Explicitly hide the welcome blurb if opening from the menu later
     tribeBtn.onclick = function() { 
         document.getElementById("welcome-blurb").style.display = "none";
-        tribeModal.style.display = "block"; 
-        document.body.classList.add('modal-open'); 
+        openModalWithNoTab(tribeModal);
     }
     
     // Logic for Random Quote Button (inside Menu Drawer)
     quoteBtn.onclick = function() {
         const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
         quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
-        quoteModal.style.display = "block";
-        document.body.classList.add('modal-open'); 
+        openModalWithNoTab(quoteModal);
     }
 
     // Buttons on Main Screen
-    bigrBtn.onclick = function() { bigrModal.style.display = "block"; document.body.classList.add('modal-open'); }
+    bigrBtn.onclick = function() { openModalWithNoTab(bigrModal); }
 
     // Hidden Idol Scavenger Hunt Logic
     hiddenIdolTrigger.onclick = function() {
-        idolModal.style.display = "block";
-        document.body.classList.add('modal-open');
+        openModalWithNoTab(idolModal);
     }
 
     // Group Chat Button Logic: Main Screen
@@ -2811,10 +2815,11 @@ let mainScoreDisplay = player.score;
         resetFireGame();
     }
 
-   // Opens the full-page mini game
+ // Opens the full-page mini game
 fireGameBtn.onclick = function() {
     resetFireGame();
     mainDashboard.style.display = "none";
+    floatingMenuBtn.style.display = "none"; // Hide the tent tab
     window.scrollTo(0, 0); // Forces browser to top before rendering game
     fireGamePage.style.display = "flex";
 
@@ -2827,6 +2832,7 @@ fireGameBtn.onclick = function() {
     function closeFireGamePage() {
         fireGamePage.style.display = "none";
         mainDashboard.style.display = ""; // Let CSS grid handle iPad layout
+        floatingMenuBtn.style.display = "flex"; // Bring the tent tab back
         
         // Remove the anti-zoom listener so normal app functions return
         document.body.removeEventListener('touchstart', preventDoubleTapZoom);
@@ -2840,15 +2846,17 @@ fireGameBtn.onclick = function() {
 
     immunityGameBtn.onclick = function() {
     mainDashboard.style.display = "none";
+    floatingMenuBtn.style.display = "none"; // Hide the tent tab
     window.scrollTo(0, 0); // Forces browser to top before rendering game
     immunityGamePage.style.display = "flex";
     document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
     renderImmunityLeaderboard();
 }
 
-    function closeImmunityGamePage() {
+ function closeImmunityGamePage() {
         immunityGamePage.style.display = "none";
         mainDashboard.style.display = ""; 
+        floatingMenuBtn.style.display = "flex"; // Bring the tent tab back
         document.body.removeEventListener('touchstart', preventDoubleTapZoom);
         if (typeof resetImmunityGame === "function") resetImmunityGame();
     }
@@ -3287,10 +3295,11 @@ fireGameBtn.onclick = function() {
         stakesViewer.scrollLeft = 0;
     }
 
-    // JS Update: Removes 'modal-open' class and resets Stakes modal state when closed
+   // JS Update: Removes 'modal-open' class and resets Stakes modal state when closed
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = "none";
         document.body.classList.remove('modal-open'); 
+        floatingMenuBtn.style.display = "flex"; // Bring tent handle back
         
         if (modalId === 'stakesModal') {
              resetStakesModal();
@@ -3300,14 +3309,13 @@ fireGameBtn.onclick = function() {
             adminMessage.innerText = "";
         }
     }
-
-    // Close Modals dynamically by checking for the 'modal' class
+  // Close Modals dynamically by checking for the 'modal' class
     window.onclick = function(event) {
-                       if (event.target.classList.contains('modal')) {
-
-
+        // Exclude side-menu-overlay from this check so it can handle its own clicks
+        if (event.target.classList.contains('modal') && event.target.id !== 'side-menu-overlay') {
             event.target.style.display = "none";
             document.body.classList.remove('modal-open'); 
+            floatingMenuBtn.style.display = "flex"; // Bring tent handle back
             
             if (event.target.id === 'stakesModal') {
                  resetStakesModal();
@@ -3318,7 +3326,6 @@ fireGameBtn.onclick = function() {
             }
         }
     }
-
     function createEmbers() {
         const body = document.body;
         for(let i = 0; i < 80; i++) {
@@ -3626,7 +3633,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.11</div>
+<div class="app-version" id="app-version">v1.0.12</div>
 </div>
 </body>
 </html>
