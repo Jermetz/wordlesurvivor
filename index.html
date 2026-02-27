@@ -1319,27 +1319,40 @@
             color: rgba(255, 255, 255, 0.3);
             letter-spacing: 1px;
         }
-        /* --- FLOATING CAMP MENU BUTTON --- */
+        /* --- SIDE MENU PULL TAB --- */
         .floating-menu-btn {
             position: fixed;
-            bottom: 85px; /* Sits perfectly above your audio controls */
-            right: 20px;
-            background: var(--text);
-            border: 3px solid var(--text);
+            top: 25%; /* Sits unobtrusively on the upper right edge */
+            right: 0;
+            background: rgba(43, 29, 14, 0.85); /* Semi-transparent dark matching var(--text) */
+            backdrop-filter: blur(2px);
+            border: 2px solid var(--card-border);
+            border-right: none; /* Flush with screen edge */
             color: var(--card-bg);
-            padding: 12px 18px;
-            border-radius: 25px;
-            font-family: 'Arial Black', sans-serif;
-            font-size: 1rem;
-            font-weight: 900;
+            padding: 12px 10px;
+            border-radius: 12px 0 0 12px;
+            font-size: 1.6rem; /* Size of the icon */
             cursor: pointer;
-            z-index: 2500;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: transform 0.2s ease;
-            text-transform: uppercase;
+            z-index: 3001; /* Crucial: Sits slightly ABOVE the side menu (3000) */
+            box-shadow: -2px 2px 8px rgba(0,0,0,0.5);
+            transition: right 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.05), background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .floating-menu-btn:active {
-            transform: scale(0.95);
+
+        /* Pushes the button to the left edge of the drawer when open */
+        .floating-menu-btn.open {
+            right: 300px; /* Matches the drawer width */
+            background: var(--accent); /* Lights up when opened */
+            border-color: var(--accent);
+        }
+        
+        /* Ensures the handle stays perfectly aligned on very small phones */
+        @media (max-width: 375px) {
+            .floating-menu-btn.open {
+                right: 80vw;
+            }
         }
 
         /* --- SIDE MENU OVERLAY & DRAWER --- */
@@ -1486,7 +1499,8 @@
 
     </div>
 
-    ```
+<button id="floating-menu-btn" class="floating-menu-btn">⛺</button>
+    </div>
 
 ### Step 3: Insert the New Side Menu Markup
 We need to insert the physical menu and toggle button outside of your dashboard layout so it floats perfectly.
@@ -2359,10 +2373,12 @@ let mainScoreDisplay = player.score;
         if (isOpen) {
             sideMenuDrawer.classList.remove('open');
             sideMenuOverlay.classList.remove('open');
+            floatingMenuBtn.classList.remove('open'); // Pulls handle back
             document.body.classList.remove('modal-open');
         } else {
             sideMenuDrawer.classList.add('open');
             sideMenuOverlay.classList.add('open');
+            floatingMenuBtn.classList.add('open');    // Pushes handle out
             document.body.classList.add('modal-open'); // Locks background scrolling
         }
     }
@@ -3622,7 +3638,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.7</div>
+<div class="app-version" id="app-version">v1.0.8</div>
 </div>
 </body>
 </html>
