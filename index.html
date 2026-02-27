@@ -1431,7 +1431,7 @@
 
             <h2 id="fire-timer" style="color: #fff; font-size: 2.2rem; margin-top: 0; font-family: monospace; text-shadow: 2px 2px 4px #000;">10.00s</h2>
 
-            <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.5rem; padding: 20px; display: none; margin-top: 20px; background-color: var(--accent); color: white;">TAP FAST TO STRIKE!</button>
+           <button id="strike-btn" class="action-btn" style="width: 100%; font-size: 1.8rem; padding: 25px 10px; display: none; margin-top: 20px; background-color: var(--accent); color: white;">TAP FAST TO STRIKE!</button>
             <button id="start-fire-btn" class="text-btn" style="background-color: var(--accent); color: white;">START CHALLENGE</button>
             
             <div id="end-game-reaction">
@@ -2711,16 +2711,20 @@ let mainScoreDisplay = player.score;
     startFireBtn.onclick = function() { startFireGame(); }
     playAgainBtn.onclick = function() { resetFireGame(); }
 
-    // Use touchstart to intercept mobile taps BEFORE the browser interprets a double-tap zoom
+    // Unified pointer event handler for flawless tap detection
     function handleStrikeEvent(e) {
         if (e && e.cancelable) {
             e.preventDefault(); // CRITICAL: This stops double-tap zooming entirely on the button!
         }
         
         if (!fireGameActive) return;
+
+        // Visual haptic feedback: Forces the button to visually depress on every tap
+        strikeBtn.style.transform = "scale(0.92)";
+        setTimeout(() => { strikeBtn.style.transform = "scale(1)"; }, 50);
         
-        // Progressive Resistance: Heat gained decreases, and wind decay increases as the fire grows!
-        let tapGain = isHardMode ? 6 : 8; 
+        // Progressive Resistance: Increased base tap gain so progress is more noticeable
+        let tapGain = isHardMode ? 7 : 10;
         fireHeat += tapGain; 
         
         if (fireHeat >= 100) {
@@ -2743,14 +2747,8 @@ let mainScoreDisplay = player.score;
         }
     }
 
-    // Attach native touch events to the strike button to make it infinitely spammable
-    strikeBtn.addEventListener('touchstart', handleStrikeEvent, { passive: false });
-    
-    // Fallback for desktop testing with a mouse
-    strikeBtn.addEventListener('mousedown', function(e) {
-        if (e.button === 0) handleStrikeEvent(e);
-    });
-
+// Use pointerdown for flawless rapid-fire tapping across all devices (ignores slight finger drags)
+    strikeBtn.addEventListener('pointerdown', handleStrikeEvent);
     function resetFireGame() {
         clearInterval(fireInterval);
         fireGameActive = false;
