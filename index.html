@@ -2451,20 +2451,16 @@ let mainScoreDisplay = player.score;
     const adminViewMessagesBtn = document.getElementById('admin-view-messages-btn');
     const adminMessagesContainer = document.getElementById('admin-messages-container');
 
-    adminViewMessagesBtn.onclick = function() {
-        if (adminMessagesContainer.style.display === "block") {
-            adminMessagesContainer.style.display = "none";
-            return;
-        }
-
-        adminMessagesContainer.style.display = "block";
+   function loadAdminMessages() {
         adminMessagesContainer.innerHTML = "<p style='color: white; text-align: center;'>Gathering tree mail...</p>";
 
         if (usingGlobalLeaderboard) {
             fireDb.ref('tribeFeedback').orderByChild('timestamp').once('value', (snapshot) => {
                 let messages = [];
                 snapshot.forEach((child) => {
-                    messages.push(child.val());
+                    let msg = child.val();
+                    msg.key = child.key; // Save the unique Firebase key for deletion
+                    messages.push(msg);
                 });
                 renderAdminMessages(messages);
             }).catch(error => {
@@ -2472,7 +2468,33 @@ let mainScoreDisplay = player.score;
             });
         } else {
             let localFeedback = JSON.parse(localStorage.getItem('tribeFeedback')) || [];
+            // Assign a local array index as the key
+            localFeedback = localFeedback.map((msg, index) => { msg.key = index; return msg; });
             renderAdminMessages(localFeedback);
+        }
+    }
+
+    adminViewMessagesBtn.onclick = function() {
+        if (adminMessagesContainer.style.display === "block") {
+            adminMessagesContainer.style.display = "none";
+            return;
+        }
+        adminMessagesContainer.style.display = "block";
+        loadAdminMessages();
+    };
+
+    window.deleteFeedback = function(key) {
+        if (!confirm("Are you sure you want to delete this suggestion?")) return;
+
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('tribeFeedback').child(key).remove().then(() => {
+                loadAdminMessages(); // Refresh the list
+            }).catch(err => alert("Error deleting: " + err.message));
+        } else {
+            let localFeedback = JSON.parse(localStorage.getItem('tribeFeedback')) || [];
+            localFeedback.splice(key, 1); // Remove from array
+            localStorage.setItem('tribeFeedback', JSON.stringify(localFeedback));
+            loadAdminMessages(); // Refresh the list
         }
     };
 
@@ -2496,7 +2518,10 @@ let mainScoreDisplay = player.score;
                 <div style="border-bottom: 1px dashed var(--card-border); padding-bottom: 10px; margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                         <span style="color: #ffd700; font-weight: 900; font-size: 1.1rem; text-shadow: 1px 1px 2px #000;">${msg.rating}/5 Stars</span>
-                        <span style="color: #aaa; font-size: 0.75rem;">${dateStr}</span>
+                       <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="color: #aaa; font-size: 0.75rem;">${dateStr}</span>
+                            <button onclick="deleteFeedback('${msg.key}')" style="background: var(--low-score); color: white; border: none; border-radius: 4px; cursor: pointer; padding: 2px 8px; font-weight: bold; font-family: 'Arial Black', sans-serif;">X</button>
+                        </div>
                     </div>
                     <div style="color: white; font-size: 0.95rem; font-family: 'Arial', sans-serif; line-height: 1.4;">
                         "${msg.suggestion}"
