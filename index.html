@@ -160,7 +160,7 @@
         /* --- STYLED AUDIO INTERFACE --- */
         .audio-wrapper {
             position: fixed;
-            bottom: 20px;
+            bottom: max(30px, env(safe-area-inset-bottom)); /* Bumps up & dodges iOS home bar */
             right: 20px;
             display: flex;
             align-items: center;
@@ -1292,10 +1292,9 @@
         }
 /* --- RIPAFIN BRANDING & APP VERSION --- */
         .app-footer {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
+            margin-top: 40px;
+            padding-bottom: 50px; /* Provides a large scroll buffer for the audio buttons */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -3627,7 +3626,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.10</div>
+<div class="app-version" id="app-version">v1.0.11</div>
 </div>
 </body>
 </html>
