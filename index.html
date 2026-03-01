@@ -324,10 +324,10 @@
             flex-grow: 1;
         }
 
-                     .player-card {
+                           .player-card {
             background-color: var(--card-bg);
-            /* Updated to exactly match your file name: Buff.png */
-            background-image: linear-gradient(rgba(244, 228, 188, 0.75), rgba(244, 228, 188, 0.75)), url('buff.jpeg');
+            /* Increased opacity to 0.88 to push the image further into the background */
+            background-image: linear-gradient(rgba(244, 228, 188, 0.88), rgba(244, 228, 188, 0.88)), url('Buff.png');
             background-size: 200%; 
             border: 2px solid var(--card-border);
             border-radius: 12px;
@@ -2096,9 +2096,16 @@ let mainScoreDisplay = player.score;
                 </div>
             `;
 
-                        if (currentSortView === 'hot') {
-                changeHtml = ''; // Completely removes the column so names have room to breathe
+                                    if (currentSortView === 'hot') {
+                // Makes the column invisible and 0 width, preserving the card height without stealing space!
+                changeHtml = `
+                    <div class="change-container" style="visibility: hidden; width: 0; min-width: 0; margin: 0;">
+                        <span class="change-label">Change</span>
+                        <span class="change-neutral">-</span>
+                    </div>
+                `;
                 if (player.hotScore <= 0) mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">ICE COLD 🧊</span>';
+
                 else if (currentRank <= 3) mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">ON FIRE 🔥</span>';
                 else if (currentRank <= 7) mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">WARMING UP 🪵</span>';
                 else mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">COOLING OFF 💨</span>';
