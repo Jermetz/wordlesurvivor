@@ -324,10 +324,10 @@
             flex-grow: 1;
         }
 
-                           .player-card {
+                                 .player-card {
             background-color: var(--card-bg);
-            /* Increased opacity to 0.88 to push the image further into the background */
-            background-image: linear-gradient(rgba(244, 228, 188, 0.88), rgba(244, 228, 188, 0.88)), url('Buff.png');
+            /* 0.82 is the sweet spot. 0.88 was hiding the image completely! */
+            background-image: linear-gradient(rgba(244, 228, 188, 0.82), rgba(244, 228, 188, 0.82)), url('Buff.png');
             background-size: 200%; 
             border: 2px solid var(--card-border);
             border-radius: 12px;
@@ -340,8 +340,6 @@
             transition: all 0.2s ease-in-out;
             overflow: hidden;
         }
-
-
 
         #extinction-board .rank { color: #333; font-size: 1.2rem; }
         #extinction-board .score { color: #333; }
