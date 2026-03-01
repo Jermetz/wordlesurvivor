@@ -324,33 +324,16 @@
             flex-grow: 1;
         }
 
-        .player-card {
-            background: var(--card-bg);
+             .player-card {
+            background-color: var(--card-bg);
+            /* Fades the buff heavily into the beige card color so text pops */
+            background-image: linear-gradient(rgba(244, 228, 188, 0.88), rgba(244, 228, 188, 0.88)), url('buff.png');
+            background-size: 250px; /* Scales the buff pattern nicely */
             border: 2px solid var(--card-border);
             border-radius: 12px;
             display: flex;
             flex-direction: column;
             border-left: 8px solid var(--accent);
-            box-shadow: 0 6px 10px rgba(0,0,0,0.4);
-            color: var(--text);
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            overflow: hidden;
-        }
-
-        /* Edge of Extinction Card Styles */
-               .player-card {
-            background-color: var(--card-bg);
-            /* NEW: Woven fabric/buff texture overlay */
-            background-image: 
-                linear-gradient(45deg, rgba(0,0,0,0.03) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.03) 75%, rgba(0,0,0,0.03)), 
-                linear-gradient(-45deg, rgba(0,0,0,0.03) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.03) 75%, rgba(0,0,0,0.03));
-            background-size: 10px 10px; /* Controls the tightness of the weave */
-            border: 2px solid var(--card-border);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            border-left: 8px solid var(--accent); /* Retains the dynamic Tribe Color on the edge */
             box-shadow: 0 6px 10px rgba(0,0,0,0.4);
             color: var(--text);
             cursor: pointer;
@@ -1939,6 +1922,18 @@
         return -3; // Torch Snuffer Penalty: Covers missed days or invalid entries
     }
 
+    // Helper function to create a unique, consistent background position based on player name
+    function getBgOffset(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const x = Math.abs(hash % 100);
+        const y = Math.abs((hash >> 8) % 100);
+        return `${x}% ${y}%`;
+    }
+
+
     async function loadScores() {
         try {
             const timestamp = new Date().getTime();
@@ -2060,6 +2055,8 @@ allPlayersData = rows.map(row => {
         activePlayers.forEach((player, index) => {
             const card = document.createElement('div');
             card.className = 'player-card';
+                        card.style.backgroundPosition = getBgOffset(player.name);
+
             card.addEventListener('click', () => {
                 // Trigger haptic feedback
                 if (window.navigator && window.navigator.vibrate) {
@@ -2180,6 +2177,9 @@ let mainScoreDisplay = player.score;
             deadPlayers.forEach(player => {
                 const card = document.createElement('div');
                 card.className = 'player-card';
+                
+                                card.style.backgroundPosition = getBgOffset(player.name);
+
                 card.addEventListener('click', () => { 
                     // Trigger haptic feedback
                     if (window.navigator && window.navigator.vibrate) {
@@ -3642,7 +3642,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.14</div>
+<div class="app-version" id="app-version">v1.0.15</div>
 </div>
 </body>
 </html>
