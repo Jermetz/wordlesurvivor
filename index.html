@@ -339,13 +339,25 @@
         }
 
         /* Edge of Extinction Card Styles */
-        #extinction-board .player-card {
-            background: #ccc;
-            border-left: 8px solid #555;
-            filter: grayscale(100%);
-            opacity: 0.8;
-            color: #333;
+               .player-card {
+            background-color: var(--card-bg);
+            /* NEW: Woven fabric/buff texture overlay */
+            background-image: 
+                linear-gradient(45deg, rgba(0,0,0,0.03) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.03) 75%, rgba(0,0,0,0.03)), 
+                linear-gradient(-45deg, rgba(0,0,0,0.03) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.03) 75%, rgba(0,0,0,0.03));
+            background-size: 10px 10px; /* Controls the tightness of the weave */
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            border-left: 8px solid var(--accent); /* Retains the dynamic Tribe Color on the edge */
+            box-shadow: 0 6px 10px rgba(0,0,0,0.4);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            overflow: hidden;
         }
+
         #extinction-board .rank { color: #333; font-size: 1.2rem; }
         #extinction-board .score { color: #333; }
         #extinction-board .drawer-status { border-color: #555; background: rgba(0,0,0,0.05); color: #333; }
@@ -3630,7 +3642,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.13</div>
+<div class="app-version" id="app-version">v1.0.14</div>
 </div>
 </body>
 </html>
