@@ -1718,8 +1718,9 @@
     </div>
 </div>
 
-<div id="chat-page" class="full-page" style="background-color: #000; background-image: none;">
-    <div class="full-page-content" style="padding: 0; min-height: 100%; display: flex; flex-direction: column; width: 100%; max-width: 100%; align-items: stretch; border: none; box-shadow: none;">
+<div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow-x: hidden;">
+    <div class="full-page-content" style="padding: 0; min-height: 100%; display: flex; flex-direction: column; width: 100vw; max-width: 100%; align-items: stretch; border: none; box-shadow: none; overflow-x: hidden;">
+
         
         <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0;">
             <div onclick="closeChatPage()" style="color: #0B93F6; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; text-transform: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: normal; text-shadow: none;">
@@ -1731,9 +1732,12 @@
             </div>
                       <div style="width: 22px;"></div>
         </div>
-        
-        <div id="chat-messages" style="flex-grow: 1; overflow-y: auto; padding: 15px 10px; display: flex; flex-direction: column; gap: 4px; background: #000; height: 60vh;">
+                <div id="chat-messages" style="flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 15px 10px; display: flex; flex-direction: column; gap: 4px; background: #000; height: 60vh; position: relative;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 2.5rem; font-family: 'Arial Black', sans-serif; color: rgba(255, 255, 255, 0.1); white-space: nowrap; pointer-events: none; z-index: 0; text-align: center; line-height: 1.2;">
+                CHAT UNDER<br>CONSTRUCTION
             </div>
+            </div>
+
         
         <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: flex-end; gap: 12px; width: 100%; box-sizing: border-box; margin: 0;">
             <input type="file" id="chat-image-upload" accept="image/*" style="display: none;">
@@ -3989,7 +3993,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.31</div>
+        <div class="app-version" id="app-version">v1.0.32</div>
     </div>
 
 </body>
