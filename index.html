@@ -3823,43 +3823,44 @@ fireGameBtn.onclick = function() {
         };
     }
 
-    // Shared Helper Function to Handle Uploading
+        // Shared Helper Function to Handle Uploading
     function uploadChatImage(file) {
-
-                    let username = getChatUsername();
+        let username = getChatUsername();
         if(!username) return;
 
         if (usingGlobalLeaderboard) {
+            // Show a temporary loading message in the input box
+            chatInput.placeholder = "Uploading image...";
+            chatInput.disabled = true;
 
-                // Show a temporary loading message in the input box
-                chatInput.placeholder = "Uploading image...";
-                chatInput.disabled = true;
+            // Handle pasted images that might not have a name
+            let fileName = file.name || "pasted_image.png";
 
-                // Create a unique filename based on time
-                const storageRef = firebase.storage().ref('chat_images/' + Date.now() + '_' + file.name);
-                
-                // Upload the file to Firebase Storage
-                storageRef.put(file).then((snapshot) => {
-                    return snapshot.ref.getDownloadURL();
-                }).then((downloadURL) => {
-                    // Push the resulting URL to the chat database
-                    fireDb.ref('tribeChat').push({
-                        name: username,
-                        text: downloadURL,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    });
-                }).catch((error) => {
-                    alert("Image upload failed: " + error.message);
-                }).finally(() => {
-                    // Reset the input box
-                    chatInput.placeholder = "iMessage";
-                    chatInput.disabled = false;
-                    chatImageUpload.value = ""; // Clear the file input
+            // Create a unique filename based on time
+            const storageRef = firebase.storage().ref('chat_images/' + Date.now() + '_' + fileName);
+            
+            // Upload the file to Firebase Storage
+            storageRef.put(file).then((snapshot) => {
+                return snapshot.ref.getDownloadURL();
+            }).then((downloadURL) => {
+                // Push the resulting URL to the chat database
+                fireDb.ref('tribeChat').push({
+                    name: username,
+                    text: downloadURL,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
-            } else {
-                alert("Cannot upload images while database is offline.");
-            }
-        };
+            }).catch((error) => {
+                alert("Image upload failed: " + error.message);
+            }).finally(() => {
+                // Reset the input box
+                chatInput.placeholder = "iMessage";
+                chatInput.disabled = false;
+                const uploadInput = document.getElementById('chat-image-upload');
+                if(uploadInput) uploadInput.value = ""; // Clear the file input
+            });
+        } else {
+            alert("Cannot upload images while database is offline.");
+        }
     }
 
 
@@ -3940,8 +3941,6 @@ fireGameBtn.onclick = function() {
         <div class="ripafin-logo">RIPAFIN</div>
         <div class="app-version" id="app-version">v1.0.29</div>
     </div>
-</body>
-</html>
 
 </body>
 </html>
