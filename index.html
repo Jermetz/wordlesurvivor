@@ -235,30 +235,30 @@
             opacity: 0.9;
         }
 
-      .banner-content {
+ .banner-content {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
-            font-size: 1.6rem;
-            font-family: 'Arial Black', sans-serif;
-            font-weight: 900;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-            color: #ffd700;
-            letter-spacing: 1px;
-            margin-top: 5px;
+            gap: 12px; /* Increased gap slightly for breathing room */
+            margin-top: 15px;
+            width: 100%;
         }
 
         .tied-name-pill {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.6); /* Slightly darker for better contrast */
             border: 2px solid var(--accent);
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 8px 18px; /* Slightly larger padding */
+            border-radius: 25px; /* Rounder edges */
             box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-            font-size: 1.3rem;
+            font-size: 1.4rem; /* Adjusted font size */
+            font-family: 'Arial Black', sans-serif;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
             white-space: nowrap;
+            letter-spacing: 1px;
+            display: inline-block; /* Ensure they behave like distinct blocks */
         }
-
         /* --- NEW VIEW TOGGLE BUTTONS --- */
         .view-toggle-container {
             display: flex;
@@ -2087,12 +2087,18 @@
             const bannerContainer = document.getElementById('best-wordle-banner');
             const bannerTextEl = document.getElementById('best-wordle-text');
             
-            if (bannerText && bannerText.length > 0) {
-                // Split the string by commas, slashes, or ampersands to catch tied names
-                const names = bannerText.split(/[,/&]+/).map(n => n.trim()).filter(n => n.length > 0);
+           if (bannerText && bannerText.length > 0) {
+                // Split by common separators (comma, slash, ampersand, or pipe)
+                const namesArray = bannerText.split(/[,/&|]+/).map(n => n.trim()).filter(n => n.length > 0);
                 
-                // Wrap each name in our new pill style
-                bannerTextEl.innerHTML = names.map(name => `<span class="tied-name-pill">${name}</span>`).join('');
+                // Build the HTML string for all pills
+                let htmlContent = "";
+                namesArray.forEach(name => {
+                    htmlContent += `<span class="tied-name-pill">${name}</span>`;
+                });
+                
+                // Inject the final HTML into the container
+                bannerTextEl.innerHTML = htmlContent;
                 bannerContainer.classList.add('visible');
             } else {
                 bannerContainer.classList.remove('visible');
@@ -4014,7 +4020,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.38</div>
+        <div class="app-version" id="app-version">v1.0.39</div>
     </div>
 
 </body>
