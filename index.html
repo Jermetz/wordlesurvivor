@@ -3766,9 +3766,12 @@ fireGameBtn.onclick = function() {
         }
     };
 
-    chatInput.addEventListener('keypress', function (e) {
+        chatInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             chatSendBtn.click();
+            chatInput.blur(); 
+        }
+    });
             
     // Plus Button Native Image Upload
     const chatImageUpload = document.getElementById('chat-image-upload');
@@ -3893,7 +3896,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.22</div>
+<div class="app-version" id="app-version">v1.0.23</div>
 </div>
 </body>
 </html>
