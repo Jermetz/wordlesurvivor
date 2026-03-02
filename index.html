@@ -10,9 +10,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <style>
         :root {
             /* Tagi Orange is the default accent, but this can now be overridden by the user! */
@@ -1702,6 +1702,8 @@
             </div>
         
       <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; margin: 0;">
+        <input type="file" id="chat-image-upload" accept="image/*" style="display: none;">
+            <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer;">
             <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer;">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             </div>
@@ -3767,25 +3769,50 @@ fireGameBtn.onclick = function() {
     chatInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             chatSendBtn.click();
-            chatInput.blur(); 
-        }
-    });
-
-    // Plus Button Image/GIF Sending
-    if(chatPlusBtn) {
+            
+    // Plus Button Native Image Upload
+    const chatImageUpload = document.getElementById('chat-image-upload');
+    
+    if(chatPlusBtn && chatImageUpload) {
         chatPlusBtn.onclick = function() {
-            let imgUrl = prompt("Paste an image URL (ending in .jpg, .png, or .gif) to share it to the camp:");
-            if(imgUrl && imgUrl.trim() !== "") {
-                let username = getChatUsername();
-                if(!username) return;
+            chatImageUpload.click(); // Open the native file picker
+        };
+
+        chatImageUpload.onchange = function(e) {
+            let file = e.target.files[0];
+            if (!file) return;
+
+            let username = getChatUsername();
+            if(!username) return;
+
+            if (usingGlobalLeaderboard) {
+                // Show a temporary loading message in the input box
+                chatInput.placeholder = "Uploading image...";
+                chatInput.disabled = true;
+
+                // Create a unique filename based on time
+                const storageRef = firebase.storage().ref('chat_images/' + Date.now() + '_' + file.name);
                 
-                if (usingGlobalLeaderboard) {
+                // Upload the file to Firebase Storage
+                storageRef.put(file).then((snapshot) => {
+                    return snapshot.ref.getDownloadURL();
+                }).then((downloadURL) => {
+                    // Push the resulting URL to the chat database
                     fireDb.ref('tribeChat').push({
                         name: username,
-                        text: imgUrl.trim(),
+                        text: downloadURL,
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
-                }
+                }).catch((error) => {
+                    alert("Image upload failed: " + error.message);
+                }).finally(() => {
+                    // Reset the input box
+                    chatInput.placeholder = "iMessage";
+                    chatInput.disabled = false;
+                    chatImageUpload.value = ""; // Clear the file input
+                });
+            } else {
+                alert("Cannot upload images while database is offline.");
             }
         };
     }
@@ -3866,7 +3893,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.21</div>
+<div class="app-version" id="app-version">v1.0.22</div>
 </div>
 </body>
 </html>
