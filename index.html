@@ -1718,19 +1718,20 @@
     </div>
 </div>
 
-<div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow-x: hidden; display: none; flex-direction: column; height: 100vh;">
+<div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow-x: hidden; display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: -webkit-fill-available; z-index: 4000;">
+    
     <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
-        <div onclick="closeChatPage()" style="color: #0B93F6; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; text-transform: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: normal; text-shadow: none;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;"><polyline points="15 18 9 12 15 6"></polyline></svg> 
+        <div onclick="closeChatPage()" style="color: #0B93F6; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; text-transform: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: normal; text-shadow: none; padding: 5px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;"><polyline points="15 18 9 12 15 6"></polyline></svg> Back
         </div>
         <div style="display: flex; flex-direction: column; align-items: center; text-shadow: none;">
             <span style="font-size: 0.95rem; color: #fff; letter-spacing: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: bold;">Tribe Chat</span>
             <span style="font-size: 0.75rem; color: #888; text-transform: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: normal;">Edge of Extinction</span>
         </div>
-        <div style="width: 22px;"></div>
-    </div>
+        <div style="width: 50px;"></div> </div>
             
     <div id="chat-messages" style="flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 15px 10px; display: flex; flex-direction: column; gap: 4px; background: transparent; position: relative;">
+
         <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 2.5rem; font-family: 'Arial Black', sans-serif; color: rgba(255, 255, 255, 0.1); white-space: nowrap; pointer-events: none; z-index: -1; text-align: center; line-height: 1.2;">
             CHAT UNDER<br>CONSTRUCTION
         </div>
@@ -1738,7 +1739,7 @@
             </div>
 
         
-        <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: flex-end; gap: 12px; width: 100%; box-sizing: border-box; margin: 0;">
+              <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: flex-end; gap: 12px; width: 100%; box-sizing: border-box; margin: 0; flex-shrink: 0;">
             <input type="file" id="chat-image-upload" accept="image/*" style="display: none;">
             <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer; flex-shrink: 0; margin-bottom: 8px;" onclick="document.getElementById('chat-image-upload').click();">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
@@ -3992,7 +3993,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.33</div>
+        <div class="app-version" id="app-version">v1.0.34</div>
     </div>
 
 </body>
