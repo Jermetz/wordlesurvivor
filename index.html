@@ -2080,11 +2080,15 @@
             const response = await fetch(SHEET_URL + '&nocache=' + timestamp, { cache: 'no-store' });
             const data = await response.text();
             const allRows = data.split('\n');
-            const headerRow = allRows[0].split(',');
+                        // Use regex to split by comma EXCEPT when inside double quotes (Google Sheets formatting)
+            const headerRow = allRows[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
             // Updated Column Indices based on inserting the new columns
-            const bannerText = headerRow[9] ? headerRow[9].trim() : '';
+            let bannerText = headerRow[9] ? headerRow[9].trim() : '';
+            bannerText = bannerText.replace(/^"|"$/g, '').trim(); // Remove Google Sheets quotes
+            
             const bannerContainer = document.getElementById('best-wordle-banner');
+
             const bannerTextEl = document.getElementById('best-wordle-text');
             
            if (bannerText && bannerText.length > 0) {
@@ -4020,7 +4024,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.39</div>
+        <div class="app-version" id="app-version">v1.0.40</div>
     </div>
 
 </body>
