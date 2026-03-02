@@ -1426,6 +1426,20 @@
     </style>
 </head>
 <body>
+<div id="chatModal" class="modal">
+  <div class="modal-content">
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('chatModal')">&times;</span></div>
+    <div class="modal-header">TRIBE CHAT</div>
+    <div class="modal-body">
+        <div id="chat-messages" style="height: 350px; overflow-y: auto; background: rgba(0,0,0,0.05); border: 2px solid var(--accent); border-radius: 8px; padding: 12px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px;">
+            </div>
+        <div style="display: flex; gap: 8px;">
+            <input type="text" id="chat-input" placeholder="Paste Wordle score or type message..." style="flex-grow: 1; padding: 12px; border-radius: 6px; border: 2px solid var(--card-border); font-size: 1rem; font-family: 'Arial', sans-serif;">
+            <button id="chat-send-btn" class="action-btn" style="margin: 0; padding: 10px 15px;">SEND</button>
+        </div>
+    </div>
+  </div>
+</div>
 
 <script>
     // Clearing the old storage key so everyone is forced to see the Welcome Prompt again!
@@ -2431,23 +2445,12 @@ let mainScoreDisplay = player.score;
         openModalWithNoTab(idolModal);
     }
 
-    // Group Chat Button Logic: Main Screen
-    groupChatBtn.onclick = async function() {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'SW',
-                    text: 'SW' 
-                });
-                return; 
-            } catch (err) {
-                console.log("Share sheet dismissed or failed, attempting fallback.");
-            }
-        } else {
-            const otherMembers = "12676002525,12157830476,12155340778,12677840928,12672462812,12157782017,12155342754,12155345206,12154160918,15705176212,12676886136,12156511073,12677848350";
-            window.location.href = `sms://open?addresses=${otherMembers}`;
-        }
+        // Group Chat Button Logic: Main Screen
+    groupChatBtn.onclick = function() {
+        openModalWithNoTab(document.getElementById("chatModal"));
+        loadChatMessages(); // Fetch the live feed
     }
+
 
     // Refresh Button Logic: Main Screen
     refreshBtn.onclick = function() { 
@@ -3574,7 +3577,82 @@ fireGameBtn.onclick = function() {
     }
 
 
-    
+        // --- TRIBE CHAT LOGIC ---
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatMessagesContainer = document.getElementById('chat-messages');
+    let chatListenerActive = false;
+
+    function loadChatMessages() {
+        if (chatListenerActive || !usingGlobalLeaderboard) return;
+        chatListenerActive = true;
+        
+        chatMessagesContainer.innerHTML = "<p style='text-align:center; color: var(--text);'>Connecting to camp...</p>";
+
+        // Listen to the last 50 messages to keep performance snappy
+        fireDb.ref('tribeChat').limitToLast(50).on('value', (snapshot) => {
+            chatMessagesContainer.innerHTML = "";
+            let hasMessages = false;
+            
+            snapshot.forEach((child) => {
+                hasMessages = true;
+                let msg = child.val();
+                let msgDate = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                let msgDiv = document.createElement('div');
+                msgDiv.style.background = "var(--card-bg)";
+                msgDiv.style.border = "1px solid var(--card-border)";
+                msgDiv.style.padding = "10px";
+                msgDiv.style.borderRadius = "8px";
+                msgDiv.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
+                
+                msgDiv.innerHTML = `
+                    <div style="font-size: 0.75rem; color: var(--accent); font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">${msg.name} <span style="color: #666; font-weight: normal; margin-left: 5px;">${msgDate}</span></div>
+                    <div style="font-size: 0.95rem; color: var(--text); word-wrap: break-word; white-space: pre-wrap; font-family: 'Arial', sans-serif;">${msg.text}</div>
+                `;
+                chatMessagesContainer.appendChild(msgDiv);
+            });
+            
+            if (!hasMessages) {
+                chatMessagesContainer.innerHTML = "<p style='text-align:center; color: var(--text); font-style: italic;'>No messages yet. Be the first to drop your score!</p>";
+            } else {
+                // Instantly scroll to the bottom so newest messages are visible
+                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+            }
+        });
+    }
+
+    chatSendBtn.onclick = function() {
+        let text = chatInput.value.trim();
+        if (text === "") return;
+
+        // Check if we know who is sending it, otherwise prompt them
+        let username = localStorage.getItem('survivorChatName');
+        if (!username) {
+            username = prompt("Enter your Survivor alias for the group chat:");
+            if (!username || username.trim() === "") return;
+            localStorage.setItem('survivorChatName', username.trim().toUpperCase());
+        }
+
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('tribeChat').push({
+                name: username,
+                text: text,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            chatInput.value = ""; // Clear input after sending
+        }
+    };
+
+    // Allow hitting "Enter" on the keyboard to send
+    chatInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            chatSendBtn.click();
+            // Optional: Dismiss mobile keyboard after hitting enter
+            chatInput.blur(); 
+        }
+    });
+
     // --- iOS BYPASS AUDIO LOGIC ---
     const fireAudio = document.getElementById('fireSound');
     const themeAudio = document.getElementById('themeSound');
@@ -3650,7 +3728,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.15</div>
+<div class="app-version" id="app-version">v1.0.16</div>
 </div>
 </body>
 </html>
