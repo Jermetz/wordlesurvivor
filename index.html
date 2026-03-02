@@ -2092,8 +2092,9 @@
             const bannerTextEl = document.getElementById('best-wordle-text');
             
            if (bannerText && bannerText.length > 0) {
-                // Split by common separators (comma, slash, ampersand, or pipe)
-                const namesArray = bannerText.split(/[,/&|]+/).map(n => n.trim()).filter(n => n.length > 0);
+                              // Split by common separators (comma, ampersand, or pipe) - ignoring slashes for Wordle scores
+                const namesArray = bannerText.split(/[,&|]+/).map(n => n.trim()).filter(n => n.length > 0);
+
                 
                 // Build the HTML string for all pills
                 let htmlContent = "";
@@ -4024,7 +4025,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.40</div>
+        <div class="app-version" id="app-version">v1.0.41</div>
     </div>
 
 </body>
