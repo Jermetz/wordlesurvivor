@@ -1423,6 +1423,49 @@
             margin-bottom: 12px;
             margin-top: 0;
         }
+                /* --- iMESSAGE BUBBLE TAILS --- */
+        .chat-bubble {
+            position: relative;
+            padding: 8px 14px;
+            border-radius: 18px;
+            font-size: 1.05rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.35;
+            max-width: 100%;
+            z-index: 1;
+        }
+        .chat-bubble.me {
+            background: #0B93F6;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble.me::before {
+            content: ""; position: absolute; z-index: -1; bottom: 0; right: -8px; height: 20px; width: 20px;
+            background: #0B93F6; border-bottom-left-radius: 15px;
+        }
+        .chat-bubble.me::after {
+            content: ""; position: absolute; z-index: -1; bottom: 0; right: -10px; width: 10px; height: 20px;
+            background: #000; border-bottom-left-radius: 10px;
+        }
+        .chat-bubble.them {
+            background: #26252A;
+            color: white;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-bubble.them::before {
+            content: ""; position: absolute; z-index: -1; bottom: 0; left: -8px; height: 20px; width: 20px;
+            background: #26252A; border-bottom-right-radius: 15px;
+        }
+        .chat-bubble.them::after {
+            content: ""; position: absolute; z-index: -1; bottom: 0; left: -10px; width: 10px; height: 20px;
+            background: #000; border-bottom-right-radius: 10px;
+        }
+        .chat-img {
+            max-width: 100%; border-radius: 12px; margin-top: 4px;
+        }
+
     </style>
 </head>
 <body>
@@ -1658,10 +1701,11 @@
         <div id="chat-messages" style="flex-grow: 1; overflow-y: auto; padding: 15px 10px; display: flex; flex-direction: column; gap: 4px; background: #000; height: 60vh;">
             </div>
         
-        <div style="padding: 10px 15px; background: rgba(30, 30, 30, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: center; gap: 12px; padding-bottom: max(15px, env(safe-area-inset-bottom));">
-            <div style="color: #888; display: flex; align-items: center;">
+        <div style="padding: 10px 15px; background: rgba(30, 30, 30, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: center; gap: 12px; padding-bottom: max(15px, env(safe-area-inset-
+                        <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer;">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             </div>
+
             <div style="flex-grow: 1; position: relative; display: flex; align-items: center;">
                 <input type="text" id="chat-input" placeholder="iMessage" style="width: 100%; padding: 8px 36px 8px 16px; border-radius: 20px; border: 1px solid #444; font-size: 1.05rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #000; color: #fff; outline: none; box-sizing: border-box;">
                 <button id="chat-send-btn" style="position: absolute; right: 4px; padding: 0; width: 26px; height: 26px; border-radius: 50%; background: #0B93F6; border: none; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;">
@@ -3592,24 +3636,23 @@ fireGameBtn.onclick = function() {
             }
         }
     }
-        // --- TRIBE CHAT LOGIC (FULL SCREEN & iMESSAGE STYLE) ---
+        
+    // --- TRIBE CHAT LOGIC (FULL SCREEN & iMESSAGE STYLE) ---
     const chatInput = document.getElementById('chat-input');
     const chatSendBtn = document.getElementById('chat-send-btn');
     const chatMessagesContainer = document.getElementById('chat-messages');
+    const chatPlusBtn = document.getElementById('chat-plus-btn');
     let chatListenerActive = false;
 
-    // Open Full Screen Chat
     groupChatBtn.onclick = function() {
         document.getElementById('main-dashboard').style.display = "none";
         document.getElementById('floating-menu-btn').style.display = "none"; 
         window.scrollTo(0, 0); 
         document.getElementById('chat-page').style.display = "flex";
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-        
         loadChatMessages();
     }
 
-    // Close Full Screen Chat
     function closeChatPage() {
         document.getElementById('chat-page').style.display = "none";
         document.getElementById('main-dashboard').style.display = ""; 
@@ -3617,183 +3660,93 @@ fireGameBtn.onclick = function() {
         document.body.removeEventListener('touchstart', preventDoubleTapZoom);
     }
 
-    function loadChatMessages() {
-        if (chatListenerActive) return; 
-        chatListenerActive = true;
-        
-        chatMessagesContainer.innerHTML = "<p style='text-align:center; color: #888; font-family: -apple-system, sans-serif;'>Connecting to camp...</p>";
-
-        if (usingGlobalLeaderboard) {
-            fireDb.ref('tribeChat').limitToLast(50).on('value', (snapshot) => {
-                renderChatBubbles(snapshot);
-            });
-        } else {
-            // Local fallback so you can test sending messages without Firebase connected!
-            setInterval(() => {
-                let localChat = JSON.parse(localStorage.getItem('tribeChat')) || [];
-                let mockSnapshot = localChat.map(msg => ({ val: () => msg }));
-                renderChatBubbles(mockSnapshot);
-            }, 1000);
-        }
-    }
-
-    function renderChatBubbles(snapshot) {
-        chatMessagesContainer.innerHTML = "";
-        let hasMessages = false;
-        let currentUser = localStorage.getItem('survivorChatName') || "";
-        let lastSender = ""; 
-
-        snapshot.forEach((child) => {
-            hasMessages = true;
-            let msg = typeof child.val === 'function' ? child.val() : child;
-            let isMe = (msg.name === currentUser) && (currentUser !== "");
-            let showName = !isMe && msg.name !== lastSender;
-            
-            lastSender = msg.name;
-
-            let msgDiv = document.createElement('div');
-            msgDiv.style.display = "flex";
-            msgDiv.style.flexDirection = "column";
-            msgDiv.style.maxWidth = "100%";
-            msgDiv.style.marginBottom = "2px"; 
-            
-            if (isMe) {
-                msgDiv.style.alignItems = "flex-end";
-                msgDiv.innerHTML = `
-                    <div style="background: #0B93F6; color: white; padding: 8px 14px; border-radius: 18px; border-bottom-right-radius: 4px; font-size: 1.05rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; word-wrap: break-word; white-space: pre-wrap; line-height: 1.35; max-width: 75%;">${msg.text}</div>
-                `;
-            } else {
-                msgDiv.style.alignItems = "flex-start";
-                let nameHtml = showName ? `<div style="font-size: 0.7rem; color: #888; margin-bottom: 2px; margin-left: 42px; text-transform: capitalize; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">${msg.name.toLowerCase()}</div>` : '';
-                let initial = msg.name ? msg.name.charAt(0).toUpperCase() : "?";
-                let avatarHtml = `<div style="width: 28px; height: 28px; border-radius: 50%; background: #555; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; flex-shrink: 0; margin-top: auto;">${initial}</div>`;
-                
-                msgDiv.innerHTML = `
-                    ${nameHtml}
-                    <div style="display: flex; gap: 8px; max-width: 80%;">
-                        ${avatarHtml}
-                        <div style="background: #26252A; color: #fff; padding: 8px 14px; border-radius: 18px; border-bottom-left-radius: 4px; font-size: 1.05rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; word-wrap: break-word; white-space: pre-wrap; line-height: 1.35;">${msg.text}</div>
-                    </div>
-                `;
-            }
-            chatMessagesContainer.appendChild(msgDiv);
-        });
-        
-        if (!hasMessages) {
-            chatMessagesContainer.innerHTML = "<p style='text-align:center; color: #888; font-style: italic; margin-top: 20px; font-family: -apple-system, sans-serif;'>No messages yet. Drop your Wordle score!</p>";
-        } else {
-            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-        }
-    }
-
-    chatSendBtn.onclick = function() {
-        let text = chatInput.value.trim();
-        if (text === "") return;
-
+    function getChatUsername() {
         let username = localStorage.getItem('survivorChatName');
         if (!username) {
             username = prompt("Enter your Survivor alias for the group chat:");
-            if (!username || username.trim() === "") return;
+            if (!username || username.trim() === "") return null;
             localStorage.setItem('survivorChatName', username.trim().toUpperCase());
         }
-
-        let msgData = {
-            name: username,
-            text: text,
-            timestamp: Date.now() 
-        };
-
-        if (usingGlobalLeaderboard) {
-            msgData.timestamp = firebase.database.ServerValue.TIMESTAMP;
-            fireDb.ref('tribeChat').push(msgData);
-        } else {
-            // Offline/Local Testing Fallback
-            let localChat = JSON.parse(localStorage.getItem('tribeChat')) || [];
-            localChat.push(msgData);
-            if(localChat.length > 50) localChat.shift(); 
-            localStorage.setItem('tribeChat', JSON.stringify(localChat));
-            
-            // Force instant render so the user sees it immediately
-            let mockSnapshot = localChat.map(msg => ({ val: () => msg }));
-            renderChatBubbles(mockSnapshot);
-        }
-        chatInput.value = ""; 
-    };
-
-    chatInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            chatSendBtn.click();
-            chatInput.blur(); 
-        }
-    });
-
-
-    // Close Full Screen Chat
-    function closeChatPage() {
-        document.getElementById('chat-page').style.display = "none";
-        document.getElementById('main-dashboard').style.display = ""; 
-        document.getElementById('floating-menu-btn').style.display = "flex";
-        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        return username;
     }
 
     function loadChatMessages() {
         if (chatListenerActive || !usingGlobalLeaderboard) return;
         chatListenerActive = true;
-        
-        chatMessagesContainer.innerHTML = "<p style='text-align:center; color: white;'>Connecting to camp...</p>";
+        chatMessagesContainer.innerHTML = "<p style='text-align:center; color: #888; font-family: -apple-system, sans-serif;'>Connecting to camp...</p>";
 
         fireDb.ref('tribeChat').limitToLast(50).on('value', (snapshot) => {
             chatMessagesContainer.innerHTML = "";
             let hasMessages = false;
             let currentUser = localStorage.getItem('survivorChatName') || "";
-            
+            let lastSender = "";
+
             snapshot.forEach((child) => {
                 hasMessages = true;
                 let msg = child.val();
-                let msgDate = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                
                 let isMe = (msg.name === currentUser) && (currentUser !== "");
-                
-                // iMessage Styling Logic
-                let bubbleStyle = isMe 
-                    ? "background: #0B93F6; color: white; align-self: flex-end; border-bottom-right-radius: 4px;" 
-                    : "background: #E5E5EA; color: black; align-self: flex-start; border-bottom-left-radius: 4px;";
-                    
-                let nameLabel = isMe 
-                    ? "" 
-                    : `<div style="font-size: 0.65rem; color: #aaa; margin-bottom: 2px; text-transform: uppercase; margin-left: 8px;">${msg.name} • ${msgDate}</div>`;
+                let showName = !isMe && msg.name !== lastSender;
+                lastSender = msg.name;
 
                 let msgDiv = document.createElement('div');
                 msgDiv.style.display = "flex";
                 msgDiv.style.flexDirection = "column";
-                msgDiv.style.maxWidth = "80%";
-                msgDiv.style.alignSelf = isMe ? "flex-end" : "flex-start";
-                
-                msgDiv.innerHTML = `
-                    ${nameLabel}
-                    <div style="${bubbleStyle} padding: 10px 14px; border-radius: 18px; font-size: 0.95rem; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; word-wrap: break-word; white-space: pre-wrap; box-shadow: 0 1px 2px rgba(0,0,0,0.15); line-height: 1.3;">${msg.text}</div>
-                `;
+                msgDiv.style.maxWidth = "100%";
+                msgDiv.style.marginBottom = "4px"; 
+                msgDiv.style.alignItems = isMe ? "flex-end" : "flex-start";
+
+                // Image Rendering Logic
+                let contentHtml = msg.text;
+                let isImg = msg.text.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png)(\?.*)?$/i);
+                if(isImg) {
+                    contentHtml = `<img src="${msg.text}" class="chat-img" alt="Shared Image">`;
+                }
+
+                // Delete Logic (Long Press)
+                let pressTimer;
+                msgDiv.addEventListener('touchstart', (e) => {
+                    pressTimer = window.setTimeout(() => {
+                        let promptMsg = isMe ? "Delete your message?" : "Admin: Delete this message from the server?";
+                        if(confirm(promptMsg)) {
+                            fireDb.ref('tribeChat').child(child.key).remove();
+                        }
+                    }, 800); // 800ms long press
+                });
+                msgDiv.addEventListener('touchend', () => clearTimeout(pressTimer));
+                msgDiv.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+                if (isMe) {
+                    msgDiv.innerHTML = `<div class="chat-bubble me" style="max-width: 75%;">${contentHtml}</div>`;
+                } else {
+                    let nameHtml = showName ? `<div style="font-size: 0.7rem; color: #888; margin-bottom: 2px; margin-left: 42px; text-transform: capitalize; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">${msg.name.toLowerCase()}</div>` : '';
+                    let initial = msg.name ? msg.name.charAt(0).toUpperCase() : "?";
+                    let avatarHtml = `<div style="width: 28px; height: 28px; border-radius: 50%; background: #555; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; flex-shrink: 0; margin-top: auto;">${initial}</div>`;
+                    
+                    msgDiv.innerHTML = `
+                        ${nameHtml}
+                        <div style="display: flex; gap: 8px; max-width: 80%; align-items: flex-end;">
+                            ${avatarHtml}
+                            <div class="chat-bubble them">${contentHtml}</div>
+                        </div>
+                    `;
+                }
                 chatMessagesContainer.appendChild(msgDiv);
             });
             
             if (!hasMessages) {
-                chatMessagesContainer.innerHTML = "<p style='text-align:center; color: white; font-style: italic; margin-top: 20px;'>No messages yet. Drop your Wordle score!</p>";
+                chatMessagesContainer.innerHTML = "<p style='text-align:center; color: #888; font-style: italic; margin-top: 20px; font-family: -apple-system, sans-serif;'>No messages yet. Drop your Wordle score!</p>";
             } else {
                 chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
             }
         });
     }
 
+    // Standard Text Sending
     chatSendBtn.onclick = function() {
         let text = chatInput.value.trim();
         if (text === "") return;
-
-        let username = localStorage.getItem('survivorChatName');
-        if (!username) {
-            username = prompt("Enter your Survivor alias for the group chat:");
-            if (!username || username.trim() === "") return;
-            localStorage.setItem('survivorChatName', username.trim().toUpperCase());
-        }
+        let username = getChatUsername();
+        if (!username) return;
 
         if (usingGlobalLeaderboard) {
             fireDb.ref('tribeChat').push({
@@ -3811,6 +3764,25 @@ fireGameBtn.onclick = function() {
             chatInput.blur(); 
         }
     });
+
+    // Plus Button Image/GIF Sending
+    if(chatPlusBtn) {
+        chatPlusBtn.onclick = function() {
+            let imgUrl = prompt("Paste an image URL (ending in .jpg, .png, or .gif) to share it to the camp:");
+            if(imgUrl && imgUrl.trim() !== "") {
+                let username = getChatUsername();
+                if(!username) return;
+                
+                if (usingGlobalLeaderboard) {
+                    fireDb.ref('tribeChat').push({
+                        name: username,
+                        text: imgUrl.trim(),
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
+            }
+        };
+    }
 
 
     // --- iOS BYPASS AUDIO LOGIC ---
@@ -3888,7 +3860,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
     <div class="ripafin-logo">RIPAFIN</div>
-<div class="app-version" id="app-version">v1.0.19</div>
+<div class="app-version" id="app-version">v1.0.20</div>
 </div>
 </body>
 </html>
