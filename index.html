@@ -1727,12 +1727,12 @@
         <div id="chat-messages" style="flex-grow: 1; overflow-y: auto; padding: 15px 10px; display: flex; flex-direction: column; gap: 4px; background: #000; height: 60vh;">
             </div>
         
-      <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; margin: 0;">
-        <input type="file" id="chat-image-upload" accept="image/*" style="display: none;">
-            <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer;">
-            <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer;">
+        <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: center; gap: 12px; width: 100%; max-width: 100%; box-sizing: border-box; margin: 0;">
+            <input type="file" id="chat-image-upload" accept="image/*" style="display: none;">
+            <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer; flex-shrink: 0;" onclick="document.getElementById('chat-image-upload').click();">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             </div>
+
 
             <div style="flex-grow: 1; position: relative; display: flex; align-items: center;">
                 <input type="text" id="chat-input" placeholder="iMessage" style="width: 100%; padding: 8px 36px 8px 16px; border-radius: 20px; border: 1px solid #444; font-size: 1.05rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #000; color: #fff; outline: none; box-sizing: border-box;">
@@ -3790,29 +3790,47 @@ fireGameBtn.onclick = function() {
         }
     };
 
-        chatInput.addEventListener('keypress', function (e) {
+    chatInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             chatSendBtn.click();
             chatInput.blur(); 
         }
     });
-            
-    // Plus Button Native Image Upload
+
+    // Paste Image Logic
+    chatInput.addEventListener('paste', function(e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let index in items) {
+            const item = items[index];
+            if (item.kind === 'file') {
+                const blob = item.getAsFile();
+                if (blob) {
+                    uploadChatImage(blob);
+                }
+            }
+        }
+    });
+
+    // Native Image Upload Logic
     const chatImageUpload = document.getElementById('chat-image-upload');
     
-    if(chatPlusBtn && chatImageUpload) {
-        chatPlusBtn.onclick = function() {
-            chatImageUpload.click(); // Open the native file picker
-        };
-
+    if(chatImageUpload) {
         chatImageUpload.onchange = function(e) {
             let file = e.target.files[0];
-            if (!file) return;
+            if (file) {
+                uploadChatImage(file);
+            }
+        };
+    }
 
-            let username = getChatUsername();
-            if(!username) return;
+    // Shared Helper Function to Handle Uploading
+    function uploadChatImage(file) {
 
-            if (usingGlobalLeaderboard) {
+                    let username = getChatUsername();
+        if(!username) return;
+
+        if (usingGlobalLeaderboard) {
+
                 // Show a temporary loading message in the input box
                 chatInput.placeholder = "Uploading image...";
                 chatInput.disabled = true;
@@ -3918,6 +3936,12 @@ fireGameBtn.onclick = function() {
     }, {once: true});
 
 </script>
+    <div class="app-footer">
+        <div class="ripafin-logo">RIPAFIN</div>
+        <div class="app-version" id="app-version">v1.0.29</div>
+    </div>
+</body>
+</html>
 
 </body>
 </html>
