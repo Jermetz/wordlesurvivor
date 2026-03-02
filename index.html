@@ -13,6 +13,8 @@
    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
         :root {
             /* Tagi Orange is the default accent, but this can now be overridden by the user! */
@@ -2474,6 +2476,33 @@ let mainScoreDisplay = player.score;
           
     const fireGamePage = document.getElementById("fire-game-page");
     const mainDashboard = document.getElementById("main-dashboard");
+   
+   // --- BEST WORDLE CONFETTI LOGIC ---
+const bestWordleBanner = document.getElementById('best-wordle-banner');
+bestWordleBanner.addEventListener('pointerdown', function(e) {
+    // Prevent default to avoid double-firing on touch devices
+    if (e.cancelable) e.preventDefault();
+
+    // Calculate touch coordinates as percentages of the screen for the confetti canvas
+    const xPos = e.clientX / window.innerWidth;
+    const yPos = e.clientY / window.innerHeight;
+
+    // Trigger the firework explosion!
+    confetti({
+        particleCount: 65,
+        spread: 70,
+        origin: { x: xPos, y: yPos },
+        colors: ['#ffd700', '#d95100', '#ffffff', '#f4e4bc'], // Survivor theme colors
+        zIndex: 3000, // Ensure it pops over the modals
+        disableForReducedMotion: true
+    });
+
+    // Trigger a tiny haptic pulse if the device supports it
+    if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(15);
+    }
+});
+
 
     const rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
@@ -4025,7 +4054,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.41</div>
+        <div class="app-version" id="app-version">v1.0.42</div>
     </div>
 
 </body>
