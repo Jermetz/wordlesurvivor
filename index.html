@@ -1739,7 +1739,7 @@
             </div>
 
         
-              <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: flex-end; gap: 12px; width: 100%; box-sizing: border-box; margin: 0; flex-shrink: 0;">
+           <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: flex-end; gap: 12px; width: 100%; box-sizing: border-box; margin: 0; flex-shrink: 0; position: relative;">
             <input type="file" id="chat-image-upload" accept="image/*" style="display: none;">
             <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer; flex-shrink: 0; margin-bottom: 8px;" onclick="document.getElementById('chat-image-upload').click();">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
@@ -1755,11 +1755,13 @@
                 <div style="display: flex; align-items: flex-end; position: relative; width: 100%;">
                      <textarea id="chat-input" rows="1" placeholder="Tribe Message" style="width: 100%; padding: 10px 36px 10px 16px; border: none; font-size: 1.05rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: transparent; color: #fff; outline: none; box-sizing: border-box; resize: none; min-height: 42px; max-height: 120px; overflow-y: auto; line-height: 1.2;"></textarea>
 
-                    <button id="chat-send-btn" style="position: absolute; right: 8px; bottom: 8px; padding: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); border: none; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2;">
+<button id="chat-send-btn" style="position: absolute; right: 8px; bottom: 8px; padding: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); border: none; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                     </button>
                 </div>
             </div>
+            
+            <div style="position: absolute; top: 100%; left: 0; right: 0; height: 100px; background: rgba(30, 30, 30, 0.95);"></div>
         </div>
 
 </div>
@@ -3993,7 +3995,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.36</div>
+        <div class="app-version" id="app-version">v1.0.37</div>
     </div>
 
 </body>
