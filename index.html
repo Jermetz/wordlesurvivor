@@ -1172,6 +1172,38 @@
             0% { box-shadow: 0 0 5px rgba(255, 140, 0, 0.5); }
             100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
         }
+                    /* --- ADMIN PUZZLE GAME CSS --- */
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 4px;
+            margin: 20px auto;
+            width: 316px;
+            background: rgba(0,0,0,0.5);
+            padding: 6px;
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 6px 15px rgba(0,0,0,0.6);
+        }
+        .puzzle-tile {
+            width: 100px;
+            height: 100px;
+            background-image: url('survivor50.jpg');
+            background-size: 300px 300px;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-sizing: border-box;
+            border-radius: 8px; /* Rounded corners for a tile look */
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.7), 2px 2px 5px rgba(0,0,0,0.5); /* 3D bevel effect */
+        }
+        .puzzle-tile.selected {
+            outline: 4px solid #ffd700;
+            outline-offset: -2px;
+            transform: scale(0.88);
+            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.5);
+            z-index: 2;
+        }
+
             /* --- IMMUNITY MEMORY GAME CSS --- */
         .memory-grid {
             display: grid;
@@ -1693,6 +1725,44 @@
         </div>
     </div>
 </div>
+<div id="puzzle-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>SURVIVOR 50 PUZZLE</span>
+            <span class="close-btn-full" onclick="closePuzzleGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 15px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>🏝️ ASSEMBLE THE LOGO 🧩</strong><br>Tap a tile, then tap another to swap them.
+            </p>
+
+            <h2 id="puzzle-timer" style="color: #fff; font-size: 2.2rem; margin-top: 0; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+            <div id="puzzle-grid" class="puzzle-grid"></div>
+
+            <button id="start-puzzle-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">SCRAMBLE & START</button>
+            
+            <div id="puzzle-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed #ffd700;">
+                <h3 style="color: #ffd700; margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🧩 PUZZLE SOLVED! 🧩</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="puzzle-final-time"></span>s</p>
+                
+                <div id="puzzle-input-area" style="margin-top: 15px;">
+                    <input type="text" id="puzzle-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-puzzle-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="puzzle-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: #ffd700; border-bottom: 2px solid #ffd700; padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🧩 FASTEST PUZZLE SOLVERS</h3>
+                <ol id="puzzle-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="puzzle-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div>
 
 <div id="immunity-game-page" class="full-page">
     <div class="full-page-content">
@@ -1944,6 +2014,8 @@
             <button id="admin-clear-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 0 auto;">CLEAR LEADERBOARD</button>
             
             <button id="admin-clear-immunity-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 10px auto 0 auto;">CLEAR IMMUNITY BOARD</button>
+            <button id="admin-puzzle-btn" class="action-btn" style="background-color: #ffd700; color: #000; border-color: #ffd700; margin: 10px auto 0 auto; width: 100%;">TEST SURVIVOR 50 PUZZLE</button>
+
             <button id="admin-view-messages-btn" class="action-btn" style="background-color: var(--accent); color: white; border-color: var(--accent); margin: 10px auto 0 auto; width: 100%;">VIEW TRIBE FEEDBACK</button>
             <div id="admin-messages-container" style="display: none; margin-top: 15px; text-align: left; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--accent);"></div>
 
@@ -3530,6 +3602,205 @@ fireGameBtn.onclick = function() {
         }
     }
     createEmbers();
+    /* --- ADMIN PUZZLE GAME LOGIC --- */
+    const puzzleGamePage = document.getElementById("puzzle-game-page");
+    const puzzleGrid = document.getElementById("puzzle-grid");
+    const puzzleTimerDisplay = document.getElementById("puzzle-timer");
+    const startPuzzleBtn = document.getElementById("start-puzzle-btn");
+    const puzzleSaveSection = document.getElementById("puzzle-save-section");
+    const puzzleFinalTime = document.getElementById("puzzle-final-time");
+    const puzzleInputArea = document.getElementById("puzzle-input-area");
+    const puzzleInitials = document.getElementById("puzzle-initials");
+    const savePuzzleBtn = document.getElementById("save-puzzle-btn");
+    const puzzleLeaderboardSection = document.getElementById("puzzle-leaderboard-section");
+    const puzzleLeaderboardList = document.getElementById("puzzle-leaderboard-list");
+    const puzzlePlayAgainBtn = document.getElementById("puzzle-play-again-btn");
+
+    let puzzleTimer;
+    let puzzleStartTime;
+    let puzzleActive = false;
+    let puzzleOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    let selectedTile = null;
+    let currentPuzzleRef = null;
+
+    document.getElementById("admin-puzzle-btn").onclick = function() {
+        closeModal('adminModal');
+        document.getElementById("main-dashboard").style.display = "none";
+        document.getElementById("floating-menu-btn").style.display = "none";
+        window.scrollTo(0, 0);
+        puzzleGamePage.style.display = "flex";
+        document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+        
+        resetPuzzleGame();
+        renderPuzzleLeaderboard();
+    };
+
+    window.closePuzzleGamePage = function() {
+        puzzleGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(puzzleTimer);
+        if (currentPuzzleRef) currentPuzzleRef.off();
+    };
+
+    function initPuzzleBoard() {
+        puzzleGrid.innerHTML = "";
+        puzzleOrder.forEach((val, index) => {
+            let tile = document.createElement("div");
+            tile.className = "puzzle-tile";
+            tile.dataset.index = index;
+            tile.dataset.val = val;
+            
+            let row = Math.floor(val / 3);
+            let col = val % 3;
+            tile.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
+            
+            tile.onclick = () => handleTileClick(tile);
+            puzzleGrid.appendChild(tile);
+        });
+    }
+
+    function handleTileClick(tile) {
+        if (!puzzleActive) return;
+        
+        if (!selectedTile) {
+            selectedTile = tile;
+            tile.classList.add("selected");
+        } else {
+            let idx1 = parseInt(selectedTile.dataset.index);
+            let idx2 = parseInt(tile.dataset.index);
+            
+            let temp = puzzleOrder[idx1];
+            puzzleOrder[idx1] = puzzleOrder[idx2];
+            puzzleOrder[idx2] = temp;
+            
+            initPuzzleBoard();
+            selectedTile = null;
+            checkPuzzleWin();
+        }
+    }
+
+    function checkPuzzleWin() {
+        let isWin = puzzleOrder.every((val, index) => val === index);
+        if (isWin) {
+            puzzleActive = false;
+            clearInterval(puzzleTimer);
+            let finalTime = ((Date.now() - puzzleStartTime) / 1000).toFixed(2);
+            puzzleTimerDisplay.style.color = "#ffd700";
+            puzzleFinalTime.innerText = finalTime;
+            
+            setTimeout(() => {
+                puzzleSaveSection.style.display = "block";
+                puzzlePlayAgainBtn.style.display = "block";
+            }, 500);
+        }
+    }
+
+    function resetPuzzleGame() {
+        puzzleOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+        puzzleActive = false;
+        clearInterval(puzzleTimer);
+        puzzleTimerDisplay.innerText = "0.00s";
+        puzzleTimerDisplay.style.color = "#fff";
+        startPuzzleBtn.style.display = "block";
+        puzzleSaveSection.style.display = "none";
+        puzzleInputArea.style.display = "block";
+        puzzleInitials.value = "";
+        puzzlePlayAgainBtn.style.display = "none";
+        initPuzzleBoard();
+    }
+
+    startPuzzleBtn.onclick = function() {
+        do {
+            for (let i = puzzleOrder.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [puzzleOrder[i], puzzleOrder[j]] = [puzzleOrder[j], puzzleOrder[i]];
+            }
+        } while (puzzleOrder.every((val, index) => val === index));
+        
+        initPuzzleBoard();
+        puzzleActive = true;
+        startPuzzleBtn.style.display = "none";
+        puzzleSaveSection.style.display = "none";
+        puzzlePlayAgainBtn.style.display = "none";
+        puzzleTimerDisplay.style.color = "#fff";
+        selectedTile = null;
+        
+        puzzleStartTime = Date.now();
+        puzzleTimer = setInterval(() => {
+            let elapsed = (Date.now() - puzzleStartTime) / 1000;
+            puzzleTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+        }, 20);
+    };
+
+    puzzlePlayAgainBtn.onclick = resetPuzzleGame;
+
+    savePuzzleBtn.onclick = function() {
+        let initials = puzzleInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(puzzleFinalTime.innerText);
+        
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('puzzleLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            puzzleInputArea.style.display = "none";
+        } else {
+            let board = JSON.parse(localStorage.getItem('puzzleLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10); 
+            localStorage.setItem('puzzleLeaderboard', JSON.stringify(board));
+            puzzleInputArea.style.display = "none";
+            renderPuzzleLeaderboard();
+        }
+    };
+
+    function renderPuzzleLeaderboard() {
+        if (usingGlobalLeaderboard) {
+            if (currentPuzzleRef) currentPuzzleRef.off();
+            currentPuzzleRef = fireDb.ref('puzzleLeaderboard').orderByChild('time').limitToFirst(10);
+            
+            currentPuzzleRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => {
+                    board.push(childSnapshot.val());
+                });
+                
+                if(board.length > 0) {
+                    puzzleLeaderboardSection.style.display = "block";
+                    puzzleLeaderboardList.innerHTML = "";
+                    board.forEach(entry => {
+                        let li = document.createElement('li');
+                        li.style.marginBottom = "8px";
+                        li.innerHTML = `<span style="display:inline-block; width: 45px; color: #ffd700;">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                        puzzleLeaderboardList.appendChild(li);
+                    });
+                } else {
+                    puzzleLeaderboardSection.style.display = "none";
+                    puzzleLeaderboardList.innerHTML = "";
+                }
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('puzzleLeaderboard')) || [];
+            if(board.length > 0) {
+                puzzleLeaderboardSection.style.display = "block";
+                puzzleLeaderboardList.innerHTML = "";
+                board.forEach(entry => {
+                    let li = document.createElement('li');
+                    li.style.marginBottom = "8px";
+                    li.innerHTML = `<span style="display:inline-block; width: 45px; color: #ffd700;">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                    puzzleLeaderboardList.appendChild(li);
+                });
+            } else {
+                puzzleLeaderboardSection.style.display = "none";
+                puzzleLeaderboardList.innerHTML = "";
+            }
+        }
+    }
 
         /* --- IMMUNITY MEMORY GAME LOGIC --- */
     const memoryGrid = document.getElementById('memory-grid');
@@ -4054,7 +4325,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.42</div>
+        <div class="app-version" id="app-version">v1.0.43</div>
     </div>
 
 </body>
