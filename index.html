@@ -2211,7 +2211,10 @@ allPlayersData = rows.map(row => {
                 let hist2Pts = getWordleValue(safeHist2) * 1.0;
                 let hist3Pts = getWordleValue(safeHist3) * 0.8;
                 
-                const calculatedHotScore = todayPts + hist1Pts + hist2Pts + hist3Pts + parsedStreak;
+                // Cap the streak bonus at a maximum of 3 points for the Hot Score calculation
+                let streakBonus = Math.min(parsedStreak, 3);
+                
+                const calculatedHotScore = todayPts + hist1Pts + hist2Pts + hist3Pts + streakBonus;
 
                 return { 
                     name: name ? name.trim() : '', 
@@ -4325,7 +4328,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.43</div>
+        <div class="app-version" id="app-version">v1.0.44</div>
     </div>
 
 </body>
