@@ -2208,11 +2208,11 @@ allPlayersData = rows.map(row => {
 
                 const parsedStreak = parseInt(streakCol) || 0;
 
-                // Ultimate Momentum Formula: Time-Weighted + Streak Bonus
-                let todayPts = getWordleValue(safeHistToday) * 1.5;
-                let hist1Pts = getWordleValue(safeHist1) * 1.2;
-                let hist2Pts = getWordleValue(safeHist2) * 1.0;
-                let hist3Pts = getWordleValue(safeHist3) * 0.8;
+// Ultimate Momentum Formula: Heavily Time-Weighted (Favors Today/Yesterday)
+                let todayPts = getWordleValue(safeHistToday) * 2.0;   // Today is worth 200%
+                let hist1Pts = getWordleValue(safeHist1) * 1.5;       // Yesterday is worth 150%
+                let hist2Pts = getWordleValue(safeHist2) * 0.5;       // 2 Days ago drops to 50%
+                let hist3Pts = getWordleValue(safeHist3) * 0.25;      // 3 Days ago is only 25%
                 
                 // Cap the streak bonus at a maximum of 3 points for the Hot Score calculation
                 let streakBonus = Math.min(parsedStreak, 3);
