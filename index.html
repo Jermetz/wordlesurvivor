@@ -1204,56 +1204,6 @@
             z-index: 2;
         }
 
-            /* --- IMMUNITY MEMORY GAME CSS --- */
-        .memory-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            width: 100%;
-            max-width: 320px;
-            margin: 0 auto;
-            perspective: 1000px;
-        }
-
-        .memory-card {
-            width: 100%;
-            aspect-ratio: 1 / 1.1;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-            border-radius: 8px;
-        }
-
-        .memory-card.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .memory-card-front, .memory-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            box-sizing: border-box;
-        }
-
-        .memory-card-front {
-            background-color: var(--card-bg);
-            border: 3px solid var(--card-border);
-            transform: rotateY(180deg);
-        }
-
-        .memory-card-back {
-            background: repeating-linear-gradient(45deg, var(--accent), var(--accent) 10px, #b34300 10px, #b34300 20px);
-            border: 3px solid #fff;
-        }
-
             /* --- MANDATORY FEEDBACK MODAL --- */
         #feedbackModal {
             z-index: 9999; /* Forced high to sit above everything */
@@ -1639,7 +1589,7 @@
     <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
     <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
     <button id="fire-game-btn" class="action-btn">🔥 MINI-GAME</button>
-    <button id="immunity-game-btn" class="action-btn">🧩 IMMUNITY</button>
+   <button id="weekly-challenge-btn" class="action-btn">🧩 WEEKLY CHALLENGE</button>
     <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
     <button id="open-feedback-btn" class="action-btn" style="background-color: var(--leaf-green); color: white; border-color: var(--leaf-green); margin-bottom: 30px;">📣 DROP A SUGGESTION</button>
 </div>
@@ -1740,7 +1690,9 @@
             <h2 id="puzzle-timer" style="color: #fff; font-size: 2.2rem; margin-top: 0; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
 
             <div id="puzzle-grid" class="puzzle-grid"></div>
-
+             <p style="font-size: 0.95rem; margin-bottom: 20px; color: #ffd700; text-shadow: 1px 1px 2px #000; font-weight: bold;">
+                Whomever has the lowest time at the end of the next Tuesday 3/10 at 11:59 PM will gain +1 life point to their Total.
+            </p>
             <button id="start-puzzle-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">SCRAMBLE & START</button>
             
             <div id="puzzle-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed #ffd700;">
@@ -1764,46 +1716,7 @@
     </div>
 </div>
 
-<div id="immunity-game-page" class="full-page">
-    <div class="full-page-content">
-        <div class="full-page-header">
-            <span></span> <span>WEDNESDAY IMMUNITY</span>
-            <span class="close-btn-full" onclick="closeImmunityGamePage()">&times;</span>
-        </div>
-        
-        <div style="width: 100%;">
-                      <p id="immunity-instructions" style="font-size: 1rem; margin-bottom: 15px; color: #fff; text-shadow: 1px 1px 2px #000;">
-                <strong>🏝️ SURVIVORS READY? GO! 🧩</strong><br>Get the fastest time by Tuesday at 11:59 PM (1 week). Try as many times as you want. The winner gets Individual Immunity and <strong>+1 Life Point</strong>!
-            </p>
 
-
-            <h2 id="immunity-timer" style="color: #fff; font-size: 2.2rem; margin-top: 0; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
-
-            <div id="memory-grid" class="memory-grid"></div>
-
-            <button id="start-immunity-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">START PUZZLE</button>
-            
-                        <div id="immunity-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed #ffd700;">
-                <h3 style="color: #ffd700; margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🧩 PUZZLE SOLVED! 🧩</h3>
-                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="immunity-final-time"></span>s</p>
-                
-                <div id="immunity-input-area" style="margin-top: 15px;">
-                    <input type="text" id="immunity-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
-                    <button id="save-immunity-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
-                </div>
-            </div>
-
-            <div id="immunity-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
-                <h3 style="color: #ffd700; border-bottom: 2px solid #ffd700; padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🧩 FASTEST SURVIVORS</h3>
-                <ol id="immunity-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
-                </ol>
-            </div>
-
-            <button id="immunity-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
-
-        </div>
-    </div>
-</div>
 
 <div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow-x: hidden; display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: -webkit-fill-available; z-index: 4000;">
     
@@ -2017,7 +1930,7 @@
             <button id="admin-clear-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 0 auto;">CLEAR LEADERBOARD</button>
             
             <button id="admin-clear-immunity-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 10px auto 0 auto;">CLEAR IMMUNITY BOARD</button>
-            <button id="admin-puzzle-btn" class="action-btn" style="background-color: #ffd700; color: #000; border-color: #ffd700; margin: 10px auto 0 auto; width: 100%;">TEST SURVIVOR 50 PUZZLE</button>
+          
 
             <button id="admin-view-messages-btn" class="action-btn" style="background-color: var(--accent); color: white; border-color: var(--accent); margin: 10px auto 0 auto; width: 100%;">VIEW TRIBE FEEDBACK</button>
             <div id="admin-messages-container" style="display: none; margin-top: 15px; text-align: left; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--accent);"></div>
@@ -2593,10 +2506,9 @@ bestWordleBanner.addEventListener('pointerdown', function(e) {
          floatingMenuBtn = document.getElementById("floating-menu-btn"),
          sideMenuOverlay = document.getElementById("side-menu-overlay"),
          sideMenuDrawer = document.getElementById("side-menu-drawer"),
-         fireGameBtn = document.getElementById("fire-game-btn"),
-          immunityGameBtn = document.getElementById("immunity-game-btn"),
-          immunityGamePage = document.getElementById("immunity-game-page"),
-          dynamicLeaderboardHeader = document.getElementById("dynamic-leaderboard-header"),
+fireGameBtn = document.getElementById("fire-game-btn"),
+         weeklyChallengeBtn = document.getElementById("weekly-challenge-btn"),
+         dynamicLeaderboardHeader = document.getElementById("dynamic-leaderboard-header"),
           adminClearBtn = document.getElementById("admin-clear-btn"),
                   adminClearImmunityBtn = document.getElementById("admin-clear-immunity-btn"),
 
@@ -3111,23 +3023,6 @@ fireGameBtn.onclick = function() {
         }
     }
 
-    immunityGameBtn.onclick = function() {
-    mainDashboard.style.display = "none";
-    floatingMenuBtn.style.display = "none"; // Hide the tent tab
-    window.scrollTo(0, 0); // Forces browser to top before rendering game
-    immunityGamePage.style.display = "flex";
-    document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-    renderImmunityLeaderboard();
-}
-
- function closeImmunityGamePage() {
-        immunityGamePage.style.display = "none";
-        mainDashboard.style.display = ""; 
-        floatingMenuBtn.style.display = "flex"; // Bring the tent tab back
-        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
-        if (typeof resetImmunityGame === "function") resetImmunityGame();
-    }
-
     
     // Global Double-Tap Zoom Preventer (attached when modal opens)
     // By keeping track of touch times, we block rapid successive taps anywhere on the screen
@@ -3629,8 +3524,7 @@ fireGameBtn.onclick = function() {
     let selectedTile = null;
     let currentPuzzleRef = null;
 
-    document.getElementById("admin-puzzle-btn").onclick = function() {
-        closeModal('adminModal');
+    weeklyChallengeBtn.onclick = function() {
         document.getElementById("main-dashboard").style.display = "none";
         document.getElementById("floating-menu-btn").style.display = "none";
         window.scrollTo(0, 0);
@@ -3808,220 +3702,7 @@ fireGameBtn.onclick = function() {
         }
     }
 
-        /* --- IMMUNITY MEMORY GAME LOGIC --- */
-    const memoryGrid = document.getElementById('memory-grid');
-    const startImmunityBtn = document.getElementById('start-immunity-btn');
-    const immunityTimerDisplay = document.getElementById('immunity-timer');
-    const immunitySaveSection = document.getElementById('immunity-save-section');
-    const immunityFinalTime = document.getElementById('immunity-final-time');
-    const immunityPlayAgainBtn = document.getElementById('immunity-play-again-btn');
-    
-        const immunityInputArea = document.getElementById('immunity-input-area');
-    const immunityInitials = document.getElementById('immunity-initials');
-    const saveImmunityBtn = document.getElementById('save-immunity-btn');
-    const immunityLeaderboardSection = document.getElementById('immunity-leaderboard-section');
-    const immunityLeaderboardList = document.getElementById('immunity-leaderboard-list');
-    let currentImmunityRef = null;
-
-
-    const cardSymbols = ['🗿', '🗿', '🥥', '🥥', '🌴', '🌴', '🐍', '🐍', '🐢', '🐢', '🦀', '🦀'];
-    let immunityCards = [];
-    let hasFlippedCard = false;
-    let lockBoard = false;
-    let firstCard, secondCard;
-    let matchedPairs = 0;
-    
-    let immunityStartTime = 0;
-    let immunityInterval;
-    let immunityGameActive = false;
-
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    function createBoard() {
-        memoryGrid.innerHTML = '';
-        immunityCards = shuffle([...cardSymbols]);
-        
-        immunityCards.forEach((symbol, index) => {
-            const card = document.createElement('div');
-            card.classList.add('memory-card');
-            card.dataset.symbol = symbol;
-            
-            card.innerHTML = `
-                <div class="memory-card-front">${symbol}</div>
-                <div class="memory-card-back"></div>
-            `;
-            
-            card.addEventListener('click', flipCard);
-            memoryGrid.appendChild(card);
-        });
-    }
-
-    function flipCard() {
-        if (!immunityGameActive || lockBoard || this === firstCard) return;
-
-        this.classList.add('flipped');
-
-        if (!hasFlippedCard) {
-            hasFlippedCard = true;
-            firstCard = this;
-            return;
-        }
-
-        secondCard = this;
-        checkForMatch();
-    }
-
-    function checkForMatch() {
-        let isMatch = firstCard.dataset.symbol === secondCard.dataset.symbol;
-
-        if (isMatch) {
-            disableCards();
-            matchedPairs++;
-            if (matchedPairs === 6) {
-                endImmunityGame();
-            }
-        } else {
-            unflipCards();
-        }
-    }
-
-    function disableCards() {
-        firstCard.removeEventListener('click', flipCard);
-        secondCard.removeEventListener('click', flipCard);
-        resetBoard();
-    }
-
-    function unflipCards() {
-        lockBoard = true;
-        setTimeout(() => {
-            firstCard.classList.remove('flipped');
-            secondCard.classList.remove('flipped');
-            resetBoard();
-        }, 800);
-    }
-
-    function resetBoard() {
-        [hasFlippedCard, lockBoard] = [false, false];
-        [firstCard, secondCard] = [null, null];
-    }
-
-    function startImmunityGame() {
-        createBoard();
-        matchedPairs = 0;
-        immunityGameActive = true;
-        startImmunityBtn.style.display = "none";
-        immunitySaveSection.style.display = "none";
-        immunityPlayAgainBtn.style.display = "none";
-        
-        immunityStartTime = Date.now();
-        immunityInterval = setInterval(() => {
-            let elapsed = (Date.now() - immunityStartTime) / 1000;
-            immunityTimerDisplay.innerText = elapsed.toFixed(2) + "s";
-        }, 20);
-    }
-
-    function endImmunityGame() {
-        immunityGameActive = false;
-        clearInterval(immunityInterval);
-        
-        let finalTime = ((Date.now() - immunityStartTime) / 1000).toFixed(2);
-        immunityTimerDisplay.style.color = "#ffd700";
-        immunityFinalTime.innerText = finalTime;
-        
-        setTimeout(() => {
-            immunitySaveSection.style.display = "block";
-            immunityPlayAgainBtn.style.display = "block";
-        }, 500);
-    }
-
-    function resetImmunityGame() {
-        clearInterval(immunityInterval);
-        immunityGameActive = false;
-        memoryGrid.innerHTML = '';
-        immunityTimerDisplay.innerText = "0.00s";
-        immunityTimerDisplay.style.color = "#fff";
-        startImmunityBtn.style.display = "block";
-        immunitySaveSection.style.display = "none";
-                immunityInputArea.style.display = "block";
-        immunityInitials.value = "";
-        immunityPlayAgainBtn.style.display = "none";
-    }
-
-    startImmunityBtn.onclick = startImmunityGame;
-    immunityPlayAgainBtn.onclick = resetImmunityGame;
-    
-        saveImmunityBtn.onclick = function() {
-        let initials = immunityInitials.value.trim().toUpperCase();
-        if(initials === "") initials = "???";
-        let timeTaken = parseFloat(immunityFinalTime.innerText);
-        
-        if (usingGlobalLeaderboard) {
-            fireDb.ref('immunityLeaderboard').push({
-                name: initials,
-                time: timeTaken,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            immunityInputArea.style.display = "none";
-        } else {
-            let board = JSON.parse(localStorage.getItem('immunityLeaderboard')) || [];
-            board.push({ name: initials, time: timeTaken });
-            board.sort((a, b) => a.time - b.time);
-            board = board.slice(0, 10); 
-            localStorage.setItem('immunityLeaderboard', JSON.stringify(board));
-            immunityInputArea.style.display = "none";
-            renderImmunityLeaderboard();
-        }
-    }
-
-    function renderImmunityLeaderboard() {
-        if (usingGlobalLeaderboard) {
-            if (currentImmunityRef) currentImmunityRef.off();
-            currentImmunityRef = fireDb.ref('immunityLeaderboard').orderByChild('time').limitToFirst(10);
-            
-            currentImmunityRef.on('value', (snapshot) => {
-                let board = [];
-                snapshot.forEach((childSnapshot) => {
-                    board.push(childSnapshot.val());
-                });
-                
-                if(board.length > 0) {
-                    immunityLeaderboardSection.style.display = "block";
-                    immunityLeaderboardList.innerHTML = "";
-                    board.forEach(entry => {
-                        let li = document.createElement('li');
-                        li.style.marginBottom = "8px";
-                        li.innerHTML = `<span style="display:inline-block; width: 45px; color: #ffd700;">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
-                        immunityLeaderboardList.appendChild(li);
-                    });
-                } else {
-                    immunityLeaderboardSection.style.display = "none";
-                    immunityLeaderboardList.innerHTML = "";
-                }
-            });
-        } else {
-            let board = JSON.parse(localStorage.getItem('immunityLeaderboard')) || [];
-            if(board.length > 0) {
-                immunityLeaderboardSection.style.display = "block";
-                immunityLeaderboardList.innerHTML = "";
-                board.forEach(entry => {
-                    let li = document.createElement('li');
-                    li.style.marginBottom = "8px";
-                    li.innerHTML = `<span style="display:inline-block; width: 45px; color: #ffd700;">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
-                    immunityLeaderboardList.appendChild(li);
-                });
-            } else {
-                immunityLeaderboardSection.style.display = "none";
-                immunityLeaderboardList.innerHTML = "";
-            }
-        }
-    }
-        
+  
     // --- TRIBE CHAT LOGIC (FULL SCREEN & iMESSAGE STYLE) ---
     const chatInput = document.getElementById('chat-input');
     const chatSendBtn = document.getElementById('chat-send-btn');
@@ -4331,7 +4012,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.46</div>
+        <div class="app-version" id="app-version">v1.0.47</div>
     </div>
 
 </body>
