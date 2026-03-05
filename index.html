@@ -1729,59 +1729,44 @@
     </div>
 </div>
 
-
-
 <div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow-x: hidden; display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: -webkit-fill-available; z-index: 4000;">
     
-    <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
-<div onclick="closeChatPage()" style="color: var(--accent); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; text-transform: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: normal; text-shadow: none; padding: 5px;">
+    <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
+        <div onclick="closeChatPage()" style="position: absolute; left: 15px; color: var(--accent); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; text-transform: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: normal; text-shadow: none; padding: 10px; z-index: 2;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;"><polyline points="15 18 9 12 15 6"></polyline></svg> Back
         </div>
-        <div style="display: flex; flex-direction: column; align-items: center; text-shadow: none;">
+        <div style="display: flex; flex-direction: column; align-items: center; text-shadow: none; pointer-events: none; z-index: 1;">
             <span style="font-size: 0.95rem; color: #fff; letter-spacing: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: bold;">Tribe Chat</span>
             <span style="font-size: 0.75rem; color: #888; text-transform: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: normal;">Edge of Extinction</span>
         </div>
-        <div style="width: 50px;"></div> </div>
+    </div>
             
     <div id="chat-messages" style="flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 15px 10px; display: flex; flex-direction: column; gap: 4px; background: transparent; position: relative;">
     </div>
+    
     <div id="typing-indicator" style="font-size: 0.75rem; color: var(--accent); padding: 2px 15px; min-height: 16px; font-style: italic; font-family: -apple-system, sans-serif; background: rgba(30, 30, 30, 0.95); display: none;"></div>
 
-        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 2.5rem; font-family: 'Arial Black', sans-serif; color: rgba(255, 255, 255, 0.1); white-space: nowrap; pointer-events: none; z-index: -1; text-align: center; line-height: 1.2;">
-            CHAT UNDER<br>CONSTRUCTION
+    <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: flex-end; gap: 12px; width: 100%; box-sizing: border-box; margin: 0; flex-shrink: 0; position: relative;">
+        <input type="file" id="chat-image-upload" accept="image/*" style="display: none;">
+        <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer; flex-shrink: 0; margin-bottom: 8px;" onclick="document.getElementById('chat-image-upload').click();">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
         </div>
 
+        <div style="flex-grow: 1; position: relative; display: flex; flex-direction: column; background: #000; border-radius: 20px; border: 1px solid #444; overflow: hidden;">
+            <div id="chat-preview-container">
+                <img id="chat-preview-img" src="" alt="Preview">
+                <div id="chat-preview-remove">&times;</div>
             </div>
-
-        
-           <div style="padding: 10px 15px; padding-bottom: max(15px, env(safe-area-inset-bottom)); background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid #333; display: flex; align-items: flex-end; gap: 12px; width: 100%; box-sizing: border-box; margin: 0; flex-shrink: 0; position: relative;">
-            <input type="file" id="chat-image-upload" accept="image/*" style="display: none;">
-            <div id="chat-plus-btn" style="color: #888; display: flex; align-items: center; cursor: pointer; flex-shrink: 0; margin-bottom: 8px;" onclick="document.getElementById('chat-image-upload').click();">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            <div style="display: flex; align-items: flex-end; position: relative; width: 100%;">
+                 <textarea id="chat-input" rows="1" placeholder="Tribe Message" style="width: 100%; padding: 10px 36px 10px 16px; border: none; font-size: 1.05rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: transparent; color: #fff; outline: none; box-sizing: border-box; resize: none; min-height: 42px; max-height: 120px; overflow-y: auto; line-height: 1.2;"></textarea>
+                 <button id="chat-send-btn" style="position: absolute; right: 8px; bottom: 8px; padding: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); border: none; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                </button>
             </div>
-
-            <div style="flex-grow: 1; position: relative; display: flex; flex-direction: column; background: #000; border-radius: 20px; border: 1px solid #444; overflow: hidden;">
-                
-                <div id="chat-preview-container">
-                    <img id="chat-preview-img" src="" alt="Preview">
-                    <div id="chat-preview-remove">&times;</div>
-                </div>
-
-                <div style="display: flex; align-items: flex-end; position: relative; width: 100%;">
-                     <textarea id="chat-input" rows="1" placeholder="Tribe Message" style="width: 100%; padding: 10px 36px 10px 16px; border: none; font-size: 1.05rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: transparent; color: #fff; outline: none; box-sizing: border-box; resize: none; min-height: 42px; max-height: 120px; overflow-y: auto; line-height: 1.2;"></textarea>
-
-<button id="chat-send-btn" style="position: absolute; right: 8px; bottom: 8px; padding: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); border: none; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                    </button>
-                </div>
-            </div>
-            
-            <div style="position: absolute; top: 100%; left: 0; right: 0; height: 50vh; background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);"></div>
-
         </div>
-
+        <div style="position: absolute; top: 100%; left: 0; right: 0; height: 50vh; background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);"></div>
+    </div>
 </div>
-
 
 <div id="rulesModal" class="modal">
   <div class="modal-content">
@@ -1792,47 +1777,34 @@
         <p>You just play Wordle daily per usual but now there’s running points, pride and survivor themed stakes involved :)</p>
         <p><strong>WE START:</strong> The 1st day of Survivor 50: Wed. Feb. 25th. (The season is approx 14 weeks long)</p>
         <p>I’ll be your “Jeff Probst”, come on in survivors!</p>
-
         <h3 style="text-align: center; font-size: 1.4rem;">THE SETUP (FINE PRINT)</h3>
         <p>Everyone starts with 50 Life Points. The "Sole Wordler" is whoever has the most points remaining after the Survivor 50 Finale night.</p>
         <p>I will keep track of all points and post daily updates via the Survivor web app.</p>
-        
         <h3>HARD MODE BONUS</h3>
         <p>Hard Mode (*) players get +1 Point to offset any scoring penalty.</p>
         <p><em>Note: This only applies to negative scores (it doesn't boost a 4/6 or better).</em></p>
-
         <h3>HONOR SYSTEM</h3>
         <p>No cheating. No using free hints or multiple devices. We play fair or your torch gets snuffed.</p>
-
         <h3>THE DEADLINE</h3>
         <p>Post by 11:59 PM ET. Miss a day? -5 Point Penalty (unless you use a Shot in the Dark, or an advantage saves you).</p>
-
         <h3>SHOT IN THE DARK</h3>
         <p>You have the power to erase your 5 worst scores. Reply "Playing my Shot in the Dark!" to wipe a terrible score (or a missed day) from your record.</p>
-
         <h3>IDOLS & ADVANTAGES</h3>
         <ul>
             <li><strong>2/6 (Hidden Immunity Idol):</strong> You immediately score +2 points AND bank an idol. To use it, shout "PLAYING MY IDOL!" on a future bad day. It will negate that day's penalty, bringing your score to a safe 0.</li>
             <li><strong>1/6 (Legacy Advantage):</strong> Did you guess it on the first try?! You earn +3 points and a Permanent, Automatic Idol. You don't even have to declare it—this advantage permanently sits in your inventory and will automatically deploy to save you from your next fatal penalty (like an X/6 or a missed day).</li>
             <li><strong>Bank Rule:</strong> You can only hold 2 standard Idols at a time. All standard idols expire 1 week before the finale.</li>
         </ul>
-
         <h3>EDGE OF EXTINCTION</h3>
         <p>Hit 0 Points? You're out. To return to the game, you must score 4/6 or better for 3 days in a row.</p>
-
-<h3>SURVIVOR WEDNESDAYS</h3>
+        <h3>SURVIVOR WEDNESDAYS</h3>
         <p>On episode nights, all gains and losses are DOUBLED. Hard mode bonus (+1 pt) still applies to negative scores only.</p>
-
         <h3>*WEEKLY CHALLENGES</h3>
         <p>A new mini-game puzzle will be available each week. The castaway with the fastest completion time by Tuesday at 11:59 PM will earn <strong>+1 Life Point</strong> added to their total!</p>
-
         <h3>*FINALE TIE BREAKER</h3>
         <p>If two or more players are tied for 1st place after the final Wordle, the Sole Wordler will be decided by a live, head-to-head <strong>Fire-Making Challenge</strong> using the app's built-in mini-game. The fastest time takes the crown!</p>
-        
         <p style="text-align:center; margin-top: 20px;"><strong>Outwit, Outplay, Outwordle! Who will be the Sole Wordler?</strong></p>
-
-        <p></p>*Astrisk on Rule header = newly added or clarified rule</p>
-
+        <p>*Astrisk on Rule header = newly added or clarified rule</p>
         <a href="sms:12676002525" class="text-btn">RULE QUESTION? TEXT JEFF PROBST</a>
     </div>
   </div>
@@ -1843,15 +1815,11 @@
     <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('stakesModal')">&times;</span></div>
     <div class="modal-header">THE DAILY STAKES</div>
     <div class="modal-body" style="text-align: center;">
-        
         <div id="stakes-viewer" class="stakes-viewer">
             <img id="stakes-img" src="dailystakes.png" alt="The Daily Stakes" style="max-width: 100%; max-height: 100%; object-fit: contain;">
         </div>
-        
         <p style="font-size: 0.9rem; font-weight: bold; color: var(--text); font-style: italic; margin: 10px 0;">*Hard Mode grants +1 pt to offset negative scores.</p>
-        
         <button id="stakes-zoom-btn" class="text-btn">ZOOM</button>
-        
     </div>
   </div>
 </div>
@@ -1881,12 +1849,10 @@
     <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('tribeModal')">&times;</span></div>
     <div class="modal-header">CHOOSE YOUR TRIBE</div>
     <div class="modal-body" style="text-align: center; margin-top: 15px;">
-        
         <div id="welcome-blurb" style="display: none; margin-bottom: 20px;">
             <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 10px; font-size: 1.4rem;">WELCOME TO SURVIVOR WORDLE!</h3>
             <p style="font-size: 1.05rem; color: var(--text); line-height: 1.4;">Your 14-week adventure begins now. First things first...</p>
         </div>
-
         <p style="margin-bottom: 5px; font-weight: bold; font-size: 1.1rem; color: var(--text);">Personalize your app by choosing your buff color.</p>
         <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px; font-style: italic;">(You can always change this later in the ⛺ Camp Menu)</p>
         <button class="color-swatch" style="background-color: #d95100;" onclick="setThemeColor('#d95100')">Tagi Orange (Default)</button>
@@ -1907,20 +1873,17 @@
         <p style="font-size: 1.2rem; margin-top: 15px;">Congratulations. You scoured the island and found the secret.</p>
         <p style="font-size: 1.2rem; margin-top: 15px; margin-bottom: 25px;">To claim your advantage, tap the button below to text Jeff the secret phrase:</p>
         <div style="background: var(--text); color: var(--card-bg); padding: 15px; border-radius: 8px; font-size: 2rem; font-weight: 900; letter-spacing: 2px;">BLIND SIDE</div>
-        
         <a href="sms:12676002525?body=Blind%20side" class="text-btn" style="margin-top: 25px;">TEXT JEFF TO CLAIM IDOL</a>
     </div>
   </div>
 </div>
+
 <div id="feedbackModal" class="modal">
   <div class="modal-content" style="text-align: center; margin-top: 15%;">
     <div id="feedback-close-wrapper" class="sticky-close-wrapper"><span class="close" onclick="closeModal('feedbackModal')">&times;</span></div>
       <div class="modal-header">WHAT DO YOU LIKE/DISLIKE?</div>
-
     <div class="modal-body">
         <p style="font-size: 1.1rem; color: var(--text); margin-bottom: 5px;">I'd love a quick rating on how the app is running so far.</p>
-
-        
         <div class="star-rating" id="star-rating-container">
             <span data-value="5">&#9733;</span>
             <span data-value="4">&#9733;</span>
@@ -1928,19 +1891,15 @@
             <span data-value="2">&#9733;</span>
             <span data-value="1">&#9733;</span>
         </div>
-
         <p style="font-size: 1rem; color: var(--text); margin-top: 15px; margin-bottom: 10px;">Got ideas for camp? If it were possible, it would be amazing if we could...</p>
         <textarea id="suggestion-input" class="suggestion-box" placeholder="Drop any ideas, enhancements, or bug reports here..."></textarea>
-        
         <div id="feedback-error">Please tap a star rating and leave a quick note so we can improve!</div>
-
         <button id="submit-feedback-btn" class="action-btn" style="background-color: var(--leaf-green); color: white; width: 100%; font-size: 1.2rem; border-color: var(--leaf-green);">SUBMIT FEEDBACK</button>
     </div>
   </div>
 </div>
 
 <div id="thank-you-toast">🌟 Thank you! Your feedback was sent to Jeff.</div>
-
 
 <div id="adminModal" class="modal">
     <div class="modal-content">
@@ -1950,13 +1909,9 @@
             <p style="color: var(--text);">Enter Admin Code to Wipe Leaderboard:</p>
             <input type="password" id="admin-code-input" style="padding: 10px; font-size: 1rem; width: 200px; text-align: center; border: 2px solid var(--card-border); border-radius: 6px; margin-bottom: 15px;">
             <button id="admin-clear-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 0 auto;">CLEAR LEADERBOARD</button>
-            
             <button id="admin-clear-immunity-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 10px auto 0 auto;">CLEAR IMMUNITY BOARD</button>
-          
-
             <button id="admin-view-messages-btn" class="action-btn" style="background-color: var(--accent); color: white; border-color: var(--accent); margin: 10px auto 0 auto; width: 100%;">VIEW TRIBE FEEDBACK</button>
             <div id="admin-messages-container" style="display: none; margin-top: 15px; text-align: left; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--accent);"></div>
-
             <p id="admin-message" style="margin-top: 15px; font-weight: bold;"></p>
         </div>
     </div>
@@ -1976,7 +1931,6 @@
     let fireDb = null;
     let usingGlobalLeaderboard = false;
 
-    // Check if the user has added their Firebase API key yet
     if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
         firebase.initializeApp(firebaseConfig);
         fireDb = firebase.database();
@@ -1986,13 +1940,8 @@
 
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
-
-    // Default hint built right into the variable
     let customTreeMail = "RUMOR HAS IT... AN ADVANTAGE IS HIDDEN SOMEWHERE AT CAMP. LEAVE NO STONE UNTURNED... OR PIXEL UN-TAPPED."; 
-    
-    // Global variable to hold all players data so we can dynamically re-sort it without fetching
     let allPlayersData = []; 
-    // State to track which view is currently selected ('total' or 'hot')
     let currentSortView = 'total'; 
 
     function updateCountdown() {
@@ -2000,11 +1949,10 @@
         const target = new Date();
         let baseText = "";
         
-        // Find days until next Wednesday (0=Sun, 3=Wed)
         let daysUntilWed = (3 - now.getDay() + 7) % 7;
         
         if (daysUntilWed === 0) {
-            target.setHours(20, 0, 0, 0); // 8:00 PM EST target
+            target.setHours(20, 0, 0, 0); 
             const diff = target.getTime() - now.getTime();
             
             if (diff > 0) {
@@ -2038,18 +1986,13 @@
                 finalText += ` TREE MAIL: ${customTreeMail.toUpperCase()} 🌴`;
             }
             
-            // Only update DOM if text changed to avoid interrupting the animation
             if (m1.innerText !== finalText) {
                 m1.innerText = finalText;
                 m2.innerText = finalText;
-                
-                // Smart Speed Control: 0.18 seconds per character, minimum of 12 seconds
                 const animDuration = Math.max(12, finalText.length * 0.18);
                 track.style.animationDuration = `${animDuration}s`;
             }
             
-            // Bulletproof sizing: Ensures elements are ALWAYS at least the width of the screen
-            // so the -50% CSS animation NEVER snaps abruptly.
             const wWidth = wrapper.offsetWidth;
             if (wWidth > 0) {
                 m1.style.minWidth = `${wWidth}px`;
@@ -2061,20 +2004,16 @@
     updateCountdown();
     setInterval(updateCountdown, 60000); 
 
-    // Helper function to extract a momentum value out of a Wordle string (e.g. "3/6" or "X/6")
-    // Helper function to extract a momentum value out of a Wordle string
     function getWordleValue(scoreStr) {
         if (!scoreStr || typeof scoreStr !== 'string' || scoreStr.trim() === '-') return -3;
         const match = scoreStr.match(/([1-6X])\/6/i);
         if (match) {
             if (match[1].toUpperCase() === 'X') return -3;
-            // 1/6 gets 6 momentum points, 6/6 gets 1 momentum point
             return 7 - parseInt(match[1], 10);
         }
-        return -3; // Torch Snuffer Penalty: Covers missed days or invalid entries
+        return -3; 
     }
 
-    // Helper function to create a unique, consistent background position based on player name
     function getBgOffset(name) {
         let hash = 0;
         for (let i = 0; i < name.length; i++) {
@@ -2085,43 +2024,32 @@
         return `${x}% ${y}%`;
     }
 
-
     async function loadScores() {
         try {
             const timestamp = new Date().getTime();
             const response = await fetch(SHEET_URL + '&nocache=' + timestamp, { cache: 'no-store' });
             const data = await response.text();
             const allRows = data.split('\n');
-                        // Use regex to split by comma EXCEPT when inside double quotes (Google Sheets formatting)
             const headerRow = allRows[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
-            // Updated Column Indices based on inserting the new columns
             let bannerText = headerRow[9] ? headerRow[9].trim() : '';
-            bannerText = bannerText.replace(/^"|"$/g, '').trim(); // Remove Google Sheets quotes
+            bannerText = bannerText.replace(/^"|"$/g, '').trim(); 
             
             const bannerContainer = document.getElementById('best-wordle-banner');
-
             const bannerTextEl = document.getElementById('best-wordle-text');
             
            if (bannerText && bannerText.length > 0) {
-                              // Split by common separators (comma, ampersand, or pipe) - ignoring slashes for Wordle scores
                 const namesArray = bannerText.split(/[,&|]+/).map(n => n.trim()).filter(n => n.length > 0);
-
-                
-                // Build the HTML string for all pills
                 let htmlContent = "";
                 namesArray.forEach(name => {
                     htmlContent += `<span class="tied-name-pill">${name}</span>`;
                 });
-                
-                // Inject the final HTML into the container
                 bannerTextEl.innerHTML = htmlContent;
                 bannerContainer.classList.add('visible');
             } else {
                 bannerContainer.classList.remove('visible');
             }
 
-            // Updated Column Index for Tree Mail, keeping the default hint if empty
             const treeMailText = headerRow[10] ? headerRow[10].trim() : '';
             if (treeMailText) {
                 customTreeMail = treeMailText;
@@ -2132,8 +2060,7 @@
             updateCountdown(); 
 
             const rows = allRows.slice(1);
-
-allPlayersData = rows.map(row => {
+            allPlayersData = rows.map(row => {
                 const [name, score, change, idols, histToday, hist1, hist2, hist3, hardModeCol, shotInDarkCol, streakCol, f1, f2, f3, f4, f5, f6, fx] = row.split(',');
                 
                 const safeHistToday = histToday ? histToday.trim() : '-';
@@ -2142,16 +2069,12 @@ allPlayersData = rows.map(row => {
                 const safeHist3 = hist3 ? hist3.trim() : '-';
 
                 const parsedStreak = parseInt(streakCol) || 0;
-
-// Ultimate Momentum Formula: Heavily Time-Weighted (Favors Today/Yesterday)
-                let todayPts = getWordleValue(safeHistToday) * 2.0;   // Today is worth 200%
-                let hist1Pts = getWordleValue(safeHist1) * 1.5;       // Yesterday is worth 150%
-                let hist2Pts = getWordleValue(safeHist2) * 0.5;       // 2 Days ago drops to 50%
-                let hist3Pts = getWordleValue(safeHist3) * 0.25;      // 3 Days ago is only 25%
+                let todayPts = getWordleValue(safeHistToday) * 2.0;   
+                let hist1Pts = getWordleValue(safeHist1) * 1.5;       
+                let hist2Pts = getWordleValue(safeHist2) * 0.5;       
+                let hist3Pts = getWordleValue(safeHist3) * 0.25;      
                 
-                // Cap the streak bonus at a maximum of 3 points for the Hot Score calculation
                 let streakBonus = Math.min(parsedStreak, 3);
-                
                 const calculatedHotScore = todayPts + hist1Pts + hist2Pts + hist3Pts + streakBonus;
 
                 return { 
@@ -2173,8 +2096,8 @@ allPlayersData = rows.map(row => {
                         parseInt(fx) || 0
                     ]
                 };
-            }).filter(player => player.name !== ''); // Filter out empty names
-            // Now that data is loaded and mapped, render the leaderboard
+            }).filter(player => player.name !== ''); 
+            
             renderLeaderboard();
 
         } catch (e) {
@@ -2192,8 +2115,6 @@ allPlayersData = rows.map(row => {
         extinctionContainer.innerHTML = '';
         
         let sortedPlayers = [...allPlayersData]; 
-
-        // Split active players (> 0 points) and extinguished players (<= 0 points)
         const activePlayers = [];
         const deadPlayers = [];
         
@@ -2205,7 +2126,6 @@ allPlayersData = rows.map(row => {
             }
         });
 
-        // Sort Active Players based on the current toggle view
         if (currentSortView === 'hot') {
             activePlayers.sort((a, b) => b.hotScore - a.hotScore || b.score - a.score);
             headerEl.innerHTML = '🔥 WHO\'S HOT? 🔥<span>(Ranked by 3-Day Momentum)</span>';
@@ -2214,23 +2134,20 @@ allPlayersData = rows.map(row => {
             headerEl.innerHTML = 'LEADERBOARD<span>(Ranked by Total Life Pts)</span>';
         }
         
-        // Sort Dead Players strictly by their total score (lowest negative at bottom)
         deadPlayers.sort((a, b) => b.score - a.score);
 
         const allUnranked = activePlayers.every(p => p.score === 50);
         let currentRank = 1;
         let previousScore = null;
 
-        // Render Active Players to Main Board
         activePlayers.forEach((player, index) => {
             const card = document.createElement('div');
             card.className = 'player-card';
-                        card.style.backgroundPosition = getBgOffset(player.name);
+            card.style.backgroundPosition = getBgOffset(player.name);
 
             card.addEventListener('click', () => {
-                // Trigger haptic feedback
                 if (window.navigator && window.navigator.vibrate) {
-                    window.navigator.vibrate(10); // Short 10ms pulse
+                    window.navigator.vibrate(10); 
                 }
                 card.classList.toggle('expanded');
             });
@@ -2253,10 +2170,10 @@ allPlayersData = rows.map(row => {
                 changeClass = 'change-negative';
             }
 
-const isHardMode = player.hardMode.includes('*');
+            const isHardMode = player.hardMode.includes('*');
             const hardModeText = isHardMode ? '✅' : '❌';
             
-let mainScoreDisplay = player.score;
+            let mainScoreDisplay = player.score;
             let changeHtml = `
                 <div class="change-container">
                     <span class="change-label">Change</span>
@@ -2264,8 +2181,7 @@ let mainScoreDisplay = player.score;
                 </div>
             `;
 
-                                    if (currentSortView === 'hot') {
-                // Makes the column invisible and 0 width, preserving the card height without stealing space!
+            if (currentSortView === 'hot') {
                 changeHtml = `
                     <div class="change-container" style="visibility: hidden; width: 0; min-width: 0; margin: 0;">
                         <span class="change-label">Change</span>
@@ -2273,12 +2189,10 @@ let mainScoreDisplay = player.score;
                     </div>
                 `;
                 if (player.hotScore <= 0) mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">ICE COLD 🧊</span>';
-
                 else if (currentRank <= 3) mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">ON FIRE 🔥</span>';
                 else if (currentRank <= 7) mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">WARMING UP 🪵</span>';
                 else mainScoreDisplay = '<span style="font-size: 0.95rem; white-space: nowrap;">COOLING OFF 💨</span>';
             }
-
 
             card.innerHTML = `
                 <div class="card-main">
@@ -2299,7 +2213,6 @@ let mainScoreDisplay = player.score;
                         <div>📿 Immunity Idols Banked: ${player.idols}</div>
                         <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
                     </div>
-
                   <div class="history-title"><strong>Wordle History</strong></div>
                     <div class="history-grid">
                         <div class="history-day">
@@ -2322,7 +2235,6 @@ let mainScoreDisplay = player.score;
                     <button class="stat-toggle-btn" onclick="event.stopPropagation(); this.nextElementSibling.classList.toggle('open'); this.innerText = this.nextElementSibling.classList.contains('open') ? '📊 Hide Stats ▴' : '📊 View All-Time Stats ▾';">
                         📊 View All-Time Stats ▾
                     </button>
-                    
                     <div class="freq-container" onclick="event.stopPropagation();">
                         ${[1, 2, 3, 4, 5, 6, 'X'].map((val, i) => {
                             let count = player.freq[i];
@@ -2348,19 +2260,16 @@ let mainScoreDisplay = player.score;
             container.appendChild(card);
         });
 
-        // Render Extinguished Players to the Graveyard
         if (deadPlayers.length > 0) {
             extinctionHeader.style.display = 'block';
             deadPlayers.forEach(player => {
                 const card = document.createElement('div');
                 card.className = 'player-card';
-                
-                                card.style.backgroundPosition = getBgOffset(player.name);
+                card.style.backgroundPosition = getBgOffset(player.name);
 
                 card.addEventListener('click', () => { 
-                    // Trigger haptic feedback
                     if (window.navigator && window.navigator.vibrate) {
-                        window.navigator.vibrate(10); // Short 10ms pulse
+                        window.navigator.vibrate(10); 
                     }
                     card.classList.toggle('expanded'); 
                 });
@@ -2397,7 +2306,6 @@ let mainScoreDisplay = player.score;
                             <div>📿 Immunity Idols Banked: ${player.idols}</div>
                             <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
                         </div>
-
                        <div class="history-title"><strong>Wordle History</strong></div>
                         <div class="history-grid">
                             <div class="history-day">
@@ -2420,7 +2328,6 @@ let mainScoreDisplay = player.score;
                         <button class="stat-toggle-btn" onclick="event.stopPropagation(); this.nextElementSibling.classList.toggle('open'); this.innerText = this.nextElementSibling.classList.contains('open') ? '📊 Hide Stats ▴' : '📊 View All-Time Stats ▾';">
                         📊 View All-Time Stats ▾
                     </button>
-                    
                     <div class="freq-container" onclick="event.stopPropagation();">
                         ${[1, 2, 3, 4, 5, 6, 'X'].map((val, i) => {
                             let count = player.freq[i];
@@ -2450,7 +2357,6 @@ let mainScoreDisplay = player.score;
         }
     }
 
-    // Toggle Button Listeners
     document.getElementById('view-total-btn').addEventListener('click', function() {
         if(currentSortView === 'total') return; 
         currentSortView = 'total';
@@ -2467,18 +2373,14 @@ let mainScoreDisplay = player.score;
         renderLeaderboard();
     });
 
-    // Boot up the app by loading data
     loadScores();
 
-    // --- First-time Tribe Color Prompt ---
-    // If they don't have the new v2 save key, prompt them immediately and show welcome message.
     if (!localStorage.getItem('survivorTribeColor_v2')) {
         document.getElementById("welcome-blurb").style.display = "block";
         document.getElementById("tribeModal").style.display = "block";
         document.body.classList.add('modal-open');
     }
 
-    // MODAL AND BUTTON LOGIC
     const rulesModal = document.getElementById("rulesModal"), 
           stakesModal = document.getElementById("stakesModal"), 
           bigrModal = document.getElementById("bigrModal"),
@@ -2490,32 +2392,23 @@ let mainScoreDisplay = player.score;
     const fireGamePage = document.getElementById("fire-game-page");
     const mainDashboard = document.getElementById("main-dashboard");
    
-   // --- BEST WORDLE CONFETTI LOGIC ---
-const bestWordleBanner = document.getElementById('best-wordle-banner');
-bestWordleBanner.addEventListener('pointerdown', function(e) {
-    // Prevent default to avoid double-firing on touch devices
-    if (e.cancelable) e.preventDefault();
-
-    // Calculate touch coordinates as percentages of the screen for the confetti canvas
-    const xPos = e.clientX / window.innerWidth;
-    const yPos = e.clientY / window.innerHeight;
-
-    // Trigger the firework explosion!
-    confetti({
-        particleCount: 65,
-        spread: 70,
-        origin: { x: xPos, y: yPos },
-        colors: ['#ffd700', '#d95100', '#ffffff', '#f4e4bc'], // Survivor theme colors
-        zIndex: 3000, // Ensure it pops over the modals
-        disableForReducedMotion: true
+    const bestWordleBanner = document.getElementById('best-wordle-banner');
+    bestWordleBanner.addEventListener('pointerdown', function(e) {
+        if (e.cancelable) e.preventDefault();
+        const xPos = e.clientX / window.innerWidth;
+        const yPos = e.clientY / window.innerHeight;
+        confetti({
+            particleCount: 65,
+            spread: 70,
+            origin: { x: xPos, y: yPos },
+            colors: ['#ffd700', '#d95100', '#ffffff', '#f4e4bc'], 
+            zIndex: 3000, 
+            disableForReducedMotion: true
+        });
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(15);
+        }
     });
-
-    // Trigger a tiny haptic pulse if the device supports it
-    if (window.navigator && window.navigator.vibrate) {
-        window.navigator.vibrate(15);
-    }
-});
-
 
     const rulesBtn = document.getElementById("rules-btn"), 
           stakesBtn = document.getElementById("stakes-btn"), 
@@ -2528,18 +2421,16 @@ bestWordleBanner.addEventListener('pointerdown', function(e) {
          floatingMenuBtn = document.getElementById("floating-menu-btn"),
          sideMenuOverlay = document.getElementById("side-menu-overlay"),
          sideMenuDrawer = document.getElementById("side-menu-drawer"),
-fireGameBtn = document.getElementById("fire-game-btn"),
+         fireGameBtn = document.getElementById("fire-game-btn"),
          weeklyChallengeBtn = document.getElementById("weekly-challenge-btn"),
          dynamicLeaderboardHeader = document.getElementById("dynamic-leaderboard-header"),
           adminClearBtn = document.getElementById("admin-clear-btn"),
-                  adminClearImmunityBtn = document.getElementById("admin-clear-immunity-btn"),
-
+          adminClearImmunityBtn = document.getElementById("admin-clear-immunity-btn"),
           adminCodeInput = document.getElementById("admin-code-input"),
           adminMessage = document.getElementById("admin-message");
 
     const quoteText = document.getElementById("quote-text");
 
-    // Array of 25 random Jeff Probst Quotes
     const jeffQuotes = [
         "The tribe has spoken.",
         "Got nothing for ya. Head back to camp.",
@@ -2568,78 +2459,61 @@ fireGameBtn = document.getElementById("fire-game-btn"),
         "Grab your torches, head back to camp. Goodnight."
     ];
 
-    // JS Update: Open/Close Survivor Side Menu
     function toggleSideMenu() {
         const isOpen = sideMenuDrawer.classList.contains('open');
         if (isOpen) {
             sideMenuDrawer.classList.remove('open');
             sideMenuOverlay.classList.remove('open');
-            floatingMenuBtn.classList.remove('open'); // Pulls handle back
+            floatingMenuBtn.classList.remove('open'); 
             document.body.classList.remove('modal-open');
         } else {
             sideMenuDrawer.classList.add('open');
             sideMenuOverlay.classList.add('open');
-            floatingMenuBtn.classList.add('open');    // Pushes handle out
-            document.body.classList.add('modal-open'); // Locks background scrolling
+            floatingMenuBtn.classList.add('open');    
+            document.body.classList.add('modal-open'); 
         }
     }
 
     floatingMenuBtn.onclick = toggleSideMenu;
     sideMenuOverlay.onclick = toggleSideMenu;
 
-    // Automatically close the side menu if any action button inside it is clicked
     sideMenuDrawer.addEventListener('click', function(e) {
         if (e.target.classList.contains('action-btn')) {
             toggleSideMenu();
         }
     });
 
- // Helper function to hide tent handle when a modal opens
     function openModalWithNoTab(modalElement) {
         modalElement.style.display = "block";
         document.body.classList.add('modal-open');
-        floatingMenuBtn.style.display = "none"; // Hide tent handle
+        floatingMenuBtn.style.display = "none"; 
     }
 
-    // Buttons inside the Camp Menu Drawer
     rulesBtn.onclick = function() { openModalWithNoTab(rulesModal); }
     stakesBtn.onclick = function() { openModalWithNoTab(stakesModal); }
     
-    // Explicitly hide the welcome blurb if opening from the menu later
     tribeBtn.onclick = function() { 
         document.getElementById("welcome-blurb").style.display = "none";
         openModalWithNoTab(tribeModal);
     }
     
-    // Logic for Random Quote Button (inside Menu Drawer)
     quoteBtn.onclick = function() {
         const randomIndex = Math.floor(Math.random() * jeffQuotes.length);
         quoteText.innerText = '"' + jeffQuotes[randomIndex] + '"';
         openModalWithNoTab(quoteModal);
     }
 
-    // Buttons on Main Screen
     bigrBtn.onclick = function() { openModalWithNoTab(bigrModal); }
 
-    // Hidden Idol Scavenger Hunt Logic
     hiddenIdolTrigger.onclick = function() {
         openModalWithNoTab(idolModal);
     }
 
-        // Group Chat Button Logic: Main Screen
-    groupChatBtn.onclick = function() {
-        openModalWithNoTab(document.getElementById("chatModal"));
-        loadChatMessages(); // Fetch the live feed
-    }
-
-
-    // Refresh Button Logic: Main Screen
     refreshBtn.onclick = function() { 
         document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
         loadScores(); 
     }
 
-    // Secret Admin Menu Logic
     let adminTapCount = 0;
     let adminTapTimer;
 
@@ -2648,7 +2522,7 @@ fireGameBtn = document.getElementById("fire-game-btn"),
         clearTimeout(adminTapTimer);
         adminTapTimer = setTimeout(() => {
             adminTapCount = 0;
-        }, 1000); // Reset count after 1 second of inactivity
+        }, 1000); 
 
         if (adminTapCount === 5) {
             adminTapCount = 0;
@@ -2660,7 +2534,6 @@ fireGameBtn = document.getElementById("fire-game-btn"),
         }
     }
 
-    // Updated Admin Clear button to clear the currently selected mode
     adminClearBtn.onclick = function() {
         const code = adminCodeInput.value;
         const currentFirebaseKey = isHardMode ? 'fireLeaderboard_hard' : 'fireLeaderboard';
@@ -2694,18 +2567,15 @@ fireGameBtn = document.getElementById("fire-game-btn"),
         }
     }
 
-        adminClearImmunityBtn.onclick = function() {
+    adminClearImmunityBtn.onclick = function() {
         const code = adminCodeInput.value;
-        
         if (code === "PRIDE12") {
             if (usingGlobalLeaderboard) {
                 fireDb.ref('immunityLeaderboard').remove()
                     .then(() => {
                         adminMessage.innerText = "Immunity Leaderboard Cleared!";
                         adminMessage.style.color = "var(--leaf-green)";
-                        setTimeout(() => {
-                            closeModal('adminModal');
-                        }, 1500);
+                        setTimeout(() => { closeModal('adminModal'); }, 1500);
                     })
                     .catch((error) => {
                         adminMessage.innerText = "Error Clearing: " + error.message;
@@ -2716,9 +2586,7 @@ fireGameBtn = document.getElementById("fire-game-btn"),
                 if (typeof renderImmunityLeaderboard === "function") renderImmunityLeaderboard();
                 adminMessage.innerText = "Local Immunity Leaderboard Cleared!";
                 adminMessage.style.color = "var(--leaf-green)";
-                setTimeout(() => {
-                    closeModal('adminModal');
-                }, 1500);
+                setTimeout(() => { closeModal('adminModal'); }, 1500);
             }
         } else {
             adminMessage.innerText = "Invalid Code.";
@@ -2726,7 +2594,6 @@ fireGameBtn = document.getElementById("fire-game-btn"),
         }
     }
 
-        // --- MANDATORY FEEDBACK LOGIC ---
     const feedbackModal = document.getElementById('feedbackModal');
     const stars = document.querySelectorAll('.star-rating span');
     const suggestionInput = document.getElementById('suggestion-input');
@@ -2734,26 +2601,22 @@ fireGameBtn = document.getElementById("fire-game-btn"),
     const feedbackError = document.getElementById('feedback-error');
     let currentRating = 0;
 
-      // Auto-popup ONLY ONCE per user, regardless of if they submit or close it
     if (!localStorage.getItem('survivorFeedbackSeen')) {
         feedbackModal.style.display = "block";
         document.body.classList.add('modal-open');
-        document.getElementById('feedback-close-wrapper').style.display = "none"; // Hide the X for the mandatory check-in
-        // Instantly flag their device so it NEVER auto-pops again
+        document.getElementById('feedback-close-wrapper').style.display = "none"; 
         localStorage.setItem('survivorFeedbackSeen', 'true');
     }
 
-   // Wire up the new Camp Menu button
     const openFeedbackBtn = document.getElementById("open-feedback-btn");
     if (openFeedbackBtn) {
         openFeedbackBtn.onclick = function() { 
             feedbackModal.style.display = "block"; 
             document.body.classList.add('modal-open'); 
-            document.getElementById('feedback-close-wrapper').style.display = "flex"; // Show the X for voluntary suggestions
+            document.getElementById('feedback-close-wrapper').style.display = "flex"; 
         };
     }
 
-    // Handle Star Clicks
     stars.forEach(star => {
         star.addEventListener('click', function() {
             stars.forEach(s => s.classList.remove('active'));
@@ -2762,7 +2625,6 @@ fireGameBtn = document.getElementById("fire-game-btn"),
         });
     });
 
-    // Handle Submit
     submitFeedbackBtn.onclick = function() {
         const suggestionText = suggestionInput.value.trim();
 
@@ -2773,14 +2635,12 @@ fireGameBtn = document.getElementById("fire-game-btn"),
 
         feedbackError.style.display = "none";
 
-        // Build the Firebase Payload
         const feedbackData = {
             rating: currentRating,
             suggestion: suggestionText,
             timestamp: firebase.database.ServerValue.TIMESTAMP
         };
 
-        // Push to Firebase (or LocalStorage if offline)
         if (usingGlobalLeaderboard) {
             fireDb.ref('tribeFeedback').push(feedbackData);
         } else {
@@ -2789,30 +2649,23 @@ fireGameBtn = document.getElementById("fire-game-btn"),
             localStorage.setItem('tribeFeedback', JSON.stringify(localFeedback));
         }
 
-        // Mark as submitted
         localStorage.setItem('survivorFeedbackSubmitted', 'true');
 
-        // Close modal and clean up
         feedbackModal.style.display = "none";
         if (document.getElementById("tribeModal").style.display !== "block") {
             document.body.classList.remove('modal-open');
         }
-                // Trigger the Thank You Toast
         const toast = document.getElementById("thank-you-toast");
         toast.className = "show";
-        
-        // Hide the toast after 3.5 seconds
         setTimeout(function() {
             toast.className = toast.className.replace("show", "");
         }, 3500);
-
     };
 
-    // --- ADMIN TRIBE FEEDBACK LOGIC ---
     const adminViewMessagesBtn = document.getElementById('admin-view-messages-btn');
     const adminMessagesContainer = document.getElementById('admin-messages-container');
 
-   function loadAdminMessages() {
+    function loadAdminMessages() {
         adminMessagesContainer.innerHTML = "<p style='color: white; text-align: center;'>Gathering tree mail...</p>";
 
         if (usingGlobalLeaderboard) {
@@ -2820,7 +2673,7 @@ fireGameBtn = document.getElementById("fire-game-btn"),
                 let messages = [];
                 snapshot.forEach((child) => {
                     let msg = child.val();
-                    msg.key = child.key; // Save the unique Firebase key for deletion
+                    msg.key = child.key; 
                     messages.push(msg);
                 });
                 renderAdminMessages(messages);
@@ -2829,7 +2682,6 @@ fireGameBtn = document.getElementById("fire-game-btn"),
             });
         } else {
             let localFeedback = JSON.parse(localStorage.getItem('tribeFeedback')) || [];
-            // Assign a local array index as the key
             localFeedback = localFeedback.map((msg, index) => { msg.key = index; return msg; });
             renderAdminMessages(localFeedback);
         }
@@ -2849,13 +2701,13 @@ fireGameBtn = document.getElementById("fire-game-btn"),
 
         if (usingGlobalLeaderboard) {
             fireDb.ref('tribeFeedback').child(key).remove().then(() => {
-                loadAdminMessages(); // Refresh the list
+                loadAdminMessages(); 
             }).catch(err => alert("Error deleting: " + err.message));
         } else {
             let localFeedback = JSON.parse(localStorage.getItem('tribeFeedback')) || [];
-            localFeedback.splice(key, 1); // Remove from array
+            localFeedback.splice(key, 1); 
             localStorage.setItem('tribeFeedback', JSON.stringify(localFeedback));
-            loadAdminMessages(); // Refresh the list
+            loadAdminMessages(); 
         }
     };
 
@@ -2864,17 +2716,13 @@ fireGameBtn = document.getElementById("fire-game-btn"),
             adminMessagesContainer.innerHTML = "<p style='color: white; text-align: center;'>No feedback submitted yet.</p>";
             return;
         }
-
         adminMessagesContainer.innerHTML = "";
-        
-        // Reverse to show newest messages at the top
         messages.reverse().forEach(msg => {
             let dateStr = "Unknown Date";
             if (msg.timestamp) {
                 const d = new Date(msg.timestamp);
                 dateStr = d.toLocaleDateString() + ' at ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             }
-
             adminMessagesContainer.innerHTML += `
                 <div style="border-bottom: 1px dashed var(--card-border); padding-bottom: 10px; margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
@@ -2892,7 +2740,6 @@ fireGameBtn = document.getElementById("fire-game-btn"),
         });
     }
 
-    // --- MINI-GAME LOGIC: FIRE TIEBREAKER ---
     const startFireBtn = document.getElementById('start-fire-btn');
     const strikeBtn = document.getElementById('strike-btn');
     const playAgainBtn = document.getElementById('play-again-btn');
@@ -2901,7 +2748,6 @@ fireGameBtn = document.getElementById("fire-game-btn"),
     const fireEmoji = document.getElementById('fire-emoji');
     const fireInstructions = document.getElementById('fire-instructions');
     
-    // Save UI
     const saveScoreSection = document.getElementById('save-score-section');
     const finalTimeDisplay = document.getElementById('final-time-display');
     const playerInitials = document.getElementById('player-initials');
@@ -2910,26 +2756,21 @@ fireGameBtn = document.getElementById("fire-game-btn"),
     const notTop10Message = document.getElementById('not-top-10-message');
     const winStatusText = document.getElementById('win-status-text');
     
-    // Board UI
     const leaderboardSection = document.getElementById('fire-leaderboard-section');
     const leaderboardList = document.getElementById('fire-leaderboard-list');
     const localOnlyWarning = document.getElementById('local-only-warning');
     
-    // Difficulty Toggles
     const modeStdBtn = document.getElementById('mode-std-btn');
     const modeHrdBtn = document.getElementById('mode-hrd-btn');
     
-    // Visual Rope Challenge Elements
     const ropeFull = document.getElementById('rope-full');
     const ropeLeft = document.getElementById('rope-left');
     const ropeRight = document.getElementById('rope-right');
     const flagMechanism = document.getElementById('flag-mechanism');
 
-    // SFX Elements
     const sfxWin = document.getElementById('sfx-win');
     const sfxLose = document.getElementById('sfx-lose');
     
-    // Reaction elements
     const endGameReaction = document.getElementById('end-game-reaction');
     const reactionBubble = document.getElementById('reaction-bubble');
 
@@ -2995,11 +2836,8 @@ fireGameBtn = document.getElementById("fire-game-btn"),
     let fireGameActive = false;
     let fireStartTime = 0;
     let isHardMode = false;
-    
-    // Allows us to turn off previous firebase listeners when switching modes
     let currentFirebaseRef = null; 
 
-    // Mode Switcher Logic
     modeStdBtn.onclick = function() {
         if (!isHardMode) return;
         isHardMode = false;
@@ -3016,38 +2854,26 @@ fireGameBtn = document.getElementById("fire-game-btn"),
         resetFireGame();
     }
 
- // Opens the full-page mini game
-fireGameBtn.onclick = function() {
-    resetFireGame();
-    mainDashboard.style.display = "none";
-    floatingMenuBtn.style.display = "none"; // Hide the tent tab
-    window.scrollTo(0, 0); // Forces browser to top before rendering game
-    fireGamePage.style.display = "flex";
+    fireGameBtn.onclick = function() {
+        resetFireGame();
+        mainDashboard.style.display = "none";
+        floatingMenuBtn.style.display = "none"; 
+        window.scrollTo(0, 0); 
+        fireGamePage.style.display = "flex";
+        document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+    }
 
-    // Anti-Zoom Global Event Listener ONLY active while game is open
-    // Adding passive: false allows preventDefault to work properly
-    document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-}
-
-    // Function to close the full-page mini game
     function closeFireGamePage() {
         fireGamePage.style.display = "none";
-        mainDashboard.style.display = ""; // Let CSS grid handle iPad layout
-        floatingMenuBtn.style.display = "flex"; // Bring the tent tab back
-        
-        // Remove the anti-zoom listener so normal app functions return
+        mainDashboard.style.display = ""; 
+        floatingMenuBtn.style.display = "flex"; 
         document.body.removeEventListener('touchstart', preventDoubleTapZoom);
-        
-        // Remove Firebase listeners to save memory
         if (currentFirebaseRef) {
             currentFirebaseRef.off();
             isLeaderboardListening = false;
         }
     }
 
-    
-    // Global Double-Tap Zoom Preventer (attached when modal opens)
-    // By keeping track of touch times, we block rapid successive taps anywhere on the screen
     let lastTouchTime = 0;
     function preventDoubleTapZoom(e) {
         const currentTime = new Date().getTime();
@@ -3061,33 +2887,27 @@ fireGameBtn.onclick = function() {
     startFireBtn.onclick = function() { startFireGame(); }
     playAgainBtn.onclick = function() { resetFireGame(); }
 
-    // Unified pointer event handler for flawless tap detection
     function handleStrikeEvent(e) {
         if (e && e.cancelable) {
-            e.preventDefault(); // CRITICAL: This stops double-tap zooming entirely on the button!
+            e.preventDefault(); 
         }
-        
         if (!fireGameActive) return;
 
-        // Visual haptic feedback: Forces the button to visually depress on every tap
         strikeBtn.style.transform = "scale(0.92)";
         setTimeout(() => { strikeBtn.style.transform = "scale(1)"; }, 50);
         
-        // Progressive Resistance: Increased base tap gain so progress is more noticeable
-      let tapGain = isHardMode ? 5 : 10;
+        let tapGain = isHardMode ? 5 : 10;
         fireHeat += tapGain; 
         
         if (fireHeat >= 100) {
             fireHeat = 100;
             fireGameActive = false;
-            clearInterval(fireInterval); // Instantly stop the clock
+            clearInterval(fireInterval); 
             
-            // Record the exact time of the winning tap
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimerDisplay.innerText = elapsed.toFixed(2) + "s";
             updateFireVisuals();
 
-            // Wait 250ms to allow the progress bar CSS transition to finish before triggering win state
             setTimeout(() => {
                 endFireGame(true, elapsed);
             }, 250);
@@ -3097,22 +2917,20 @@ fireGameBtn.onclick = function() {
         }
     }
 
-// Use pointerdown for flawless rapid-fire tapping across all devices (ignores slight finger drags)
     strikeBtn.addEventListener('pointerdown', handleStrikeEvent);
+
     function resetFireGame() {
         clearInterval(fireInterval);
         fireGameActive = false;
         fireHeat = 0;
         fireTimeLeft = 10.00;
         
-        // Reset Visual Rope Challenge Elements
         ropeFull.style.display = "block";
         ropeLeft.style.display = "none";
         ropeLeft.style.transform = "rotate(0deg)";
         ropeRight.style.display = "none";
         ropeRight.style.transform = "rotate(0deg)";
         
-        // Reset Flag
         flagMechanism.style.opacity = "0";
         flagMechanism.style.display = "none";
         flagMechanism.style.transform = "translateY(160px)"; 
@@ -3147,16 +2965,12 @@ fireGameBtn.onclick = function() {
 
         fireStartTime = Date.now();
 
-        // High precision interval using accurate Date math
         fireInterval = setInterval(() => {
             let elapsed = (Date.now() - fireStartTime) / 1000;
             fireTimeLeft = 10.00 - elapsed;
             
-            // --- NEW BALANCED DECAY MATH ---
-            // Standard: Starts easy, but wind ramps up heavily. Requires ~4.5 taps/sec to cross the finish line.
-            // Hard: Brutal wind at the end. Requires ~9 taps/sec to push through the final 20%.
-           let baseDecay = isHardMode ? 0.55 : 0.25;
-           let scalingDecay = (fireHeat / 100) * (isHardMode ? 1.2 : 0.65);
+            let baseDecay = isHardMode ? 0.55 : 0.25;
+            let scalingDecay = (fireHeat / 100) * (isHardMode ? 1.2 : 0.65);
             
             fireHeat -= (baseDecay + scalingDecay);
 
@@ -3174,7 +2988,6 @@ fireGameBtn.onclick = function() {
                     sfxLose.play().catch(err => {});
                 }
 
-                // Allow the CSS transition to finish before flipping UI
                 setTimeout(() => {
                     endFireGame(false);
                 }, 100);
@@ -3196,8 +3009,6 @@ fireGameBtn.onclick = function() {
             fireEmoji.innerText = "🔥";
         }
 
-        // Scale the fire up physically towards the rope. 
-        // Max scale ~3.5 reaches the rope perfectly based on CSS dimensions.
         let scaleHeight = 1 + (fireHeat / 100) * 2.5;
         let scaleWidth = 1 + (fireHeat / 100) * 1.5;
         fireEmoji.style.transform = `translateX(-50%) scaleX(${scaleWidth}) scaleY(${scaleHeight})`;
@@ -3211,7 +3022,6 @@ fireGameBtn.onclick = function() {
         reactionFaceImg.classList.remove('shake-anim');
         void reactionFaceImg.offsetWidth; 
 
-        // 1. Check current leaderboard times directly from the UI elements
         let currentTimes = [];
         let boardElems = leaderboardList.querySelectorAll('li');
         boardElems.forEach(li => {
@@ -3219,7 +3029,6 @@ fireGameBtn.onclick = function() {
             if (match) currentTimes.push(parseFloat(match[1]));
         });
 
-        // 2. Logic for Top 10 and #1 Spot
         let isHighScore = false;
         let qualifiesForTop10 = false;
         
@@ -3239,20 +3048,16 @@ fireGameBtn.onclick = function() {
         }
 
         if (won) {
-            // Trigger Visual Rope Snap
             ropeFull.style.display = "none";
             ropeLeft.style.display = "block";
             ropeRight.style.display = "block";
-            
             flagMechanism.style.display = "block";
             
-            // Allow display:block to register before dropping ropes and popping flag
             setTimeout(() => {
-                ropeLeft.style.transform = "rotate(85deg)"; // Falls down left
-                ropeRight.style.transform = "rotate(-85deg)"; // Falls down right
-                
+                ropeLeft.style.transform = "rotate(85deg)"; 
+                ropeRight.style.transform = "rotate(-85deg)"; 
                 flagMechanism.style.opacity = "1";
-                flagMechanism.style.transform = "translateY(0px)"; // Springs straight up!
+                flagMechanism.style.transform = "translateY(0px)"; 
             }, 10);
             
             if (sfxWin) {
@@ -3268,7 +3073,6 @@ fireGameBtn.onclick = function() {
             saveScoreSection.style.display = "block";
             finalTimeDisplay.innerText = timeTaken;
             
-            // Adjust save UI based on Top 10 qualification
             if (qualifiesForTop10) {
                 winStatusText.innerText = "🔥 FIRE MADE! 🔥";
                 top10InputArea.style.display = "block";
@@ -3279,7 +3083,6 @@ fireGameBtn.onclick = function() {
                 notTop10Message.style.display = "block";
             }
 
-            // Trigger Reaction Picture + Bubble
             endGameReaction.style.display = "flex";
             if (isHighScore) {
                 reactionBubble.innerText = "NEW LEADER!";
@@ -3300,7 +3103,6 @@ fireGameBtn.onclick = function() {
             
             saveScoreSection.style.display = "none";
 
-            // Show insult reaction on lose
             endGameReaction.style.display = "flex";
             reactionBubble.innerText = fireInsults[Math.floor(Math.random() * fireInsults.length)];
             reactionBubble.style.color = "var(--low-score)";
@@ -3338,14 +3140,11 @@ fireGameBtn.onclick = function() {
         
         if (usingGlobalLeaderboard) {
             localOnlyWarning.style.display = "none";
-            
-            // Unbind previous listener if switching between Hard/Standard
             if (currentFirebaseRef) {
                 currentFirebaseRef.off();
             }
             
             currentFirebaseRef = fireDb.ref(targetKey).orderByChild('time').limitToFirst(10);
-            
             currentFirebaseRef.on('value', (snapshot) => {
                 let board = [];
                 snapshot.forEach((childSnapshot) => {
@@ -3366,9 +3165,7 @@ fireGameBtn.onclick = function() {
                     leaderboardList.innerHTML = "";
                 }
             });
-            
         } else {
-            // Render from LocalStorage (Fallback)
             localOnlyWarning.style.display = "block";
             let board = JSON.parse(localStorage.getItem(targetKey)) || [];
             if(board.length > 0) {
@@ -3387,14 +3184,12 @@ fireGameBtn.onclick = function() {
         }
     }
 
-    // --- TRIBE THEME LOGIC ---
     function setThemeColor(hexColor) {
         document.documentElement.style.setProperty('--accent', hexColor);
         localStorage.setItem('survivorTribeColor_v2', hexColor);
         closeModal('tribeModal');
     }
 
-    // --- DAILY STAKES IMAGE TOGGLE & CUSTOM PINCH-ZOOM LOGIC ---
     const stakesViewer = document.getElementById('stakes-viewer');
     const stakesImg = document.getElementById('stakes-img');
     const stakesZoomBtn = document.getElementById('stakes-zoom-btn');
@@ -3423,7 +3218,6 @@ fireGameBtn.onclick = function() {
         }
     };
 
-    // Custom Pinch-To-Zoom Gesture Listener for the Stakes Image
     stakesViewer.addEventListener('touchstart', (e) => {
         if (isStakesZoomed && e.touches.length === 2) {
             initialDistance = Math.hypot(
@@ -3462,7 +3256,6 @@ fireGameBtn.onclick = function() {
         }
     }, { passive: false });
 
-    // Helper function to cleanly reset stakes modal back to default
     function resetStakesModal() {
         isStakesZoomed = false;
         stakesImg.src = "dailystakes.png";
@@ -3479,11 +3272,10 @@ fireGameBtn.onclick = function() {
         stakesViewer.scrollLeft = 0;
     }
 
-   // JS Update: Removes 'modal-open' class and resets Stakes modal state when closed
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = "none";
         document.body.classList.remove('modal-open'); 
-        floatingMenuBtn.style.display = "flex"; // Bring tent handle back
+        floatingMenuBtn.style.display = "flex"; 
         
         if (modalId === 'stakesModal') {
              resetStakesModal();
@@ -3493,13 +3285,12 @@ fireGameBtn.onclick = function() {
             adminMessage.innerText = "";
         }
     }
-  // Close Modals dynamically by checking for the 'modal' class
+
     window.onclick = function(event) {
-        // Exclude side-menu-overlay from this check so it can handle its own clicks
         if (event.target.classList.contains('modal') && event.target.id !== 'side-menu-overlay') {
             event.target.style.display = "none";
             document.body.classList.remove('modal-open'); 
-            floatingMenuBtn.style.display = "flex"; // Bring tent handle back
+            floatingMenuBtn.style.display = "flex"; 
             
             if (event.target.id === 'stakesModal') {
                  resetStakesModal();
@@ -3510,6 +3301,7 @@ fireGameBtn.onclick = function() {
             }
         }
     }
+
     function createEmbers() {
         const body = document.body;
         for(let i = 0; i < 80; i++) {
@@ -3525,7 +3317,7 @@ fireGameBtn.onclick = function() {
         }
     }
     createEmbers();
-    /* --- ADMIN PUZZLE GAME LOGIC --- */
+
     const puzzleGamePage = document.getElementById("puzzle-game-page");
     const puzzleGrid = document.getElementById("puzzle-grid");
     const puzzleTimerDisplay = document.getElementById("puzzle-timer");
@@ -3578,7 +3370,6 @@ fireGameBtn.onclick = function() {
             let col = val % 3;
             tile.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
             
-                        // Use pointerdown for instant response and prevent default gesture behaviors
             tile.addEventListener('pointerdown', (e) => {
                 if (e.cancelable) e.preventDefault();
                 handleTileClick(tile);
@@ -3613,7 +3404,6 @@ fireGameBtn.onclick = function() {
         if (isWin) {
             puzzleActive = false;
             clearInterval(puzzleTimer);
-                        // Grab the exact time frozen on the screen instead of recalculating
             let finalTime = parseFloat(puzzleTimerDisplay.innerText).toFixed(2);
 
             puzzleTimerDisplay.style.color = "#ffd700";
@@ -3731,23 +3521,22 @@ fireGameBtn.onclick = function() {
         }
     }
 
-  
-    // --- TRIBE CHAT LOGIC (FULL SCREEN & iMESSAGE STYLE) ---
     const chatInput = document.getElementById('chat-input');
     const chatSendBtn = document.getElementById('chat-send-btn');
     const chatMessagesContainer = document.getElementById('chat-messages');
     const chatPlusBtn = document.getElementById('chat-plus-btn');
     let chatListenerActive = false;
 
-            groupChatBtn.onclick = function() {
+    groupChatBtn.onclick = function() {
         document.getElementById('main-dashboard').style.display = "none";
         document.getElementById('floating-menu-btn').style.display = "none"; 
         
-        // --- NEW: Lock scrolling and make EVERYTHING pitch black ---
+        // Stops scrolling bleed
         document.body.classList.add('modal-open');
         document.documentElement.style.backgroundColor = "#000";
         document.body.style.backgroundColor = "#000";
         document.body.style.backgroundImage = "none";
+        document.body.style.padding = "0"; 
         document.querySelector('.fire-glow').style.display = "none";
         document.querySelector('.audio-wrapper').style.display = "none";
 
@@ -3762,17 +3551,17 @@ fireGameBtn.onclick = function() {
         document.getElementById('main-dashboard').style.display = ""; 
         document.getElementById('floating-menu-btn').style.display = "flex";
         
-        // --- NEW: Unlock scrolling and bring the wood background back ---
+        // Brings background back
         document.body.classList.remove('modal-open');
         document.documentElement.style.backgroundColor = ""; 
         document.body.style.backgroundColor = "";
         document.body.style.backgroundImage = "";
+        document.body.style.padding = ""; 
         document.querySelector('.fire-glow').style.display = "block";
         document.querySelector('.audio-wrapper').style.display = "flex";
 
         document.body.removeEventListener('touchstart', preventDoubleTapZoom);
     }
-
 
     function getChatUsername() {
         let username = localStorage.getItem('survivorChatName');
@@ -3784,12 +3573,11 @@ fireGameBtn.onclick = function() {
         return username;
     }
 
-       function loadChatMessages() {
+    function loadChatMessages() {
         if (chatListenerActive || !usingGlobalLeaderboard) return;
         chatListenerActive = true;
         chatMessagesContainer.innerHTML = "<p style='text-align:center; color: #888; font-family: -apple-system, sans-serif;'>Connecting to camp...</p>";
 
-        // 1. Load Messages
         fireDb.ref('tribeChat').limitToLast(50).on('value', (snapshot) => {
             chatMessagesContainer.innerHTML = "";
             let hasMessages = false;
@@ -3810,17 +3598,14 @@ fireGameBtn.onclick = function() {
                 msgDiv.style.marginBottom = "4px"; 
                 msgDiv.style.alignItems = isMe ? "flex-end" : "flex-start";
 
-                // Image Rendering Logic
                 let contentHtml = msg.text;
                 let isImg = msg.text.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png)(\?.*)?$/i);
                 if(isImg) {
                     contentHtml = `<img src="${msg.text}" class="chat-img" alt="Shared Image">`;
                 }
 
-                // Reaction Badge
                 let reactionBadge = msg.reaction ? `<div style="position: absolute; bottom: -8px; ${isMe ? 'left: -5px;' : 'right: -5px;'} background: #1a1a1a; border: 1px solid #444; border-radius: 12px; padding: 2px 6px; font-size: 0.8rem; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">${msg.reaction}</div>` : '';
 
-                // Delete Logic (Long Press) - ADMIN ONLY
                 let pressTimer;
                 msgDiv.addEventListener('touchstart', (e) => {
                     pressTimer = window.setTimeout(() => {
@@ -3836,7 +3621,6 @@ fireGameBtn.onclick = function() {
                 msgDiv.addEventListener('touchend', () => clearTimeout(pressTimer));
                 msgDiv.addEventListener('touchmove', () => clearTimeout(pressTimer));
 
-                // Double Tap to React 🔥
                 let lastTap = 0;
                 msgDiv.addEventListener('touchend', (e) => {
                     let currentTime = new Date().getTime();
@@ -3875,7 +3659,6 @@ fireGameBtn.onclick = function() {
             }
         });
 
-        // 2. Typing Indicator Listener
         fireDb.ref('tribeTyping').on('value', (snapshot) => {
             const typingIndicator = document.getElementById('typing-indicator');
             let typers = [];
@@ -3897,14 +3680,12 @@ fireGameBtn.onclick = function() {
         });
     }
 
-    // --- CHAT PREVIEW AND SEND LOGIC ---
     const chatPreviewContainer = document.getElementById('chat-preview-container');
     const chatPreviewImg = document.getElementById('chat-preview-img');
     const chatPreviewRemove = document.getElementById('chat-preview-remove');
     const chatImageUpload = document.getElementById('chat-image-upload');
     let pendingImageFile = null;
 
-    // Cancel Preview
     chatPreviewRemove.onclick = function() {
         pendingImageFile = null;
         chatPreviewContainer.style.display = 'none';
@@ -3913,7 +3694,6 @@ fireGameBtn.onclick = function() {
     };
 
     let typingTimer;
-    // Auto-expand the textbox as they type + Typing Indicator Logic
     chatInput.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
@@ -3928,7 +3708,6 @@ fireGameBtn.onclick = function() {
         }
     });
 
-    // Send on Enter (unless holding Shift)
     chatInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault(); 
@@ -3936,17 +3715,15 @@ fireGameBtn.onclick = function() {
         }
     });
 
-    // Master Send Button Logic
     chatSendBtn.onclick = function() {
         let text = chatInput.value.trim();
-        if (text === "" && !pendingImageFile) return; // Nothing to send
+        if (text === "" && !pendingImageFile) return; 
 
         let username = getChatUsername();
         if (!username) return;
 
         if (usingGlobalLeaderboard) {
             if (pendingImageFile) {
-                // Upload Image First
                 chatInput.placeholder = "Uploading...";
                 chatInput.disabled = true;
 
@@ -3976,7 +3753,6 @@ fireGameBtn.onclick = function() {
                 });
 
             } else {
-                // Text Only
                 fireDb.ref('tribeChat').push({
                     name: username,
                     text: text,
@@ -4003,8 +3779,6 @@ fireGameBtn.onclick = function() {
         }
     }
 
-
-    // Helper: Load file into preview
     function handleFileSelection(file) {
         if (file && file.type.startsWith('image/')) {
             pendingImageFile = file;
@@ -4017,28 +3791,23 @@ fireGameBtn.onclick = function() {
         }
     }
 
-    // Capture Native Image Upload
     if(chatImageUpload) {
         chatImageUpload.onchange = function(e) {
             handleFileSelection(e.target.files[0]);
         };
     }
 
-    // Capture Paste Events
     chatInput.addEventListener('paste', function(e) {
         const items = (e.clipboardData || e.originalEvent.clipboardData).items;
         for (let index in items) {
             const item = items[index];
             if (item.kind === 'file' && item.type.startsWith('image/')) {
-                e.preventDefault(); // Stop the browser from trying to render the raw blob string
+                e.preventDefault(); 
                 handleFileSelection(item.getAsFile());
             }
         }
     });
 
-
-
-    // --- iOS BYPASS AUDIO LOGIC ---
     const fireAudio = document.getElementById('fireSound');
     const themeAudio = document.getElementById('themeSound');
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -4055,11 +3824,8 @@ fireGameBtn.onclick = function() {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         audioCtx = new AudioContext();
 
-        // Route Theme Audio through a Gain Node (Virtual Mixer)
         themeSource = audioCtx.createMediaElementSource(themeAudio);
         themeGainNode = audioCtx.createGain();
-        
-        // HARDCODE THEME VOLUME HERE (0.1 = 10% volume)
         themeGainNode.gain.value = 0.1; 
         
         themeSource.connect(themeGainNode);
@@ -4068,14 +3834,12 @@ fireGameBtn.onclick = function() {
         audioInitialized = true;
     }
 
-    // Try to auto-play fire on load
     fireAudio.play().then(() => {
         fireToggleBtn.classList.add('playing');
     }).catch(() => {
         console.log("Autoplay blocked. Waiting for interaction.");
     });
 
-    // Fire Toggle Button Logic
     fireToggleBtn.addEventListener('click', () => {
         if (fireAudio.paused) {
             fireAudio.play();
@@ -4086,11 +3850,9 @@ fireGameBtn.onclick = function() {
         }
     });
 
-    // Theme Toggle Button Logic
     themeToggleBtn.addEventListener('click', () => {
-        initAudioContext(); // Ensure virtual mixer is ready
+        initAudioContext(); 
         
-        // Resume context if suspended by iOS
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
@@ -4105,7 +3867,6 @@ fireGameBtn.onclick = function() {
         }
     });
 
-    // Fallback logic to start audio context on first screen tap
     document.addEventListener('touchstart', () => {
         if(!audioInitialized) { initAudioContext(); }
     }, {once: true});
@@ -4113,7 +3874,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.55</div>
+        <div class="app-version" id="app-version">v1.0.56</div>
     </div>
 
 </body>
