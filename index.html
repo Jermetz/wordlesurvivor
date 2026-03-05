@@ -3603,7 +3603,9 @@ fireGameBtn.onclick = function() {
         if (isWin) {
             puzzleActive = false;
             clearInterval(puzzleTimer);
-            let finalTime = ((Date.now() - puzzleStartTime) / 1000).toFixed(2);
+                        // Grab the exact time frozen on the screen instead of recalculating
+            let finalTime = parseFloat(puzzleTimerDisplay.innerText).toFixed(2);
+
             puzzleTimerDisplay.style.color = "#ffd700";
             puzzleFinalTime.innerText = finalTime;
             
@@ -4029,7 +4031,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.50</div>
+        <div class="app-version" id="app-version">v1.0.51</div>
     </div>
 
 </body>
