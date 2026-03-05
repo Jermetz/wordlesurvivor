@@ -1185,7 +1185,7 @@
             border-radius: 12px;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 6px 15px rgba(0,0,0,0.6);
         }
-        .puzzle-tile {
+                .puzzle-tile {
             width: 100px;
             height: 100px;
             background-image: url('survivor50.jpg');
@@ -1195,7 +1195,13 @@
             box-sizing: border-box;
             border-radius: 8px; /* Rounded corners for a tile look */
             box-shadow: inset 0 0 10px rgba(0,0,0,0.7), 2px 2px 5px rgba(0,0,0,0.5); /* 3D bevel effect */
+            
+            /* Forces instant touch registration and prevents double-tap zoom on tiles */
+            touch-action: none; 
+            -webkit-user-select: none;
+            user-select: none;
         }
+
         .puzzle-tile.selected {
             outline: 4px solid #ffd700;
             outline-offset: -2px;
@@ -3562,7 +3568,12 @@ fireGameBtn.onclick = function() {
             let col = val % 3;
             tile.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
             
-            tile.onclick = () => handleTileClick(tile);
+                        // Use pointerdown for instant response and prevent default gesture behaviors
+            tile.addEventListener('pointerdown', (e) => {
+                if (e.cancelable) e.preventDefault();
+                handleTileClick(tile);
+            });
+
             puzzleGrid.appendChild(tile);
         });
     }
@@ -4018,7 +4029,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.49</div>
+        <div class="app-version" id="app-version">v1.0.50</div>
     </div>
 
 </body>
