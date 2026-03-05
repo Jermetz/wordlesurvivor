@@ -3764,11 +3764,12 @@ fireGameBtn.onclick = function() {
         return username;
     }
 
-    function loadChatMessages() {
+       function loadChatMessages() {
         if (chatListenerActive || !usingGlobalLeaderboard) return;
         chatListenerActive = true;
         chatMessagesContainer.innerHTML = "<p style='text-align:center; color: #888; font-family: -apple-system, sans-serif;'>Connecting to camp...</p>";
 
+        // 1. Load Messages
         fireDb.ref('tribeChat').limitToLast(50).on('value', (snapshot) => {
             chatMessagesContainer.innerHTML = "";
             let hasMessages = false;
@@ -3790,7 +3791,6 @@ fireGameBtn.onclick = function() {
                 msgDiv.style.alignItems = isMe ? "flex-end" : "flex-start";
 
                 // Image Rendering Logic
-                                // Image Rendering Logic
                 let contentHtml = msg.text;
                 let isImg = msg.text.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png)(\?.*)?$/i);
                 if(isImg) {
@@ -3811,7 +3811,7 @@ fireGameBtn.onclick = function() {
                         } else if (enteredCode !== null) {
                             alert("Incorrect admin code.");
                         }
-                    }, 800); // 800ms long press
+                    }, 800);
                 });
                 msgDiv.addEventListener('touchend', () => clearTimeout(pressTimer));
                 msgDiv.addEventListener('touchmove', () => clearTimeout(pressTimer));
@@ -3845,22 +3845,6 @@ fireGameBtn.onclick = function() {
                         </div>
                     `;
                 }
-
-                if (isMe) {
-                    msgDiv.innerHTML = `<div class="chat-bubble me" style="max-width: 75%;">${contentHtml}</div>`;
-                } else {
-                    let nameHtml = showName ? `<div style="font-size: 0.7rem; color: #888; margin-bottom: 2px; margin-left: 42px; text-transform: capitalize; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">${msg.name.toLowerCase()}</div>` : '';
-                    let initial = msg.name ? msg.name.charAt(0).toUpperCase() : "?";
-                    let avatarHtml = `<div style="width: 28px; height: 28px; border-radius: 50%; background: #555; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; flex-shrink: 0; margin-top: auto;">${initial}</div>`;
-                    
-                    msgDiv.innerHTML = `
-                        ${nameHtml}
-                        <div style="display: flex; gap: 8px; max-width: 80%; align-items: flex-end;">
-                            ${avatarHtml}
-                            <div class="chat-bubble them">${contentHtml}</div>
-                        </div>
-                    `;
-                }
                 chatMessagesContainer.appendChild(msgDiv);
             });
             
@@ -3868,7 +3852,10 @@ fireGameBtn.onclick = function() {
                 chatMessagesContainer.innerHTML = "<p style='text-align:center; color: #888; font-style: italic; margin-top: 20px; font-family: -apple-system, sans-serif;'>No messages yet. Drop your Wordle score!</p>";
             } else {
                 chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-                       // Typing Indicator Listener
+            }
+        });
+
+        // 2. Typing Indicator Listener
         fireDb.ref('tribeTyping').on('value', (snapshot) => {
             const typingIndicator = document.getElementById('typing-indicator');
             let typers = [];
@@ -3888,9 +3875,6 @@ fireGameBtn.onclick = function() {
                 typingIndicator.style.display = "none";
             }
         });
-
-            }
-        });
     }
 
     // --- CHAT PREVIEW AND SEND LOGIC ---
@@ -3908,8 +3892,7 @@ fireGameBtn.onclick = function() {
         if(chatImageUpload) chatImageUpload.value = ""; 
     };
 
-    // Auto-expand the textbox as they type
-        let typingTimer;
+    let typingTimer;
     // Auto-expand the textbox as they type + Typing Indicator Logic
     chatInput.addEventListener('input', function() {
         this.style.height = 'auto';
@@ -3924,7 +3907,6 @@ fireGameBtn.onclick = function() {
             }, 2500);
         }
     });
-
 
     // Send on Enter (unless holding Shift)
     chatInput.addEventListener('keydown', function (e) {
@@ -3960,7 +3942,6 @@ fireGameBtn.onclick = function() {
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
                     
-                    // If they also typed text, send that as a second message immediately after
                     if (text !== "") {
                         fireDb.ref('tribeChat').push({
                             name: username,
@@ -3971,22 +3952,7 @@ fireGameBtn.onclick = function() {
                 }).catch((error) => {
                     alert("Image upload failed: " + error.message);
                 }).finally(() => {
-                        function resetInputUI() {
-        chatInput.value = ""; 
-        chatInput.style.height = 'auto';
-        chatInput.placeholder = "Tribe Message";
-        chatInput.disabled = false;
-        pendingImageFile = null;
-        chatPreviewContainer.style.display = 'none';
-        chatPreviewImg.src = '';
-        if(chatImageUpload) chatImageUpload.value = "";
-        
-        let username = localStorage.getItem('survivorChatName');
-        if (usingGlobalLeaderboard && username) {
-            fireDb.ref('tribeTyping/' + username).remove();
-        }
-    }
-
+                    resetInputUI();
                 });
 
             } else {
@@ -4010,7 +3976,13 @@ fireGameBtn.onclick = function() {
         chatPreviewContainer.style.display = 'none';
         chatPreviewImg.src = '';
         if(chatImageUpload) chatImageUpload.value = "";
+        
+        let username = localStorage.getItem('survivorChatName');
+        if (usingGlobalLeaderboard && username) {
+            fireDb.ref('tribeTyping/' + username).remove();
+        }
     }
+
 
     // Helper: Load file into preview
     function handleFileSelection(file) {
@@ -4121,7 +4093,7 @@ fireGameBtn.onclick = function() {
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.52</div>
+        <div class="app-version" id="app-version">v1.0.53</div>
     </div>
 
 </body>
