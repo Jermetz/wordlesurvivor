@@ -3422,12 +3422,13 @@
     // Checks if the current time is past Midnight on March 11, 2026
     const isCoconutTime = new Date() >= new Date('2026-03-11T00:00:00');
     
-    // Auto-update the button text when the app loads
+        // Auto-update the button text when the app loads
     if (isCoconutTime) {
-        weeklyChallengeBtn.innerHTML = "🥥 COCONUT CHOP";
+        weeklyChallengeBtn.innerHTML = "🥥 WEEKLY CHALLENGE";
     } else {
         weeklyChallengeBtn.innerHTML = "🧩 WEEKLY CHALLENGE";
     }
+
 
     weeklyChallengeBtn.onclick = function() {
         document.getElementById("main-dashboard").style.display = "none";
@@ -4161,7 +4162,7 @@
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.61</div>
+        <div class="app-version" id="app-version">v1.0.62</div>
     </div>
 
 </body>
