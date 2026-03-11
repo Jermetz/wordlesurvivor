@@ -1210,6 +1210,30 @@
             z-index: 2;
         }
 
+        /* --- COCONUT CHOP GAME CSS --- */
+        .coconut-tile {
+            width: 100px;
+            height: 100px;
+            background-color: transparent;
+            cursor: pointer;
+            box-sizing: border-box;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            touch-action: none; 
+            -webkit-user-select: none;
+            user-select: none;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+        .coconut-tile:active { transform: scale(0.85); }
+        .coconut-tile.active-target { 
+            background-color: rgba(255, 255, 255, 0.1); 
+            border: 2px dashed var(--accent); 
+            box-shadow: inset 0 0 10px rgba(217, 81, 0, 0.4);
+        }
+
             /* --- MANDATORY FEEDBACK MODAL --- */
         #feedbackModal {
             z-index: 9999; /* Forced high to sit above everything */
@@ -1726,6 +1750,47 @@
             </div>
 
             <button id="puzzle-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="coconut-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>COCONUT CHOP</span>
+            <span class="close-btn-full" onclick="closeCoconutGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>🥥 CHOP 15 COCONUTS 🔪</strong><br>Tap the coconut as fast as it appears!
+            </p>
+            <p id="coconut-progress" style="font-size: 1.2rem; color: var(--accent); font-weight: bold; margin-bottom: 15px; text-shadow: 1px 1px 2px #000;">0 / 15</p>
+
+            <h2 id="coconut-timer" style="color: #fff; font-size: 2.2rem; margin-top: 0; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+            <div id="coconut-grid" class="puzzle-grid"></div>
+            
+            <button id="start-coconut-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">START CHOPPING</button>
+            
+            <div id="coconut-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🔪 TRIBE FED! 🔪</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="coconut-final-time"></span>s</p>
+                
+                <div id="coconut-input-area" style="margin-top: 15px;">
+                    <input type="text" id="coconut-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-coconut-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="coconut-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🥥 FASTEST CHOPPERS</h3>
+                <ol id="coconut-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="coconut-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
         </div>
     </div>
 </div>
@@ -3353,16 +3418,35 @@
     let selectedTile = null;
     let currentPuzzleRef = null;
 
+        // --- MIDNIGHT GAME SWAP LOGIC ---
+    // Checks if the current time is past Midnight on March 11, 2026
+    const isCoconutTime = new Date() >= new Date('2026-03-11T00:00:00');
+    
+    // Auto-update the button text when the app loads
+    if (isCoconutTime) {
+        weeklyChallengeBtn.innerHTML = "🥥 COCONUT CHOP";
+    } else {
+        weeklyChallengeBtn.innerHTML = "🧩 WEEKLY CHALLENGE";
+    }
+
     weeklyChallengeBtn.onclick = function() {
         document.getElementById("main-dashboard").style.display = "none";
         document.getElementById("floating-menu-btn").style.display = "none";
         window.scrollTo(0, 0);
-        puzzleGamePage.style.display = "flex";
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
-        resetPuzzleGame();
-        renderPuzzleLeaderboard();
+        // Launch the correct game based on the time
+        if (isCoconutTime) {
+            coconutGamePage.style.display = "flex";
+            resetCoconutGame();
+            renderCoconutLeaderboard();
+        } else {
+            puzzleGamePage.style.display = "flex";
+            resetPuzzleGame();
+            renderPuzzleLeaderboard();
+        }
     };
+
 
     window.closePuzzleGamePage = function() {
         puzzleGamePage.style.display = "none";
@@ -3885,6 +3969,194 @@
     document.addEventListener('touchstart', () => {
         if(!audioInitialized) { initAudioContext(); }
     }, {once: true});
+
+    /* --- COCONUT CHOP GAME LOGIC --- */
+    const coconutGamePage = document.getElementById("coconut-game-page");
+    const coconutGrid = document.getElementById("coconut-grid");
+    const coconutTimerDisplay = document.getElementById("coconut-timer");
+    const startCoconutBtn = document.getElementById("start-coconut-btn");
+    const coconutProgressDisplay = document.getElementById("coconut-progress");
+    const coconutSaveSection = document.getElementById("coconut-save-section");
+    const coconutFinalTime = document.getElementById("coconut-final-time");
+    const coconutInputArea = document.getElementById("coconut-input-area");
+    const coconutInitials = document.getElementById("coconut-initials");
+    const saveCoconutBtn = document.getElementById("save-coconut-btn");
+    const coconutLeaderboardSection = document.getElementById("coconut-leaderboard-section");
+    const coconutLeaderboardList = document.getElementById("coconut-leaderboard-list");
+    const coconutPlayAgainBtn = document.getElementById("coconut-play-again-btn");
+
+    let coconutTimer;
+    let coconutStartTime;
+    let coconutActive = false;
+    let coconutsChopped = 0;
+    const TOTAL_COCONUTS = 15;
+    let currentCoconutRef = null;
+    let currentTargetIndex = -1;
+
+    window.closeCoconutGamePage = function() {
+        coconutGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(coconutTimer);
+        if (currentCoconutRef) currentCoconutRef.off();
+    };
+
+    function initCoconutBoard() {
+        coconutGrid.innerHTML = "";
+        for (let i = 0; i < 9; i++) {
+            let tile = document.createElement("div");
+            tile.className = "coconut-tile";
+            tile.dataset.index = i;
+            
+            tile.addEventListener('pointerdown', (e) => {
+                if (e.cancelable) e.preventDefault();
+                handleCoconutClick(i);
+            });
+            coconutGrid.appendChild(tile);
+        }
+    }
+
+    function handleCoconutClick(index) {
+        if (!coconutActive || index !== currentTargetIndex) return;
+        
+        coconutsChopped++;
+        coconutProgressDisplay.innerText = `${coconutsChopped} / ${TOTAL_COCONUTS}`;
+        
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(15);
+
+        if (coconutsChopped >= TOTAL_COCONUTS) {
+            endCoconutGame();
+        } else {
+            spawnNextCoconut();
+        }
+    }
+
+    function spawnNextCoconut() {
+        let tiles = coconutGrid.children;
+        if (currentTargetIndex !== -1) {
+            tiles[currentTargetIndex].innerHTML = "";
+            tiles[currentTargetIndex].classList.remove("active-target");
+        }
+        
+        let nextIndex;
+        do {
+            nextIndex = Math.floor(Math.random() * 9);
+        } while (nextIndex === currentTargetIndex);
+        
+        currentTargetIndex = nextIndex;
+        tiles[currentTargetIndex].innerHTML = "🥥";
+        tiles[currentTargetIndex].classList.add("active-target");
+    }
+
+    function resetCoconutGame() {
+        coconutActive = false;
+        clearInterval(coconutTimer);
+        coconutsChopped = 0;
+        currentTargetIndex = -1;
+        coconutTimerDisplay.innerText = "0.00s";
+        coconutTimerDisplay.style.color = "#fff";
+        coconutProgressDisplay.innerText = `0 / ${TOTAL_COCONUTS}`;
+        startCoconutBtn.style.display = "block";
+        coconutSaveSection.style.display = "none";
+        coconutInputArea.style.display = "block";
+        coconutInitials.value = "";
+        coconutPlayAgainBtn.style.display = "none";
+        initCoconutBoard();
+    }
+
+    startCoconutBtn.onclick = function() {
+        resetCoconutGame();
+        coconutActive = true;
+        startCoconutBtn.style.display = "none";
+        
+        spawnNextCoconut();
+        
+        coconutStartTime = Date.now();
+        coconutTimer = setInterval(() => {
+            let elapsed = (Date.now() - coconutStartTime) / 1000;
+            coconutTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+        }, 20);
+    };
+
+    function endCoconutGame() {
+        coconutActive = false;
+        clearInterval(coconutTimer);
+        let tiles = coconutGrid.children;
+        tiles[currentTargetIndex].innerHTML = "";
+        tiles[currentTargetIndex].classList.remove("active-target");
+
+        let finalTime = parseFloat(coconutTimerDisplay.innerText).toFixed(2);
+        coconutTimerDisplay.style.color = "var(--leaf-green)";
+        coconutFinalTime.innerText = finalTime;
+        
+        if (typeof sfxWin !== 'undefined' && sfxWin) {
+            sfxWin.currentTime = 0;
+            sfxWin.play().catch(err => {});
+        }
+
+        setTimeout(() => {
+            coconutSaveSection.style.display = "block";
+            coconutPlayAgainBtn.style.display = "block";
+        }, 300);
+    }
+
+    coconutPlayAgainBtn.onclick = resetCoconutGame;
+
+    saveCoconutBtn.onclick = function() {
+        let initials = coconutInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(coconutFinalTime.innerText);
+        
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('coconutLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            coconutInputArea.style.display = "none";
+        } else {
+            let board = JSON.parse(localStorage.getItem('coconutLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10);
+            localStorage.setItem('coconutLeaderboard', JSON.stringify(board));
+            coconutInputArea.style.display = "none";
+            renderCoconutLeaderboard();
+        }
+    };
+
+    function renderCoconutLeaderboard() {
+        if (usingGlobalLeaderboard) {
+            if (currentCoconutRef) currentCoconutRef.off();
+            currentCoconutRef = fireDb.ref('coconutLeaderboard').orderByChild('time').limitToFirst(10);
+            
+            currentCoconutRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                updateCoconutBoardDOM(board);
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('coconutLeaderboard')) || [];
+            updateCoconutBoardDOM(board);
+        }
+    }
+
+    function updateCoconutBoardDOM(board) {
+        if(board.length > 0) {
+            coconutLeaderboardSection.style.display = "block";
+            coconutLeaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                coconutLeaderboardList.appendChild(li);
+            });
+        } else {
+            coconutLeaderboardSection.style.display = "none";
+            coconutLeaderboardList.innerHTML = "";
+        }
+    }
 
 </script>
     <div class="app-footer">
