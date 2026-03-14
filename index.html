@@ -2250,10 +2250,15 @@
                 changeClass = 'change-negative';
             }
 
-            const isHardMode = player.hardMode.includes('*');
+                        const isHardMode = player.hardMode.includes('*');
             const hardModeText = isHardMode ? '✅' : '❌';
             
+            let totalGames = player.freq.reduce((a, b) => a + b, 0);
+            let totalGuesses = (player.freq[0]*1) + (player.freq[1]*2) + (player.freq[2]*3) + (player.freq[3]*4) + (player.freq[4]*5) + (player.freq[5]*6) + (player.freq[6]*7);
+            let avgScore = totalGames > 0 ? (totalGuesses / totalGames).toFixed(2) : 'N/A';
+            
             let mainScoreDisplay = player.score;
+
             let changeHtml = `
                 <div class="change-container">
                     <span class="change-label">Change</span>
@@ -2288,7 +2293,11 @@
                 </div>
                 <div class="history-drawer">
                     <div class="drawer-status">
+                                           <div class="history-drawer">
+                    <div class="drawer-status">
+                        <div style="font-size: 1.1rem; color: #ffd700; text-shadow: 1px 1px 2px #000; margin-bottom: 5px;">🎯 All-Time Avg: ${avgScore}</div>
                         <div class="streak-display ${player.streak >= 7 ? 'streak-hot' : ''}">🔥 Daily Streak: ${player.streak} day${player.streak !== 1 ? 's' : ''}</div>
+
                         <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
                         <div>📿 Immunity Idols Banked: ${player.idols}</div>
                         <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
@@ -2364,10 +2373,15 @@
                     changeClass = 'change-negative';
                 }
 
-                const isHardMode = player.hardMode.includes('*');
+                                const isHardMode = player.hardMode.includes('*');
                 const hardModeText = isHardMode ? '✅' : '❌';
 
+                let totalGames = player.freq.reduce((a, b) => a + b, 0);
+                let totalGuesses = (player.freq[0]*1) + (player.freq[1]*2) + (player.freq[2]*3) + (player.freq[3]*4) + (player.freq[4]*5) + (player.freq[5]*6) + (player.freq[6]*7);
+                let avgScore = totalGames > 0 ? (totalGuesses / totalGames).toFixed(2) : 'N/A';
+
                 card.innerHTML = `
+
                     <div class="card-main">
                         <div class="rank">💀</div>
                         <div class="name">${player.name}</div>
@@ -2379,9 +2393,11 @@
                             <div class="score">${player.score}</div>
                         </div>
                     </div>
-                    <div class="history-drawer">
+                                      <div class="history-drawer">
                         <div class="drawer-status">
+                            <div style="font-size: 1.1rem; color: #ffd700; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); margin-bottom: 5px;">🎯 All-Time Avg: ${avgScore}</div>
                             <div class="streak-display ${player.streak >= 7 ? 'streak-hot' : ''}">🔥 Daily Streak: ${player.streak} day${player.streak !== 1 ? 's' : ''}</div>
+
                             <div><span class="drawer-asterisk">*</span> Hard Mode: ${hardModeText}</div>
                             <div>📿 Immunity Idols Banked: ${player.idols}</div>
                             <div>🎲 Shot in the Dark Remaining: ${player.shotInDark}</div>
@@ -4162,7 +4178,7 @@
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.62</div>
+        <div class="app-version" id="app-version">v1.0.63</div>
     </div>
 
 </body>
