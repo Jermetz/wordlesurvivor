@@ -1509,18 +1509,22 @@
             margin-top: -10px;
             text-shadow: 1px 1px 2px #000;
         }
-        /* --- SPEAR ANIMATION --- */
+                /* --- SPEAR ANIMATION --- */
         .spear-weapon {
             position: absolute;
-            top: -60px; /* Hovers just out of frame */
+            bottom: -80px; /* Hides just below the water */
             left: 50%;
-            transform: translateX(-50%);
-            font-size: 3.5rem;
+            transform: translateX(-50%); /* Default trident already points UP */
+            font-size: 4.5rem;
             z-index: 4;
-            transition: top 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Lightning fast thrust */
+            transition: bottom 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Animates from the bottom */
             pointer-events: none;
-            text-shadow: 2px 4px 6px rgba(0,0,0,0.5);
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.5)); 
         }
+        .spear-weapon.thrust {
+            bottom: 110px; /* Shoots UP deep into the target zone */
+        }
+
         .spear-weapon.thrust {
             top: 130px; /* Plunges deep into the strike zone */
         }
@@ -4574,7 +4578,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.66</div>
+        <div class="app-version" id="app-version">v1.0.67</div>
     </div>
 
 </body>
