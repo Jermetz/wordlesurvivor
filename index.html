@@ -1452,6 +1452,64 @@
             margin-bottom: 12px;
             margin-top: 0;
         }
+              /* --- SPEAR FISHING GAME CSS --- */
+        .fishing-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            height: 150px;
+            background: linear-gradient(to bottom, #1ca3ec 0%, #0f5e9c 100%);
+            border: 3px solid var(--card-border);
+            border-radius: 12px;
+            margin: 20px auto;
+            overflow: hidden;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+            touch-action: manipulation;
+        }
+        .strike-zone {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            transform: translateX(-50%);
+            background: rgba(255, 215, 0, 0.2);
+            border-left: 2px dashed #ffd700;
+            border-right: 2px dashed #ffd700;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .fish-target {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%) scaleX(1);
+            font-size: 3rem;
+            z-index: 2;
+            transition: transform 0.1s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .fish-target.swimming-left { transform: translateY(-50%) scaleX(-1); }
+        .fish-splatter {
+            position: absolute;
+            font-size: 2.5rem;
+            z-index: 3;
+            pointer-events: none;
+            animation: fadeUp 0.8s ease-out forwards;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 0; transform: translate(-50%, -100%) scale(1.5); }
+        }
+        .fishing-penalty {
+            color: var(--low-score);
+            font-size: 0.9rem;
+            font-weight: bold;
+            height: 20px;
+            margin-top: -10px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
               /* --- iMESSAGE BUBBLE TAILS --- */
         .chat-bubble {
             position: relative;
@@ -1791,6 +1849,49 @@
             </div>
 
             <button id="coconut-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div>
+<div id="fishing-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>SPEAR FISHING</span>
+            <span class="close-btn-full" onclick="closeFishingGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>🐟 PROVIDE FOR THE TRIBE 🐟</strong><br>Tap the water when the fish is in the yellow zone! Misses = +1s penalty.
+            </p>
+            <p id="fishing-progress" style="font-size: 1.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000;">0 / 10 Fish</p>
+            <div id="fishing-penalty-msg" class="fishing-penalty"></div>
+
+            <h2 id="fishing-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+            <div id="fishing-container" class="fishing-container">
+                <div class="strike-zone"></div>
+                <div id="fish-element" class="fish-target" style="display: none;">🐟</div>
+            </div>
+            
+            <button id="start-fishing-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">START FISHING</button>
+            
+            <div id="fishing-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🎣 TRIBE FED! 🎣</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="fishing-final-time"></span>s</p>
+                
+                <div id="fishing-input-area" style="margin-top: 15px;">
+                    <input type="text" id="fishing-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-fishing-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="fishing-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🐟 FASTEST SPEARS</h3>
+                <ol id="fishing-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="fishing-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
         </div>
     </div>
 </div>
@@ -3434,17 +3535,19 @@
     let selectedTile = null;
     let currentPuzzleRef = null;
 
-        // --- MIDNIGHT GAME SWAP LOGIC ---
-    // Checks if the current time is past Midnight on March 11, 2026
-    const isCoconutTime = new Date() >= new Date('2026-03-11T00:00:00');
+      // --- MIDNIGHT GAME SWAP LOGIC ---
+    const now = new Date();
+    const isFishingTime = now >= new Date('2026-03-18T00:00:00'); // Triggers at midnight Mar 18
+    const isCoconutTime = now >= new Date('2026-03-11T00:00:00') && !isFishingTime;
     
-        // Auto-update the button text when the app loads
-    if (isCoconutTime) {
+    // Auto-update the button text when the app loads
+    if (isFishingTime) {
+        weeklyChallengeBtn.innerHTML = "🐟 WEEKLY CHALLENGE";
+    } else if (isCoconutTime) {
         weeklyChallengeBtn.innerHTML = "🥥 WEEKLY CHALLENGE";
     } else {
         weeklyChallengeBtn.innerHTML = "🧩 WEEKLY CHALLENGE";
     }
-
 
     weeklyChallengeBtn.onclick = function() {
         document.getElementById("main-dashboard").style.display = "none";
@@ -3453,7 +3556,11 @@
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
         // Launch the correct game based on the time
-        if (isCoconutTime) {
+        if (isFishingTime) {
+            document.getElementById("fishing-game-page").style.display = "flex";
+            resetFishingGame();
+            renderFishingLeaderboard();
+        } else if (isCoconutTime) {
             coconutGamePage.style.display = "flex";
             resetCoconutGame();
             renderCoconutLeaderboard();
@@ -3463,6 +3570,7 @@
             renderPuzzleLeaderboard();
         }
     };
+
 
 
     window.closePuzzleGamePage = function() {
@@ -4174,11 +4282,246 @@
             coconutLeaderboardList.innerHTML = "";
         }
     }
+    /* --- SPEAR FISHING GAME LOGIC --- */
+    const fishingGamePage = document.getElementById("fishing-game-page");
+    const fishingContainer = document.getElementById("fishing-container");
+    const fishElement = document.getElementById("fish-element");
+    const fishingTimerDisplay = document.getElementById("fishing-timer");
+    const startFishingBtn = document.getElementById("start-fishing-btn");
+    const fishingProgressDisplay = document.getElementById("fishing-progress");
+    const fishingPenaltyMsg = document.getElementById("fishing-penalty-msg");
+    const fishingSaveSection = document.getElementById("fishing-save-section");
+    const fishingFinalTime = document.getElementById("fishing-final-time");
+    const fishingInputArea = document.getElementById("fishing-input-area");
+    const fishingInitials = document.getElementById("fishing-initials");
+    const saveFishingBtn = document.getElementById("save-fishing-btn");
+    const fishingLeaderboardSection = document.getElementById("fishing-leaderboard-section");
+    const fishingLeaderboardList = document.getElementById("fishing-leaderboard-list");
+    const fishingPlayAgainBtn = document.getElementById("fishing-play-again-btn");
+
+    let fishingTimer, fishingStartTime;
+    let fishingActive = false;
+    let fishCaught = 0;
+    const TOTAL_FISH = 10;
+    let currentFishingRef = null;
+    let penalties = 0;
+
+    let fishPos = 0;
+    let fishSpeed = 0;
+    let fishDirection = 1; // 1 for right, -1 for left
+    let fishAnimFrame;
+    let fishSpawned = false;
+
+    window.closeFishingGamePage = function() {
+        fishingGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(fishingTimer);
+        cancelAnimationFrame(fishAnimFrame);
+        if (currentFishingRef) currentFishingRef.off();
+    };
+
+    function spawnFish() {
+        fishSpawned = true;
+        fishDirection = Math.random() > 0.5 ? 1 : -1;
+        fishPos = fishDirection === 1 ? -15 : 115; // Start off screen
+        
+        // Random speed between 0.8 and 2.5
+        fishSpeed = (Math.random() * 1.7 + 0.8) * fishDirection;
+        
+        if (fishDirection === 1) {
+            fishElement.classList.remove('swimming-left');
+        } else {
+            fishElement.classList.add('swimming-left');
+        }
+        
+        fishElement.style.display = "block";
+        fishElement.style.left = fishPos + "%";
+    }
+
+    function updateFish() {
+        if (!fishingActive) return;
+        
+        if (fishSpawned) {
+            fishPos += fishSpeed;
+            fishElement.style.left = fishPos + "%";
+            
+            // Reset if it swims off screen
+            if ((fishDirection === 1 && fishPos > 115) || (fishDirection === -1 && fishPos < -15)) {
+                fishSpawned = false;
+                // Give it a tiny delay before next fish
+                setTimeout(() => { if (fishingActive) spawnFish(); }, Math.random() * 400 + 200);
+            }
+        }
+        
+        fishAnimFrame = requestAnimationFrame(updateFish);
+    }
+
+    fishingContainer.addEventListener('pointerdown', (e) => {
+        if (!fishingActive || e.cancelable === false) return;
+        e.preventDefault();
+        
+        if (fishSpawned) {
+            // Zone is perfectly centered (50%). Target is approx 38% to 62% for a forgiving hit
+            if (fishPos >= 38 && fishPos <= 62) {
+                // HIT!
+                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(20);
+                fishCaught++;
+                fishingProgressDisplay.innerText = `${fishCaught} / ${TOTAL_FISH} Fish`;
+                
+                // Splatter effect
+                let splash = document.createElement("div");
+                splash.innerText = "💥";
+                splash.className = "fish-splatter";
+                splash.style.left = "50%";
+                splash.style.top = "50%";
+                fishingContainer.appendChild(splash);
+                setTimeout(() => splash.remove(), 800);
+                
+                fishSpawned = false;
+                fishElement.style.display = "none";
+                fishingPenaltyMsg.innerText = "";
+                
+                if (fishCaught >= TOTAL_FISH) {
+                    endFishingGame();
+                } else {
+                    setTimeout(() => { if (fishingActive) spawnFish(); }, Math.random() * 500 + 300);
+                }
+            } else {
+                // MISS! Penalty
+                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([10, 50, 10]);
+                penalties++;
+                fishingStartTime -= 1000; // Subtract 1 second from start time to add to elapsed
+                fishingPenaltyMsg.innerText = "MISS! +1s Penalty";
+                
+                let splash = document.createElement("div");
+                splash.innerText = "💦";
+                splash.className = "fish-splatter";
+                splash.style.left = "50%"; // Always splash center
+                splash.style.top = "50%";
+                fishingContainer.appendChild(splash);
+                setTimeout(() => splash.remove(), 800);
+            }
+        }
+    });
+
+    function resetFishingGame() {
+        fishingActive = false;
+        clearInterval(fishingTimer);
+        cancelAnimationFrame(fishAnimFrame);
+        fishCaught = 0;
+        penalties = 0;
+        fishSpawned = false;
+        fishElement.style.display = "none";
+        fishingTimerDisplay.innerText = "0.00s";
+        fishingTimerDisplay.style.color = "#fff";
+        fishingProgressDisplay.innerText = `0 / ${TOTAL_FISH} Fish`;
+        fishingPenaltyMsg.innerText = "";
+        startFishingBtn.style.display = "block";
+        fishingSaveSection.style.display = "none";
+        fishingInputArea.style.display = "block";
+        fishingInitials.value = "";
+        fishingPlayAgainBtn.style.display = "none";
+    }
+
+    startFishingBtn.onclick = function() {
+        resetFishingGame();
+        fishingActive = true;
+        startFishingBtn.style.display = "none";
+        
+        fishingStartTime = Date.now();
+        spawnFish();
+        updateFish();
+        
+        fishingTimer = setInterval(() => {
+            let elapsed = (Date.now() - fishingStartTime) / 1000;
+            fishingTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+        }, 20);
+    };
+
+    function endFishingGame() {
+        fishingActive = false;
+        clearInterval(fishingTimer);
+        cancelAnimationFrame(fishAnimFrame);
+        fishElement.style.display = "none";
+
+        let finalTime = parseFloat(fishingTimerDisplay.innerText).toFixed(2);
+        fishingTimerDisplay.style.color = "var(--leaf-green)";
+        fishingFinalTime.innerText = finalTime;
+        
+        if (typeof sfxWin !== 'undefined' && sfxWin) {
+            sfxWin.currentTime = 0;
+            sfxWin.play().catch(err => {});
+        }
+
+        setTimeout(() => {
+            fishingSaveSection.style.display = "block";
+            fishingPlayAgainBtn.style.display = "block";
+        }, 300);
+    }
+
+    fishingPlayAgainBtn.onclick = resetFishingGame;
+
+    saveFishingBtn.onclick = function() {
+        let initials = fishingInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(fishingFinalTime.innerText);
+        
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('fishingLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            fishingInputArea.style.display = "none";
+        } else {
+            let board = JSON.parse(localStorage.getItem('fishingLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10);
+            localStorage.setItem('fishingLeaderboard', JSON.stringify(board));
+            fishingInputArea.style.display = "none";
+            renderFishingLeaderboard();
+        }
+    };
+
+    function renderFishingLeaderboard() {
+        if (usingGlobalLeaderboard) {
+            if (currentFishingRef) currentFishingRef.off();
+            currentFishingRef = fireDb.ref('fishingLeaderboard').orderByChild('time').limitToFirst(10);
+            
+            currentFishingRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                updateFishingBoardDOM(board);
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('fishingLeaderboard')) || [];
+            updateFishingBoardDOM(board);
+        }
+    }
+
+    function updateFishingBoardDOM(board) {
+        if(board.length > 0) {
+            fishingLeaderboardSection.style.display = "block";
+            fishingLeaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                fishingLeaderboardList.appendChild(li);
+            });
+        } else {
+            fishingLeaderboardSection.style.display = "none";
+            fishingLeaderboardList.innerHTML = "";
+        }
+    }
 
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.63</div>
+        <div class="app-version" id="app-version">v1.0.64</div>
     </div>
 
 </body>
