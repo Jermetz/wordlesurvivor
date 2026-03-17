@@ -1457,7 +1457,7 @@
             position: relative;
             width: 100%;
             max-width: 320px;
-            height: 150px;
+            height: 220px;
             background: linear-gradient(to bottom, #1ca3ec 0%, #0f5e9c 100%);
             border: 3px solid var(--card-border);
             border-radius: 12px;
@@ -1471,7 +1471,7 @@
             left: 50%;
             top: 0;
             bottom: 0;
-            width: 60px;
+            width: 40px;
             transform: translateX(-50%);
             background: rgba(255, 215, 0, 0.2);
             border-left: 2px dashed #ffd700;
@@ -4344,8 +4344,8 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
         fishDirection = Math.random() > 0.5 ? 1 : -1;
         fishPos = fishDirection === 1 ? -15 : 115; // Start off screen
         
-        // Random speed between 0.8 and 2.5
-        fishSpeed = (Math.random() * 1.7 + 0.8) * fishDirection;
+       // Faster random speed between 1.2 and 3.4
+        fishSpeed = (Math.random() * 2.2 + 1.2) * fishDirection;
         
         if (fishDirection === 1) {
             fishElement.classList.remove('swimming-left');
@@ -4381,7 +4381,8 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
         
         if (fishSpawned) {
             // Zone is perfectly centered (50%). Target is approx 38% to 62% for a forgiving hit
-            if (fishPos >= 38 && fishPos <= 62) {
+            // Tighter hit detection to match the 40px strike zone
+            if (fishPos >= 44 && fishPos <= 56) {
                 // HIT!
                 if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(20);
                 fishCaught++;
