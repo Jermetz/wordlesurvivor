@@ -1482,14 +1482,14 @@
         .fish-target {
             position: absolute;
             top: 50%;
-            transform: translateY(-50%) scaleX(1);
+           transform: translateY(-50%) scaleX(-1);
             font-size: 3rem;
             z-index: 2;
             transition: transform 0.1s;
             user-select: none;
             -webkit-user-select: none;
         }
-        .fish-target.swimming-left { transform: translateY(-50%) scaleX(-1); }
+       .fish-target.swimming-left { transform: translateY(-50%) scaleX(1); }
         .fish-splatter {
             position: absolute;
             font-size: 2.5rem;
@@ -4547,7 +4547,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.64</div>
+        <div class="app-version" id="app-version">v1.0.65</div>
     </div>
 
 </body>
