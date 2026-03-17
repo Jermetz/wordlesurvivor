@@ -2092,6 +2092,7 @@
             <button id="admin-clear-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 0 auto;">CLEAR LEADERBOARD</button>
             <button id="admin-clear-immunity-btn" class="action-btn" style="background-color: var(--low-score); color: white; border-color: var(--low-score); margin: 10px auto 0 auto;">CLEAR IMMUNITY BOARD</button>
             <button id="admin-view-messages-btn" class="action-btn" style="background-color: var(--accent); color: white; border-color: var(--accent); margin: 10px auto 0 auto; width: 100%;">VIEW TRIBE FEEDBACK</button>
+            <button id="admin-practice-fishing-btn" class="action-btn" style="background-color: var(--leaf-green); color: white; border-color: var(--leaf-green); margin: 10px auto 0 auto; width: 100%;">PRACTICE FISHING</button>
             <div id="admin-messages-container" style="display: none; margin-top: 15px; text-align: left; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--accent);"></div>
             <p id="admin-message" style="margin-top: 15px; font-weight: bold;"></p>
         </div>
@@ -4298,7 +4299,22 @@
     const fishingLeaderboardSection = document.getElementById("fishing-leaderboard-section");
     const fishingLeaderboardList = document.getElementById("fishing-leaderboard-list");
     const fishingPlayAgainBtn = document.getElementById("fishing-play-again-btn");
+const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-btn");
+    let isFishingPracticeMode = false;
 
+    if (adminPracticeFishingBtn) {
+        adminPracticeFishingBtn.onclick = function() {
+            closeModal('adminModal');
+            isFishingPracticeMode = true;
+            document.getElementById("main-dashboard").style.display = "none";
+            document.getElementById("floating-menu-btn").style.display = "none";
+            window.scrollTo(0, 0);
+            document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+            fishingGamePage.style.display = "flex";
+            resetFishingGame();
+            fishingLeaderboardSection.style.display = "none"; 
+        };
+    }
     let fishingTimer, fishingStartTime;
     let fishingActive = false;
     let fishCaught = 0;
@@ -4313,6 +4329,7 @@
     let fishSpawned = false;
 
     window.closeFishingGamePage = function() {
+        isFishingPracticeMode = false;
         fishingGamePage.style.display = "none";
         document.getElementById("main-dashboard").style.display = "";
         document.getElementById("floating-menu-btn").style.display = "flex";
@@ -4455,9 +4472,17 @@
             sfxWin.play().catch(err => {});
         }
 
-        setTimeout(() => {
+       setTimeout(() => {
             fishingSaveSection.style.display = "block";
             fishingPlayAgainBtn.style.display = "block";
+            
+            if (isFishingPracticeMode) {
+                document.querySelector('#fishing-save-section h3').innerText = "🎣 PRACTICE OVER 🎣";
+                fishingInputArea.style.display = "none";
+            } else {
+                document.querySelector('#fishing-save-section h3').innerText = "🎣 TRIBE FED! 🎣";
+                fishingInputArea.style.display = "block";
+            }
         }, 300);
     }
 
