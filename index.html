@@ -1453,11 +1453,11 @@
             margin-top: 0;
         }
               /* --- SPEAR FISHING GAME CSS --- */
-        .fishing-container {
+      .fishing-container {
             position: relative;
             width: 100%;
-            max-width: 320px;
-            height: 220px;
+            max-width: 380px;
+            height: 320px;
             background: linear-gradient(to bottom, #1ca3ec 0%, #0f5e9c 100%);
             border: 3px solid var(--card-border);
             border-radius: 12px;
@@ -1508,6 +1508,21 @@
             height: 20px;
             margin-top: -10px;
             text-shadow: 1px 1px 2px #000;
+        }
+        /* --- SPEAR ANIMATION --- */
+        .spear-weapon {
+            position: absolute;
+            top: -60px; /* Hovers just out of frame */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3.5rem;
+            z-index: 4;
+            transition: top 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Lightning fast thrust */
+            pointer-events: none;
+            text-shadow: 2px 4px 6px rgba(0,0,0,0.5);
+        }
+        .spear-weapon.thrust {
+            top: 130px; /* Plunges deep into the strike zone */
         }
 
               /* --- iMESSAGE BUBBLE TAILS --- */
@@ -1868,10 +1883,13 @@
 
             <h2 id="fishing-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
 
-            <div id="fishing-container" class="fishing-container">
+           <div id="fishing-container" class="fishing-container">
                 <div class="strike-zone"></div>
+                <div id="spear-element" class="spear-weapon">🔱</div>
                 <div id="fish-element" class="fish-target" style="display: none;">🐟</div>
             </div>
+            
+            <button id="throw-spear-btn" class="action-btn" style="width: 100%; max-width: 380px; font-size: 1.8rem; padding: 25px 10px; display: none; margin: 15px auto 20px auto; background-color: var(--low-score); color: white; border-color: white; box-shadow: 0 6px 15px rgba(0,0,0,0.5); touch-action: manipulation;">🔱 THROW SPEAR! 🔱</button>
             
             <button id="start-fishing-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">START FISHING</button>
             
@@ -4289,6 +4307,8 @@
     const fishElement = document.getElementById("fish-element");
     const fishingTimerDisplay = document.getElementById("fishing-timer");
     const startFishingBtn = document.getElementById("start-fishing-btn");
+    const throwSpearBtn = document.getElementById("throw-spear-btn");
+    const spearElement = document.getElementById("spear-element");
     const fishingProgressDisplay = document.getElementById("fishing-progress");
     const fishingPenaltyMsg = document.getElementById("fishing-penalty-msg");
     const fishingSaveSection = document.getElementById("fishing-save-section");
@@ -4375,9 +4395,13 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
         fishAnimFrame = requestAnimationFrame(updateFish);
     }
 
-    fishingContainer.addEventListener('pointerdown', (e) => {
+    throwSpearBtn.addEventListener('pointerdown', (e) => {
         if (!fishingActive || e.cancelable === false) return;
         e.preventDefault();
+        
+        // Trigger Spear Thrust Animation
+        spearElement.classList.add("thrust");
+        setTimeout(() => spearElement.classList.remove("thrust"), 150);
         
         if (fishSpawned) {
             // Zone is perfectly centered (50%). Target is approx 38% to 62% for a forgiving hit
@@ -4437,6 +4461,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
         fishingProgressDisplay.innerText = `0 / ${TOTAL_FISH} Fish`;
         fishingPenaltyMsg.innerText = "";
         startFishingBtn.style.display = "block";
+        throwSpearBtn.style.display = "none";
         fishingSaveSection.style.display = "none";
         fishingInputArea.style.display = "block";
         fishingInitials.value = "";
@@ -4447,6 +4472,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
         resetFishingGame();
         fishingActive = true;
         startFishingBtn.style.display = "none";
+        throwSpearBtn.style.display = "block";
         
         fishingStartTime = Date.now();
         spawnFish();
@@ -4463,6 +4489,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
         clearInterval(fishingTimer);
         cancelAnimationFrame(fishAnimFrame);
         fishElement.style.display = "none";
+        throwSpearBtn.style.display = "none";
 
         let finalTime = parseFloat(fishingTimerDisplay.innerText).toFixed(2);
         fishingTimerDisplay.style.color = "var(--leaf-green)";
@@ -4547,7 +4574,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.65</div>
+        <div class="app-version" id="app-version">v1.0.66</div>
     </div>
 
 </body>
