@@ -560,17 +560,20 @@
             color: var(--text);
         }
 
-        .legacy-tag {
-            font-size: 0.8rem;
-            background: var(--accent);
+              .sixty-club-badge {
+            font-size: 0.7rem;
+            background: linear-gradient(135deg, #ffd700 0%, #d95100 100%);
             color: white;
             padding: 4px 8px;
-            border-radius: 4px;
+            border-radius: 12px;
             vertical-align: middle;
-            text-shadow: none;
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-            transition: background 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            border: 1px solid #fff;
         }
+
 
         /* --- CONTROL PANEL ACTION GRID --- */
         .action-grid {
@@ -2406,10 +2409,11 @@
             card.innerHTML = `
                 <div class="card-main">
                     <div class="rank">${rankDisplay}</div>
-                    <div class="name">
+                                      <div class="name">
                         ${player.name}
-                        ${player.score >= 60 ? '<span class="legacy-tag">LEGACY</span>' : ''}
+                        ${player.score >= 60 ? '<span class="sixty-club-badge">🏆 60 CLUB</span>' : ''}
                     </div>
+
                     ${changeHtml}
                     <div class="score-container">
                         <div class="score">${mainScoreDisplay}</div>
@@ -4556,7 +4560,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.68</div>
+        <div class="app-version" id="app-version">v1.0.69</div>
     </div>
 
 </body>
