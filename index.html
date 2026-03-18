@@ -3558,19 +3558,8 @@
     let selectedTile = null;
     let currentPuzzleRef = null;
 
-      // --- MIDNIGHT GAME SWAP LOGIC ---
-    const now = new Date();
-    const isFishingTime = now >= new Date('2026-03-18T00:00:00'); // Triggers at midnight Mar 18
-    const isCoconutTime = now >= new Date('2026-03-11T00:00:00') && !isFishingTime;
-    
-    // Auto-update the button text when the app loads
-    if (isFishingTime) {
-        weeklyChallengeBtn.innerHTML = "🐟 WEEKLY CHALLENGE";
-    } else if (isCoconutTime) {
-        weeklyChallengeBtn.innerHTML = "🥥 WEEKLY CHALLENGE";
-    } else {
-        weeklyChallengeBtn.innerHTML = "🧩 WEEKLY CHALLENGE";
-    }
+        // --- WEEKLY CHALLENGE LOGIC (FISHING GAME) ---
+    weeklyChallengeBtn.innerHTML = "🐟 WEEKLY CHALLENGE";
 
     weeklyChallengeBtn.onclick = function() {
         document.getElementById("main-dashboard").style.display = "none";
@@ -3578,22 +3567,11 @@
         window.scrollTo(0, 0);
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
-        // Launch the correct game based on the time
-        if (isFishingTime) {
-            document.getElementById("fishing-game-page").style.display = "flex";
-            resetFishingGame();
-            renderFishingLeaderboard();
-        } else if (isCoconutTime) {
-            coconutGamePage.style.display = "flex";
-            resetCoconutGame();
-            renderCoconutLeaderboard();
-        } else {
-            puzzleGamePage.style.display = "flex";
-            resetPuzzleGame();
-            renderPuzzleLeaderboard();
-        }
+        // Launch the Fishing Game
+        document.getElementById("fishing-game-page").style.display = "flex";
+        resetFishingGame();
+        renderFishingLeaderboard();
     };
-
 
 
     window.closePuzzleGamePage = function() {
@@ -4578,7 +4556,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.67</div>
+        <div class="app-version" id="app-version">v1.0.68</div>
     </div>
 
 </body>
