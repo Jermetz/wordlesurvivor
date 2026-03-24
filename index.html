@@ -2742,23 +2742,23 @@
        const pastWinnersBtn = document.getElementById("past-winners-btn");
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
-    function loadPastWinners() {
-                const challenges = [
-            { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
-            { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
-            { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
-            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' }
+        function loadPastWinners() {
+        const challenges = [
+            { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game', isCurrent: false },
+            { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle', isCurrent: false },
+            { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop', isCurrent: false },
+            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing', isCurrent: true }
         ];
-
 
         const modalBody = document.getElementById('past-winners-body');
         modalBody.innerHTML = '<p style="font-size: 1.1rem; color: var(--text); margin-bottom: 15px;">A tribute to those who outplayed the rest.</p>';
 
         // 1. Build the skeleton containers first so they always display in chronological order
         challenges.forEach(c => {
+            let titleSuffix = c.isCurrent ? ' <span style="font-size: 0.8rem; color: #ffd700;">(ACTIVE)</span>' : '';
             modalBody.innerHTML += `
                 <div style="background: rgba(0,0,0,0.05); border: 2px solid var(--accent); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
-                    <h4 style="color: var(--accent); margin: 0 0 5px 0; font-size: 1.2rem; text-transform: uppercase;">${c.title}</h4>
+                    <h4 style="color: var(--accent); margin: 0 0 5px 0; font-size: 1.2rem; text-transform: uppercase;">${c.title}${titleSuffix}</h4>
                     <div id="${c.id}"><p style="font-size: 1.2rem; font-weight: bold; color: #888; margin: 0;">Gathering Data...</p></div>
                 </div>`;
         });
@@ -2772,7 +2772,8 @@
                 if (snapshot.exists()) {
                     snapshot.forEach(child => {
                         let data = child.val();
-                        container.innerHTML = `<p style="font-size: 1.5rem; font-weight: 900; color: var(--text); margin: 0;">${data.name} <span style="font-size: 1rem; color: #666; font-weight: normal;">- ${data.time.toFixed(2)}s</span></p>`;
+                        let leaderLabel = c.isCurrent ? '<span style="font-size: 0.9rem; color: #ffd700; text-transform: uppercase; display: block; margin-bottom: 2px;">👑 Current Leader</span>' : '';
+                        container.innerHTML = `${leaderLabel}<p style="font-size: 1.5rem; font-weight: 900; color: var(--text); margin: 0;">${data.name} <span style="font-size: 1rem; color: #666; font-weight: normal;">- ${data.time.toFixed(2)}s</span></p>`;
                     });
                 } else {
                     container.innerHTML = `<p style="font-size: 1.2rem; font-weight: bold; color: #888; margin: 0;">TBD</p>`;
@@ -2780,6 +2781,7 @@
             });
         });
     }
+
 
     if (pastWinnersBtn) {
         pastWinnersBtn.onclick = function() { 
@@ -4620,7 +4622,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.72</div>
+        <div class="app-version" id="app-version">v1.0.73</div>
     </div>
 
 </body>
