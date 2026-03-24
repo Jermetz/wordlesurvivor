@@ -1699,7 +1699,9 @@
     <button id="stakes-btn" class="action-btn">DAILY STAKES</button>
     <button id="quote-btn" class="action-btn">JEFF QUOTE</button>
     <button id="fire-game-btn" class="action-btn">🔥 MINI-GAME</button>
-   <button id="weekly-challenge-btn" class="action-btn">🧩 WEEKLY CHALLENGE</button>
+    <button id="weekly-challenge-btn" class="action-btn">🧩 WEEKLY CHALLENGE</button>
+    <button id="past-winners-btn" class="action-btn">🏆 PAST WINNERS</button>
+
     <button id="tribe-btn" class="action-btn">TRIBE COLORS</button>
     <button id="open-feedback-btn" class="action-btn" style="background-color: var(--leaf-green); color: white; border-color: var(--leaf-green); margin-bottom: 30px;">📣 DROP A SUGGESTION</button>
 </div>
@@ -2022,6 +2024,15 @@
         <p style="font-size: 0.9rem; font-weight: bold; color: var(--text); font-style: italic; margin: 10px 0;">*Hard Mode grants +1 pt to offset negative scores.</p>
         <button id="stakes-zoom-btn" class="text-btn">ZOOM</button>
     </div>
+  </div>
+</div>
+
+<div id="pastWinnersModal" class="modal">
+  <div class="modal-content">
+    <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('pastWinnersModal')">&times;</span></div>
+    <div class="modal-header">PAST WINNERS</div>
+    <div id="past-winners-body" class="modal-body" style="text-align: center; margin-top: 15px;">
+        </div>
   </div>
 </div>
 
@@ -2728,6 +2739,53 @@
     }
 
     bigrBtn.onclick = function() { openModalWithNoTab(bigrModal); }
+       const pastWinnersBtn = document.getElementById("past-winners-btn");
+    const pastWinnersModal = document.getElementById("pastWinnersModal");
+
+    function loadPastWinners() {
+        const challenges = [
+            { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 1: Puzzle' },
+            { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 2: Coconut Chop' },
+            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 3: Spear Fishing' }
+        ];
+
+        const modalBody = document.getElementById('past-winners-body');
+        modalBody.innerHTML = '<p style="font-size: 1.1rem; color: var(--text); margin-bottom: 15px;">A tribute to those who outplayed the rest.</p>';
+
+        // 1. Build the skeleton containers first so they always display in chronological order
+        challenges.forEach(c => {
+            modalBody.innerHTML += `
+                <div style="background: rgba(0,0,0,0.05); border: 2px solid var(--accent); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+                    <h4 style="color: var(--accent); margin: 0 0 5px 0; font-size: 1.2rem; text-transform: uppercase;">${c.title}</h4>
+                    <div id="${c.id}"><p style="font-size: 1.2rem; font-weight: bold; color: #888; margin: 0;">Gathering Data...</p></div>
+                </div>`;
+        });
+
+        if (!usingGlobalLeaderboard) return;
+
+        // 2. Fetch the #1 score from Firebase for each game and update the UI
+        challenges.forEach(c => {
+            fireDb.ref(c.ref).orderByChild('time').limitToFirst(1).once('value', snapshot => {
+                const container = document.getElementById(c.id);
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        let data = child.val();
+                        container.innerHTML = `<p style="font-size: 1.5rem; font-weight: 900; color: var(--text); margin: 0;">${data.name} <span style="font-size: 1rem; color: #666; font-weight: normal;">- ${data.time.toFixed(2)}s</span></p>`;
+                    });
+                } else {
+                    container.innerHTML = `<p style="font-size: 1.2rem; font-weight: bold; color: #888; margin: 0;">TBD</p>`;
+                }
+            });
+        });
+    }
+
+    if (pastWinnersBtn) {
+        pastWinnersBtn.onclick = function() { 
+            loadPastWinners();
+            openModalWithNoTab(pastWinnersModal); 
+        }
+    }
+
 
     hiddenIdolTrigger.onclick = function() {
         openModalWithNoTab(idolModal);
@@ -4560,7 +4618,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.69</div>
+        <div class="app-version" id="app-version">v1.0.70</div>
     </div>
 
 </body>
