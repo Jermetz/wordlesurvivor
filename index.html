@@ -2772,9 +2772,9 @@
 
         modalBody.innerHTML = '<p style="font-size: 1.1rem; color: var(--text); margin-bottom: 15px;">A tribute to those who outplayed the rest.</p>';
 
-        // 1. Build the skeleton containers first so they always display in chronological order
+                // 1. Build the skeleton containers first so they always display in chronological order
         challenges.forEach(c => {
-            let titleSuffix = c.isCurrent ? ' <span style="font-size: 0.8rem; color: #ffd700;">(ACTIVE)</span>' : '';
+            let titleSuffix = c.isCurrent ? ' <span style="font-size: 0.8rem; color: var(--leaf-green);">(ACTIVE)</span>' : '';
             modalBody.innerHTML += `
                 <div style="background: rgba(0,0,0,0.05); border: 2px solid var(--accent); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
                     <h4 style="color: var(--accent); margin: 0 0 5px 0; font-size: 1.2rem; text-transform: uppercase;">${c.title}${titleSuffix}</h4>
@@ -2784,14 +2784,14 @@
 
         if (!usingGlobalLeaderboard) return;
 
-        // 2. Fetch the #1 score from Firebase for each game and update the UI
+               // 2. Fetch the #1 score from Firebase for each game and update the UI
         challenges.forEach(c => {
             fireDb.ref(c.ref).orderByChild('time').limitToFirst(1).once('value', snapshot => {
                 const container = document.getElementById(c.id);
                 if (snapshot.exists()) {
                     snapshot.forEach(child => {
                         let data = child.val();
-                        let leaderLabel = c.isCurrent ? '<span style="font-size: 0.9rem; color: #ffd700; text-transform: uppercase; display: block; margin-bottom: 2px;">👑 Current Leader</span>' : '';
+                        let leaderLabel = c.isCurrent ? '<span style="font-size: 0.9rem; color: var(--leaf-green); font-weight: 900; text-transform: uppercase; display: block; margin-bottom: 2px;">👑 Current Leader</span>' : '';
                         container.innerHTML = `${leaderLabel}<p style="font-size: 1.5rem; font-weight: 900; color: var(--text); margin: 0;">${data.name} <span style="font-size: 1rem; color: #666; font-weight: normal;">- ${data.time.toFixed(2)}s</span></p>`;
                     });
                 } else {
@@ -2799,7 +2799,6 @@
                 }
             });
         });
-    }
 
 
     if (pastWinnersBtn) {
@@ -4641,7 +4640,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.74</div>
+        <div class="app-version" id="app-version">v1.0.75</div>
     </div>
 
 </body>
