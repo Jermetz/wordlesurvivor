@@ -2743,11 +2743,13 @@
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
     function loadPastWinners() {
-        const challenges = [
-            { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 1: Puzzle' },
-            { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 2: Coconut Chop' },
-            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 3: Spear Fishing' }
+                const challenges = [
+            { ref: 'matchingLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
+            { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
+            { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
+            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' }
         ];
+
 
         const modalBody = document.getElementById('past-winners-body');
         modalBody.innerHTML = '<p style="font-size: 1.1rem; color: var(--text); margin-bottom: 15px;">A tribute to those who outplayed the rest.</p>';
