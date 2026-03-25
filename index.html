@@ -4966,7 +4966,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 
     knotPlayAgainBtn.onclick = resetKnotGame;
 
-    saveKnotBtn.onclick = function() {
+        saveKnotBtn.onclick = function() {
         let initials = knotInitials.value.trim().toUpperCase();
         if(initials === "") initials = "???";
         let timeTaken = parseFloat(knotFinalTime.innerText);
@@ -4978,6 +4978,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             knotInputArea.style.display = "none";
+            renderKnotLeaderboard(); // ADDED: Forces UI refresh after saving to Firebase
         } else {
             let board = JSON.parse(localStorage.getItem('knotLeaderboard')) || [];
             board.push({ name: initials, time: timeTaken });
@@ -4997,6 +4998,8 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
             currentKnotRef.on('value', (snapshot) => {
                 let board = [];
                 snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                // ADDED: Explicitly sort the data pulled from Firebase
+                board.sort((a, b) => a.time - b.time);
                 updateKnotBoardDOM(board);
             });
         } else {
@@ -5020,10 +5023,12 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
             knotLeaderboardList.innerHTML = "";
         }
     }
+
+    
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.80</div>
+        <div class="app-version" id="app-version">v1.0.81</div>
     </div>
 
 </body>
