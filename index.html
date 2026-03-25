@@ -2750,16 +2750,20 @@
     const fireGamePage = document.getElementById("fire-game-page");
     const mainDashboard = document.getElementById("main-dashboard");
    
-    const bestWordleBanner = document.getElementById('best-wordle-banner');
+const bestWordleBanner = document.getElementById('best-wordle-banner');
     bestWordleBanner.addEventListener('pointerdown', function(e) {
         if (e.cancelable) e.preventDefault();
         const xPos = e.clientX / window.innerWidth;
         const yPos = e.clientY / window.innerHeight;
+        
+        // Grab the active tribe color from the CSS variable
+        const tribeColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+
         confetti({
             particleCount: 65,
             spread: 70,
             origin: { x: xPos, y: yPos },
-            colors: ['#ffd700', '#d95100', '#ffffff', '#f4e4bc'], 
+            colors: ['#ffffff', '#ffd700', tribeColor], // White, Yellow, and dynamic Tribe Color
             zIndex: 3000, 
             disableForReducedMotion: true
         });
@@ -5046,7 +5050,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.85</div>
+        <div class="app-version" id="app-version">v1.0.86</div>
     </div>
 
 </body>
