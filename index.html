@@ -1531,7 +1531,66 @@
         .spear-weapon.thrust {
             top: 130px; /* Plunges deep into the strike zone */
         }
+/* --- KNOT GAME CSS --- */
+        .knot-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: rgba(0,0,0,0.3);
+            border-radius: 50%;
+            border: 2px dashed var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none; 
+        }
+        .knot-core {
+            font-size: 5rem;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+            user-select: none;
+        }
+        .rope-strand {
+            position: absolute;
+            background: repeating-linear-gradient(45deg, #d4b886, #d4b886 4px, #8b5a2b 4px, #8b5a2b 8px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            z-index: 1;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 4px;
+        }
+        .rope-v { width: 12px; height: 250px; top: -25px; left: 94px; }
+        .rope-h { width: 250px; height: 12px; top: 94px; left: -25px; }
+        
+        .rope-pull-up { transform: translateY(-30px); }
+        .rope-pull-down { transform: translateY(30px); }
+        .rope-pull-left { transform: translateX(-30px); }
+        .rope-pull-right { transform: translateX(30px); }
 
+        .swipe-sequence-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+            height: 40px;
+        }
+        .swipe-arrow {
+            font-size: 2rem;
+            opacity: 0.3;
+            transition: opacity 0.2s, transform 0.2s, color 0.2s;
+        }
+        .swipe-arrow.active {
+            opacity: 1;
+            transform: scale(1.2);
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        .swipe-arrow.completed {
+            opacity: 0.8;
+            color: var(--leaf-green);
+        }
               /* --- iMESSAGE BUBBLE TAILS --- */
         .chat-bubble {
             position: relative;
@@ -1922,7 +1981,52 @@
         </div>
     </div>
 </div>
+<div id="knot-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>UNTANGLE KNOTS</span>
+            <span class="close-btn-full" onclick="closeKnotGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>🪢 UNTANGLE 15 KNOTS 🪢</strong><br>Swipe the screen to match the sequence. One wrong swipe resets the knot!
+            </p>
+            <p id="knot-progress" style="font-size: 1.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000;">0 / 15 Knots</p>
+            <div id="knot-penalty-msg" class="fishing-penalty"></div>
 
+            <h2 id="knot-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+            <div id="swipe-sequence" class="swipe-sequence-display"></div>
+
+            <div id="knot-container" class="knot-container">
+                <div class="rope-strand rope-v" id="rope-vertical"></div>
+                <div class="rope-strand rope-h" id="rope-horizontal"></div>
+                <div id="knot-core" class="knot-core">🪢</div>
+            </div>
+            
+            <button id="start-knot-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">START UNTANGLING</button>
+            
+            <div id="knot-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🪢 KNOTS CLEARED! 🪢</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="knot-final-time"></span>s</p>
+                
+                <div id="knot-input-area" style="margin-top: 15px;">
+                    <input type="text" id="knot-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-knot-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="knot-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🪢 FASTEST TIMES</h3>
+                <ol id="knot-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="knot-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div>
 <div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow: hidden; display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: -webkit-fill-available; z-index: 4000;">
     
     <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
@@ -3646,17 +3750,43 @@
         // --- WEEKLY CHALLENGE LOGIC (FISHING GAME) ---
     weeklyChallengeBtn.innerHTML = "🐟 WEEKLY CHALLENGE";
 
-    weeklyChallengeBtn.onclick = function() {
+weeklyChallengeBtn.onclick = function() {
         document.getElementById("main-dashboard").style.display = "none";
         document.getElementById("floating-menu-btn").style.display = "none";
         window.scrollTo(0, 0);
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
-        // Launch the Fishing Game
-        document.getElementById("fishing-game-page").style.display = "flex";
-        resetFishingGame();
-        renderFishingLeaderboard();
+        // MIDNIGHT SWITCH: Wednesday, March 25, 2026 12:00 AM EDT
+        const switchTime = new Date('2026-03-25T00:00:00-04:00').getTime();
+        const now = new Date().getTime();
+
+        if (now >= switchTime) {
+            // Launch New Knot Game
+            document.getElementById("knot-game-page").style.display = "flex";
+            resetKnotGame();
+            renderKnotLeaderboard();
+        } else {
+            // Launch Fishing Game
+            document.getElementById("fishing-game-page").style.display = "flex";
+            resetFishingGame();
+            renderFishingLeaderboard();
+        }
     };
+
+    // Admin Modal Integration
+    const adminPracticeKnotBtn = document.getElementById("admin-practice-new-challenge-btn");
+    if (adminPracticeKnotBtn) {
+        adminPracticeKnotBtn.onclick = function() {
+            closeModal('adminModal');
+            document.getElementById("main-dashboard").style.display = "none";
+            document.getElementById("floating-menu-btn").style.display = "none";
+            window.scrollTo(0, 0);
+            document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+            document.getElementById("knot-game-page").style.display = "flex";
+            resetKnotGame();
+            document.getElementById("knot-leaderboard-section").style.display = "none"; 
+        };
+    }
 
 
     window.closePuzzleGamePage = function() {
@@ -4637,7 +4767,255 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
             fishingLeaderboardList.innerHTML = "";
         }
     }
+/* --- KNOT GAME LOGIC --- */
+    const knotGamePage = document.getElementById("knot-game-page");
+    const knotContainer = document.getElementById("knot-container");
+    const swipeSequenceDisplay = document.getElementById("swipe-sequence");
+    const knotCore = document.getElementById("knot-core");
+    const ropeV = document.getElementById("rope-vertical");
+    const ropeH = document.getElementById("rope-horizontal");
+    const knotTimerDisplay = document.getElementById("knot-timer");
+    const startKnotBtn = document.getElementById("start-knot-btn");
+    const knotProgressDisplay = document.getElementById("knot-progress");
+    const knotPenaltyMsg = document.getElementById("knot-penalty-msg");
+    const knotSaveSection = document.getElementById("knot-save-section");
+    const knotFinalTime = document.getElementById("knot-final-time");
+    const knotInputArea = document.getElementById("knot-input-area");
+    const knotInitials = document.getElementById("knot-initials");
+    const saveKnotBtn = document.getElementById("save-knot-btn");
+    const knotLeaderboardSection = document.getElementById("knot-leaderboard-section");
+    const knotLeaderboardList = document.getElementById("knot-leaderboard-list");
+    const knotPlayAgainBtn = document.getElementById("knot-play-again-btn");
 
+    let knotTimer, knotStartTime;
+    let knotActive = false;
+    let knotsCleared = 0;
+    const TOTAL_KNOTS = 15;
+    let currentKnotRef = null;
+    
+    let currentSequence = [];
+    let currentSwipeIndex = 0;
+    const directions = ['up', 'down', 'left', 'right'];
+    const dirArrows = { 'up': '⬆️', 'down': '⬇️', 'left': '⬅️', 'right': '➡️' };
+
+    // Swipe Detection Logic
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    knotContainer.addEventListener('touchstart', function(e) {
+        if (!knotActive || e.cancelable === false) return;
+        e.preventDefault();
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, {passive: false});
+
+    knotContainer.addEventListener('touchend', function(e) {
+        if (!knotActive) return;
+        let touchEndX = e.changedTouches[0].screenX;
+        let touchEndY = e.changedTouches[0].screenY;
+        handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
+    });
+
+    function handleSwipe(startX, startY, endX, endY) {
+        let dx = endX - startX;
+        let dy = endY - startY;
+        let swipeDir = null;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+            if (Math.abs(dx) > 30) swipeDir = dx > 0 ? 'right' : 'left';
+        } else {
+            if (Math.abs(dy) > 30) swipeDir = dy > 0 ? 'down' : 'up';
+        }
+
+        if (swipeDir) processKnotMove(swipeDir);
+    }
+
+    function generateSequence() {
+        currentSequence = [];
+        currentSwipeIndex = 0;
+        let seqLength = Math.floor(Math.random() * 2) + 3; // 3 to 4 swipes per knot
+        let html = '';
+        for (let i = 0; i < seqLength; i++) {
+            let dir = directions[Math.floor(Math.random() * directions.length)];
+            currentSequence.push(dir);
+            html += `<span class="swipe-arrow" id="swipe-${i}">${dirArrows[dir]}</span>`;
+        }
+        swipeSequenceDisplay.innerHTML = html;
+        updateSequenceVisuals();
+        
+        // Reset ropes
+        ropeV.className = 'rope-strand rope-v';
+        ropeH.className = 'rope-strand rope-h';
+        knotCore.style.transform = 'scale(1) rotate(0deg)';
+        knotCore.style.opacity = '1';
+    }
+
+    function updateSequenceVisuals() {
+        const arrows = swipeSequenceDisplay.children;
+        for (let i = 0; i < arrows.length; i++) {
+            arrows[i].className = 'swipe-arrow';
+            if (i < currentSwipeIndex) arrows[i].classList.add('completed');
+            if (i === currentSwipeIndex) arrows[i].classList.add('active');
+        }
+    }
+
+    function processKnotMove(swipeDir) {
+        let targetDir = currentSequence[currentSwipeIndex];
+        
+        if (swipeDir === targetDir) {
+            // Correct Swipe!
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(15);
+            currentSwipeIndex++;
+            updateSequenceVisuals();
+            knotPenaltyMsg.innerText = "";
+            
+            // Animate pulling the ropes
+            if(swipeDir === 'up') ropeV.classList.add('rope-pull-up');
+            if(swipeDir === 'down') ropeV.classList.add('rope-pull-down');
+            if(swipeDir === 'left') ropeH.classList.add('rope-pull-left');
+            if(swipeDir === 'right') ropeH.classList.add('rope-pull-right');
+
+            if (currentSwipeIndex >= currentSequence.length) {
+                // Knot untangled
+                knotCore.style.transform = 'scale(1.5) rotate(180deg)';
+                knotCore.style.opacity = '0';
+                
+                setTimeout(() => {
+                    knotsCleared++;
+                    knotProgressDisplay.innerText = `${knotsCleared} / ${TOTAL_KNOTS} Knots`;
+                    if (knotsCleared >= TOTAL_KNOTS) {
+                        endKnotGame();
+                    } else {
+                        generateSequence();
+                    }
+                }, 200);
+            }
+        } else {
+            // Wrong Swipe! Reset this knot
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]);
+            knotPenaltyMsg.innerText = "WRONG DIRECTION! Knot Reset.";
+            knotCore.style.transform = 'translate(5px, 5px)'; // Quick shake
+            setTimeout(() => knotCore.style.transform = 'translate(0, 0)', 100);
+            generateSequence(); // Punish them by generating a new sequence for the same knot count
+        }
+    }
+
+    window.closeKnotGamePage = function() {
+        knotGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(knotTimer);
+        if (currentKnotRef) currentKnotRef.off();
+    };
+
+    function resetKnotGame() {
+        knotActive = false;
+        clearInterval(knotTimer);
+        knotsCleared = 0;
+        currentSequence = [];
+        swipeSequenceDisplay.innerHTML = "";
+        knotTimerDisplay.innerText = "0.00s";
+        knotTimerDisplay.style.color = "#fff";
+        knotProgressDisplay.innerText = `0 / ${TOTAL_KNOTS} Knots`;
+        knotPenaltyMsg.innerText = "";
+        startKnotBtn.style.display = "block";
+        knotSaveSection.style.display = "none";
+        knotInputArea.style.display = "block";
+        knotInitials.value = "";
+        knotPlayAgainBtn.style.display = "none";
+    }
+
+    startKnotBtn.onclick = function() {
+        resetKnotGame();
+        knotActive = true;
+        startKnotBtn.style.display = "none";
+        
+        generateSequence();
+        
+        knotStartTime = Date.now();
+        knotTimer = setInterval(() => {
+            let elapsed = (Date.now() - knotStartTime) / 1000;
+            knotTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+        }, 20);
+    };
+
+    function endKnotGame() {
+        knotActive = false;
+        clearInterval(knotTimer);
+        swipeSequenceDisplay.innerHTML = "🎉 FULLY UNTANGLED! 🎉";
+        
+        let finalTime = parseFloat(knotTimerDisplay.innerText).toFixed(2);
+        knotTimerDisplay.style.color = "var(--leaf-green)";
+        knotFinalTime.innerText = finalTime;
+        
+        if (typeof sfxWin !== 'undefined' && sfxWin) {
+            sfxWin.currentTime = 0;
+            sfxWin.play().catch(err => {});
+        }
+
+        setTimeout(() => {
+            knotSaveSection.style.display = "block";
+            knotPlayAgainBtn.style.display = "block";
+        }, 300);
+    }
+
+    knotPlayAgainBtn.onclick = resetKnotGame;
+
+    saveKnotBtn.onclick = function() {
+        let initials = knotInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(knotFinalTime.innerText);
+        
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('knotLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            knotInputArea.style.display = "none";
+        } else {
+            let board = JSON.parse(localStorage.getItem('knotLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10);
+            localStorage.setItem('knotLeaderboard', JSON.stringify(board));
+            knotInputArea.style.display = "none";
+            renderKnotLeaderboard();
+        }
+    };
+
+    function renderKnotLeaderboard() {
+        if (usingGlobalLeaderboard) {
+            if (currentKnotRef) currentKnotRef.off();
+            currentKnotRef = fireDb.ref('knotLeaderboard').orderByChild('time').limitToFirst(10);
+            
+            currentKnotRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                updateKnotBoardDOM(board);
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('knotLeaderboard')) || [];
+            updateKnotBoardDOM(board);
+        }
+    }
+
+    function updateKnotBoardDOM(board) {
+        if(board.length > 0) {
+            knotLeaderboardSection.style.display = "block";
+            knotLeaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                knotLeaderboardList.appendChild(li);
+            });
+        } else {
+            knotLeaderboardSection.style.display = "none";
+            knotLeaderboardList.innerHTML = "";
+        }
+    }
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
