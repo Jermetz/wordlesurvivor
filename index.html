@@ -1937,9 +1937,15 @@
 </div>
 <div id="fishing-game-page" class="full-page">
     <div class="full-page-content">
-        <div class="full-page-header">
-            <span></span> <span>SPEAR FISHING</span>
-            <span class="close-btn-full" onclick="closeFishingGamePage()">&times;</span>
+<div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: space-between; position: relative; flex-shrink: 0;">
+            <div onclick="closeFishingGamePage()" style="color: var(--accent); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; text-transform: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: normal; text-shadow: none; padding: 15px 20px 15px 0px; margin-left: -5px; z-index: 2;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;"><polyline points="15 18 9 12 15 6"></polyline></svg> Back
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; text-shadow: none; position: absolute; left: 50%; transform: translateX(-50%); width: 100%; pointer-events: none;">
+                <span style="font-size: 0.95rem; color: #fff; letter-spacing: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: bold;">Spear Fishing</span>
+                <span style="font-size: 0.75rem; color: #888; text-transform: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: normal;">Weekly Challenge</span>
+            </div>
+            <div style="width: 50px;"></div>
         </div>
         
         <div style="width: 100%;">
@@ -5019,7 +5025,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.78</div>
+        <div class="app-version" id="app-version">v1.0.79</div>
     </div>
 
 </body>
