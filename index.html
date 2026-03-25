@@ -2851,13 +2851,15 @@
        const pastWinnersBtn = document.getElementById("past-winners-btn");
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
-            function loadPastWinners() {
+                        function loadPastWinners() {
         const challenges = [
             { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
             { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
             { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
-            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' }
+            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' },
+            { ref: 'knotLeaderboard', id: 'winner-knot', title: 'Week 5: Untangle Knots' }
         ];
+
 
         // Season 50 Start Date: Feb 25, 2026 at Midnight
         const seasonStart = new Date(2026, 1, 25, 0, 0, 0).getTime();
@@ -4971,7 +4973,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
         if(initials === "") initials = "???";
         let timeTaken = parseFloat(knotFinalTime.innerText);
         
-        if (usingGlobalLeaderboard) {
+                if (usingGlobalLeaderboard) {
             fireDb.ref('knotLeaderboard').push({
                 name: initials,
                 time: timeTaken,
@@ -4980,6 +4982,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
             knotInputArea.style.display = "none";
             renderKnotLeaderboard(); // ADDED: Forces UI refresh after saving to Firebase
         } else {
+
             let board = JSON.parse(localStorage.getItem('knotLeaderboard')) || [];
             board.push({ name: initials, time: timeTaken });
             board.sort((a, b) => a.time - b.time);
@@ -4990,7 +4993,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
         }
     };
 
-    function renderKnotLeaderboard() {
+        function renderKnotLeaderboard() {
         if (usingGlobalLeaderboard) {
             if (currentKnotRef) currentKnotRef.off();
             currentKnotRef = fireDb.ref('knotLeaderboard').orderByChild('time').limitToFirst(10);
@@ -5003,6 +5006,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
                 updateKnotBoardDOM(board);
             });
         } else {
+
             let board = JSON.parse(localStorage.getItem('knotLeaderboard')) || [];
             updateKnotBoardDOM(board);
         }
@@ -5028,9 +5032,8 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.81</div>
+        <div class="app-version" id="app-version">v1.0.82</div>
     </div>
 
 </body>
 </html>
-
