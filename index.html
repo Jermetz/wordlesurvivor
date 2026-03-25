@@ -1691,8 +1691,6 @@
 
 <div class="fire-glow"></div>
 
-<div id="hidden-idol-trigger" style="position: fixed; top: 15px; right: 15px; width: 50px; height: 50px; z-index: 9999;"></div>
-
 <div class="dashboard-layout" id="main-dashboard">
     <header>
         <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image">
@@ -2117,7 +2115,7 @@
         <h3>*FINALE TIE BREAKER</h3>
         <p>If two or more players are tied for 1st place after the final Wordle, the Sole Wordler will be decided by a live, head-to-head <strong>Fire-Making Challenge</strong> using the app's built-in mini-game. The fastest time takes the crown!</p>
         <p style="text-align:center; margin-top: 20px;"><strong>Outwit, Outplay, Outwordle! Who will be the Sole Wordler?</strong></p>
-        <p>*Astrisk on Rule header = newly added or clarified rule</p>
+        <p>*<span id="hidden-idol-trigger" style="cursor: default;">Astrisk</span> on Rule header = newly added or clarified rule</p>
         <a href="sms:12676002525" class="text-btn">RULE QUESTION? TEXT JEFF PROBST</a>
     </div>
   </div>
@@ -2194,12 +2192,12 @@
         <img src="image11.png" alt="Hidden Immunity Idol" style="max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
     </div>
 
-    <div class="modal-body" style="text-align: center; margin-top: 10px;">
-        <h3 style="font-size: 1.6rem; color: var(--text); margin-top: 0;">Hidden Immunity Idol Clue</h3>
-        <p style="font-size: 1.2rem; margin-top: 15px;">Congratulations. You scoured the island and found the secret.</p>
-        <p style="font-size: 1.2rem; margin-top: 15px; margin-bottom: 25px;">To claim your advantage, tap the button below to text Jeff the secret phrase:</p>
-        <div style="background: var(--text); color: var(--card-bg); padding: 15px; border-radius: 8px; font-size: 2rem; font-weight: 900; letter-spacing: 2px;">BLIND SIDE</div>
-        <a href="sms:12676002525?body=Blind%20side" class="text-btn" style="margin-top: 25px;">TEXT JEFF TO CLAIM IDOL</a>
+<div class="modal-body" style="text-align: center; margin-top: 10px;">
+        <h3 style="font-size: 1.6rem; color: var(--text); margin-top: 0;">Hidden Immunity Idol</h3>
+        <p style="font-size: 1.2rem; margin-top: 15px;">Congratulations. You scoured the camp and found the secret.</p>
+        <p style="font-size: 1.2rem; margin-top: 15px; margin-bottom: 25px;">To officially claim this advantage, tap the button below to text Jeff the secret phrase:</p>
+        <div style="background: var(--text); color: var(--card-bg); padding: 15px; border-radius: 8px; font-size: 1.5rem; font-weight: 900; letter-spacing: 2px;">SNAKE IN THE GRASS</div>
+        <a href="sms:12676002525?body=Snake%20in%20the%20grass" class="text-btn" style="margin-top: 25px;">TEXT JEFF TO CLAIM IDOL</a>
     </div>
   </div>
 </div>
@@ -5025,7 +5023,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.79</div>
+        <div class="app-version" id="app-version">v1.0.80</div>
     </div>
 
 </body>
