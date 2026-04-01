@@ -1603,6 +1603,46 @@
             opacity: 0.8;
             color: var(--leaf-green);
         }
+              /* --- RICE SORTING GAME CSS --- */
+        .rice-container {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            height: 320px;
+            background: rgba(0,0,0,0.3);
+            border: 3px solid var(--card-border);
+            border-radius: 12px;
+            margin: 20px auto;
+            overflow: hidden;
+            touch-action: none; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .rice-item {
+            font-size: 5rem;
+            position: absolute;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+            user-select: none;
+        }
+        .rice-zone-left {
+            position: absolute; left: 0; top: 0; bottom: 0; width: 30%;
+            background: linear-gradient(to right, rgba(235, 64, 52, 0.2), transparent);
+            border-right: 2px dashed var(--low-score); pointer-events: none;
+        }
+        .rice-zone-right {
+            position: absolute; right: 0; top: 0; bottom: 0; width: 30%;
+            background: linear-gradient(to left, rgba(46, 125, 50, 0.2), transparent);
+            border-left: 2px dashed var(--leaf-green); pointer-events: none;
+        }
+        .swipe-instruction {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 0.9rem; color: #fff; text-shadow: 1px 1px 2px #000; 
+            display: flex; justify-content: space-between;
+            width: 100%; max-width: 340px; margin: 0 auto;
+        }
+
               /* --- iMESSAGE BUBBLE TAILS --- */
         .chat-bubble {
             position: relative;
@@ -2043,6 +2083,56 @@
         </div>
     </div>
 </div>
+<div id="rice-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>RICE SORTING</span>
+            <span class="close-btn-full" onclick="closeRiceGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>🍚 PURIFY THE RICE 🍚</strong><br>Swipe RIGHT for Rice. Swipe LEFT for Bugs/Rocks! One wrong swipe = +2s penalty.
+            </p>
+            <p id="rice-progress" style="font-size: 1.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000;">0 / 20 Sorted</p>
+            <div id="rice-penalty-msg" class="fishing-penalty"></div>
+
+            <h2 id="rice-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+            <div class="swipe-instruction">
+                <span style="color: #ff6b6b;">⬅️ TRASH</span>
+                <span style="color: #81c784;">RICE ➡️</span>
+            </div>
+
+            <div id="rice-container" class="rice-container">
+                <div class="rice-zone-left"></div>
+                <div class="rice-zone-right"></div>
+                <div id="rice-element" class="rice-item" style="display:none;">🍚</div>
+            </div>
+            
+            <button id="start-rice-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 30px;">START SORTING</button>
+            
+            <div id="rice-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🍚 RICE PURIFIED! 🍚</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="rice-final-time"></span>s</p>
+                
+                <div id="rice-input-area" style="margin-top: 15px;">
+                    <input type="text" id="rice-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-rice-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="rice-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🍚 FASTEST SORTERS</h3>
+                <ol id="rice-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="rice-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div>
+
 <div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow: hidden; display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: -webkit-fill-available; z-index: 4000;">
     
     <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
@@ -2276,6 +2366,223 @@
         firebase.initializeApp(firebaseConfig);
         fireDb = firebase.database();
         usingGlobalLeaderboard = true;
+          /* --- RICE SORTING GAME LOGIC --- */
+    const riceGamePage = document.getElementById("rice-game-page");
+    const riceContainer = document.getElementById("rice-container");
+    const riceElement = document.getElementById("rice-element");
+    const riceTimerDisplay = document.getElementById("rice-timer");
+    const startRiceBtn = document.getElementById("start-rice-btn");
+    const riceProgressDisplay = document.getElementById("rice-progress");
+    const ricePenaltyMsg = document.getElementById("rice-penalty-msg");
+    const riceSaveSection = document.getElementById("rice-save-section");
+    const riceFinalTime = document.getElementById("rice-final-time");
+    const riceInputArea = document.getElementById("rice-input-area");
+    const riceInitials = document.getElementById("rice-initials");
+    const saveRiceBtn = document.getElementById("save-rice-btn");
+    const riceLeaderboardSection = document.getElementById("rice-leaderboard-section");
+    const riceLeaderboardList = document.getElementById("rice-leaderboard-list");
+    const ricePlayAgainBtn = document.getElementById("rice-play-again-btn");
+
+    let riceTimer, riceStartTime;
+    let riceActive = false;
+    let itemsSorted = 0;
+    const TOTAL_RICE = 20;
+    let currentRiceRef = null;
+    let currentItemType = ''; // 'rice' or 'trash'
+
+    const trashEmojis = ['🪨', '🐛', '🐜', '🍂'];
+
+    // Swipe Detection Logic for Rice
+    let riceTouchStartX = 0;
+
+    riceContainer.addEventListener('touchstart', function(e) {
+        if (!riceActive || e.cancelable === false) return;
+        e.preventDefault();
+        riceTouchStartX = e.changedTouches[0].screenX;
+    }, {passive: false});
+
+    riceContainer.addEventListener('touchend', function(e) {
+        if (!riceActive) return;
+        let touchEndX = e.changedTouches[0].screenX;
+        let dx = touchEndX - riceTouchStartX;
+
+        if (Math.abs(dx) > 30) {
+            handleRiceSwipe(dx > 0 ? 'right' : 'left');
+        }
+    });
+
+    function spawnRiceItem() {
+        // 60% chance for Rice, 40% chance for Trash
+        if (Math.random() > 0.4) {
+            currentItemType = 'rice';
+            riceElement.innerText = '🍚';
+        } else {
+            currentItemType = 'trash';
+            riceElement.innerText = trashEmojis[Math.floor(Math.random() * trashEmojis.length)];
+        }
+        riceElement.style.transform = 'translateX(0) scale(1)';
+        riceElement.style.opacity = '1';
+        riceElement.style.display = 'block';
+    }
+
+    function handleRiceSwipe(direction) {
+        let isCorrect = false;
+
+        if (direction === 'right' && currentItemType === 'rice') isCorrect = true;
+        if (direction === 'left' && currentItemType === 'trash') isCorrect = true;
+
+        if (isCorrect) {
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+            ricePenaltyMsg.innerText = "";
+            itemsSorted++;
+            riceProgressDisplay.innerText = `${itemsSorted} / ${TOTAL_RICE} Sorted`;
+
+            // Animate out
+            riceElement.style.transform = direction === 'right' ? 'translateX(150px) scale(0.5)' : 'translateX(-150px) scale(0.5)';
+            riceElement.style.opacity = '0';
+
+            if (itemsSorted >= TOTAL_RICE) {
+                setTimeout(endRiceGame, 150);
+            } else {
+                setTimeout(spawnRiceItem, 150);
+            }
+        } else {
+            // Penalty
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]);
+            ricePenaltyMsg.innerText = "WRONG! +2s Penalty";
+            riceStartTime -= 2000; // Adds 2 seconds to elapsed time
+            riceElement.style.transform = 'translateX(0) scale(1.2)'; // Shake effect
+            setTimeout(() => { if (riceActive) riceElement.style.transform = 'translateX(0) scale(1)'; }, 150);
+        }
+    }
+
+    window.closeRiceGamePage = function() {
+        isRicePracticeMode = false;
+        riceGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(riceTimer);
+        if (currentRiceRef) currentRiceRef.off();
+    };
+
+    function resetRiceGame() {
+        riceActive = false;
+        clearInterval(riceTimer);
+        itemsSorted = 0;
+        riceElement.style.display = "none";
+        riceTimerDisplay.innerText = "0.00s";
+        riceTimerDisplay.style.color = "#fff";
+        riceProgressDisplay.innerText = `0 / ${TOTAL_RICE} Sorted`;
+        ricePenaltyMsg.innerText = "";
+        startRiceBtn.style.display = "block";
+        riceSaveSection.style.display = "none";
+        riceInputArea.style.display = "block";
+        riceInitials.value = "";
+        ricePlayAgainBtn.style.display = "none";
+    }
+
+    startRiceBtn.onclick = function() {
+        resetRiceGame();
+        riceActive = true;
+        startRiceBtn.style.display = "none";
+        
+        spawnRiceItem();
+        
+        riceStartTime = Date.now();
+        riceTimer = setInterval(() => {
+            let elapsed = (Date.now() - riceStartTime) / 1000;
+            riceTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+        }, 20);
+    };
+
+    function endRiceGame() {
+        riceActive = false;
+        clearInterval(riceTimer);
+        riceElement.style.display = "none";
+        
+        let finalTime = parseFloat(riceTimerDisplay.innerText).toFixed(2);
+        riceTimerDisplay.style.color = "var(--leaf-green)";
+        riceFinalTime.innerText = finalTime;
+        
+        if (typeof sfxWin !== 'undefined' && sfxWin) {
+            sfxWin.currentTime = 0;
+            sfxWin.play().catch(err => {});
+        }
+
+        setTimeout(() => {
+            riceSaveSection.style.display = "block";
+            ricePlayAgainBtn.style.display = "block";
+
+            if (isRicePracticeMode) {
+                document.querySelector('#rice-save-section h3').innerText = "🍚 PRACTICE OVER 🍚";
+                riceInputArea.style.display = "none";
+            } else {
+                document.querySelector('#rice-save-section h3').innerText = "🍚 RICE PURIFIED! 🍚";
+                riceInputArea.style.display = "block";
+            }
+        }, 300);
+    }
+
+    ricePlayAgainBtn.onclick = resetRiceGame;
+
+    saveRiceBtn.onclick = function() {
+        let initials = riceInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(riceFinalTime.innerText);
+        
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('riceLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            riceInputArea.style.display = "none";
+            renderRiceLeaderboard(); 
+        } else {
+            let board = JSON.parse(localStorage.getItem('riceLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10);
+            localStorage.setItem('riceLeaderboard', JSON.stringify(board));
+            riceInputArea.style.display = "none";
+            renderRiceLeaderboard();
+        }
+    };
+
+    function renderRiceLeaderboard() {
+        if (usingGlobalLeaderboard) {
+            if (currentRiceRef) currentRiceRef.off();
+            currentRiceRef = fireDb.ref('riceLeaderboard').orderByChild('time').limitToFirst(10);
+            
+            currentRiceRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                board.sort((a, b) => a.time - b.time);
+                updateRiceBoardDOM(board);
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('riceLeaderboard')) || [];
+            updateRiceBoardDOM(board);
+        }
+    }
+
+    function updateRiceBoardDOM(board) {
+        if(board.length > 0) {
+            riceLeaderboardSection.style.display = "block";
+            riceLeaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                riceLeaderboardList.appendChild(li);
+            });
+        } else {
+            riceLeaderboardSection.style.display = "none";
+            riceLeaderboardList.innerHTML = "";
+        }
+    }
+
     }
 </script>
 
@@ -2870,13 +3177,15 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
                         function loadPastWinners() {
-        const challenges = [
+                const challenges = [
             { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
             { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
             { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
             { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' },
-            { ref: 'knotLeaderboard', id: 'winner-knot', title: 'Week 5: Untangle Knots' }
+            { ref: 'knotLeaderboard', id: 'winner-knot', title: 'Week 5: Untangle Knots' },
+            { ref: 'riceLeaderboard', id: 'winner-rice', title: 'Week 6: Rice Sorting' }
         ];
+
 
 
         // Season 50 Start Date: Feb 25, 2026 at Midnight
@@ -3780,37 +4089,40 @@ weeklyChallengeBtn.onclick = function() {
         window.scrollTo(0, 0);
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
-        // MIDNIGHT SWITCH: Wednesday, March 25, 2026 12:00 AM EDT
-        const switchTime = new Date('2026-03-25T00:00:00-04:00').getTime();
+                // MIDNIGHT SWITCH: Wednesday, April 1, 2026 12:01 AM EDT
+        const switchTime = new Date('2026-04-01T00:01:00-04:00').getTime();
         const now = new Date().getTime();
 
         if (now >= switchTime) {
-            // Launch New Knot Game
+            // Launch New Rice Game
+            document.getElementById("rice-game-page").style.display = "flex";
+            resetRiceGame();
+            renderRiceLeaderboard();
+        } else {
+            // Launch Knot Game
             document.getElementById("knot-game-page").style.display = "flex";
             resetKnotGame();
             renderKnotLeaderboard();
-        } else {
-            // Launch Fishing Game
-            document.getElementById("fishing-game-page").style.display = "flex";
-            resetFishingGame();
-            renderFishingLeaderboard();
         }
     };
 
     // Admin Modal Integration
-    const adminPracticeKnotBtn = document.getElementById("admin-practice-new-challenge-btn");
-    if (adminPracticeKnotBtn) {
-        adminPracticeKnotBtn.onclick = function() {
+    const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
+    let isRicePracticeMode = false;
+    if (adminPracticeNewBtn) {
+        adminPracticeNewBtn.onclick = function() {
             closeModal('adminModal');
+            isRicePracticeMode = true;
             document.getElementById("main-dashboard").style.display = "none";
             document.getElementById("floating-menu-btn").style.display = "none";
             window.scrollTo(0, 0);
             document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-            document.getElementById("knot-game-page").style.display = "flex";
-            resetKnotGame();
-            document.getElementById("knot-leaderboard-section").style.display = "none"; 
+            document.getElementById("rice-game-page").style.display = "flex";
+            resetRiceGame();
+            document.getElementById("rice-leaderboard-section").style.display = "none"; 
         };
     }
+
 
 
     window.closePuzzleGamePage = function() {
@@ -5050,7 +5362,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.87</div>
+        <div class="app-version" id="app-version">v1.0.88</div>
     </div>
 
 </body>
