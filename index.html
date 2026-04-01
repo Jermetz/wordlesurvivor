@@ -319,7 +319,28 @@
             text-transform: none; /* Keeps exactly what you typed */
         }
 
-        /* --- EDGE OF EXTINCTION HEADER --- */
+                /* --- CHOPPING BLOCK & EXTINCTION HEADERS --- */
+        #danger-header {
+            display: none;
+            color: var(--low-score);
+            border-bottom: 2px dashed var(--low-score);
+            margin-top: 35px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        #danger-header span {
+            color: #ff8a80;
+        }
+        
+        @keyframes danger-pulse {
+            0% { box-shadow: 0 0 5px rgba(235, 64, 52, 0.4); }
+            100% { box-shadow: 0 0 18px rgba(235, 64, 52, 0.95); border-color: var(--low-score); }
+        }
+        
+        .danger-card {
+            animation: danger-pulse 1s infinite alternate !important;
+            border-left: 8px solid var(--low-score) !important;
+        }
+
         #extinction-header {
             display: none;
             color: #888;
@@ -332,7 +353,8 @@
         }
 
         /* --- LEADERBOARD & CARDS --- */
-        #leaderboard, #extinction-board {
+        #leaderboard, #danger-board, #extinction-board {
+
             width: 100%;
             max-width: 450px;
             display: flex;
@@ -1772,11 +1794,18 @@
             <span>(Ranked by Total Life Pts)</span>
         </div>
 
-        <div id="leaderboard">
+              <div id="leaderboard">
             <p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>
         </div>
 
-               <div class="leaderboard-header" id="extinction-header">
+        <div class="leaderboard-header" id="danger-header">
+            THE CHOPPING BLOCK 🪓
+            <span>(15 Points or Less - Torches are flickering...)</span>
+        </div>
+        <div id="danger-board"></div>
+
+        <div class="leaderboard-header" id="extinction-header">
+
             EDGE OF EXTINCTION 💀
             <span>(Eliminated Players)</span>
         </div>
@@ -2753,14 +2782,19 @@
         }
     }
 
-    function renderLeaderboard() {
+        function renderLeaderboard() {
         const container = document.getElementById('leaderboard');
+        const dangerContainer = document.getElementById('danger-board');
         const extinctionContainer = document.getElementById('extinction-board');
+        
+        const dangerHeader = document.getElementById('danger-header');
         const extinctionHeader = document.getElementById('extinction-header');
         const headerEl = document.getElementById('dynamic-leaderboard-header');
         
         container.innerHTML = '';
+        dangerContainer.innerHTML = '';
         extinctionContainer.innerHTML = '';
+        dangerHeader.style.display = 'none';
         
         let sortedPlayers = [...allPlayersData]; 
         const activePlayers = [];
@@ -2787,6 +2821,7 @@
         const allUnranked = activePlayers.every(p => p.score === 50);
         let currentRank = 1;
         let previousScore = null;
+        let hasDanger = false;
 
         activePlayers.forEach((player, index) => {
             const card = document.createElement('div');
@@ -2806,7 +2841,16 @@
             }
             previousScore = currentCompareVal;
             
-            const rankDisplay = allUnranked ? '-' : `#${currentRank}`;
+            let rankDisplay = allUnranked ? '-' : `#${currentRank}`;
+            
+            // --- CHOPPING BLOCK LOGIC ---
+            let isDangerZone = (player.score <= 15 && currentSortView === 'total');
+            if (player.score <= 15) {
+                card.classList.add('danger-card');
+                if (currentSortView === 'total') {
+                    rankDisplay = '⚠️'; // Swap rank for a warning icon in the Chopping Block
+                }
+            }
             
             let changeDisplay = '-';
             let changeClass = 'change-neutral';
@@ -2818,7 +2862,7 @@
                 changeClass = 'change-negative';
             }
 
-                        const isHardMode = player.hardMode.includes('*');
+            const isHardMode = player.hardMode.includes('*');
             const hardModeText = isHardMode ? '✅' : '❌';
             
             let totalGames = player.freq.reduce((a, b) => a + b, 0);
@@ -2861,8 +2905,6 @@
                     </div>
                 </div>
                 <div class="history-drawer">
-                    <div class="drawer-status">
-                                           <div class="history-drawer">
                     <div class="drawer-status">
                         <div style="font-size: 1.1rem; color: #ffd700; text-shadow: 1px 1px 2px #000; margin-bottom: 5px;">🎯 All-Time Avg: ${avgScore}</div>
                         <div class="streak-display ${player.streak >= 7 ? 'streak-hot' : ''}">🔥 Daily Streak: ${player.streak} day${player.streak !== 1 ? 's' : ''}</div>
@@ -2915,8 +2957,19 @@
                     </div>
                 </div>
             `;
-            container.appendChild(card);
+            
+            // Append to correct container
+            if (isDangerZone) {
+                dangerContainer.appendChild(card);
+                hasDanger = true;
+            } else {
+                container.appendChild(card);
+            }
         });
+
+        if (hasDanger) {
+            dangerHeader.style.display = 'block';
+        }
 
         if (deadPlayers.length > 0) {
             extinctionHeader.style.display = 'block';
@@ -2942,7 +2995,7 @@
                     changeClass = 'change-negative';
                 }
 
-                                const isHardMode = player.hardMode.includes('*');
+                const isHardMode = player.hardMode.includes('*');
                 const hardModeText = isHardMode ? '✅' : '❌';
 
                 let totalGames = player.freq.reduce((a, b) => a + b, 0);
@@ -2950,7 +3003,6 @@
                 let avgScore = totalGames > 0 ? (totalGuesses / totalGames).toFixed(2) : 'N/A';
 
                 card.innerHTML = `
-
                     <div class="card-main">
                         <div class="rank">💀</div>
                         <div class="name">${player.name}</div>
@@ -3021,6 +3073,7 @@
             extinctionHeader.style.display = 'none';
         }
     }
+
 
     document.getElementById('view-total-btn').addEventListener('click', function() {
         if(currentSortView === 'total') return; 
@@ -5362,7 +5415,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.88</div>
+        <div class="app-version" id="app-version">v1.0.89</div>
     </div>
 
 </body>
