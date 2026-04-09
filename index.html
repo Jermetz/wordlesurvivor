@@ -1734,6 +1734,28 @@
             font-size: 0.9rem;
             border: 1px solid #666;
         }
+        /* --- MAZE GAME CSS --- */
+        .maze-container {
+            position: relative; width: 100%; max-width: 340px; height: 340px; margin: 15px auto;
+            background: #111; border: 3px solid var(--card-border); border-radius: 8px;
+            touch-action: none; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        .maze-safe-zone {
+            position: absolute; background: #e0e0e0; border-radius: 20px;
+        }
+        .maze-start, .maze-end {
+            position: absolute; width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 0.9rem; 
+            font-family: 'Arial Black', sans-serif; font-weight: 900; z-index: 2;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+        }
+        .maze-start { background: var(--accent); color: white; border: 2px solid white; }
+        .maze-end { background: var(--leaf-green); color: white; border: 2px solid white; }
+        .maze-indicator {
+            position: absolute; width: 40px; height: 40px; background: rgba(255, 215, 0, 0.4);
+            border: 2px solid #ffd700; border-radius: 50%; pointer-events: none; z-index: 10;
+            transform: translate(-50%, -50%); display: none;
+        }
 
 
     </style>
@@ -2158,6 +2180,49 @@
             </div>
 
             <button id="rice-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div>
+<div id="maze-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>BLINDFOLD MAZE</span>
+            <span class="close-btn-full" onclick="closeMazeGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>🧭 NAVIGATE THE JUNGLE 🧭</strong><br>Press START and drag to the FINISH without leaving the path or lifting your finger! (+3s Penalty)
+            </p>
+            <p id="maze-progress" style="font-size: 1.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000;">0 / 3 Mazes</p>
+            <div id="maze-penalty-msg" class="fishing-penalty"></div>
+
+            <h2 id="maze-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+            <div id="maze-container" class="maze-container">
+                <div id="maze-indicator" class="maze-indicator"></div>
+                <div id="maze-layout"></div>
+            </div>
+            
+            <button id="start-maze-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">START CHALLENGE</button>
+            
+            <div id="maze-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🧭 PATH CLEARED! 🧭</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="maze-final-time"></span>s</p>
+                
+                <div id="maze-input-area" style="margin-top: 15px;">
+                    <input type="text" id="maze-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-maze-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="maze-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🧭 FASTEST CALLERS</h3>
+                <ol id="maze-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="maze-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
         </div>
     </div>
 </div>
@@ -3230,14 +3295,19 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
                         function loadPastWinners() {
-                const challenges = [
+                        const challenges = [
             { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
             { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
             { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
             { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' },
             { ref: 'knotLeaderboard', id: 'winner-knot', title: 'Week 5: Untangle Knots' },
-            { ref: 'riceLeaderboard', id: 'winner-rice', title: 'Week 6: Rice Sorting' }
+            { ref: 'riceLeaderboard', id: 'winner-rice', title: 'Week 6: Rice Sorting' },
+            { ref: 'mazeLeaderboard', id: 'winner-maze', title: 'Week 7: Blindfold Maze' }
         ];
+
+        // Hardcoded to 6 to ensure Week 7 (Blindfold Maze) is the active current leader
+        const currentWeekIndex = 6;
+
 
 
 
@@ -4138,45 +4208,47 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
         // --- WEEKLY CHALLENGE LOGIC (FISHING GAME) ---
     weeklyChallengeBtn.innerHTML = "WEEKLY CHALLENGE";
 
-weeklyChallengeBtn.onclick = function() {
+    weeklyChallengeBtn.onclick = function() {
         document.getElementById("main-dashboard").style.display = "none";
         document.getElementById("floating-menu-btn").style.display = "none";
         window.scrollTo(0, 0);
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
-                // MIDNIGHT SWITCH: Wednesday, April 1, 2026 12:01 AM EDT
-        const switchTime = new Date('2026-04-01T00:01:00-04:00').getTime();
+        // MIDNIGHT SWITCH: Wednesday, April 8, 2026 12:01 AM EDT
+        const switchTime = new Date('2026-04-08T00:01:00-04:00').getTime();
         const now = new Date().getTime();
 
         if (now >= switchTime) {
-            // Launch New Rice Game
+            // Launch New Maze Game
+            document.getElementById("maze-game-page").style.display = "flex";
+            resetMazeGame();
+            renderMazeLeaderboard();
+        } else {
+            // Launch Rice Game
             document.getElementById("rice-game-page").style.display = "flex";
             resetRiceGame();
             renderRiceLeaderboard();
-        } else {
-            // Launch Knot Game
-            document.getElementById("knot-game-page").style.display = "flex";
-            resetKnotGame();
-            renderKnotLeaderboard();
         }
     };
 
+
     // Admin Modal Integration
     const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
-    let isRicePracticeMode = false;
+        let isMazePracticeMode = false;
     if (adminPracticeNewBtn) {
         adminPracticeNewBtn.onclick = function() {
             closeModal('adminModal');
-            isRicePracticeMode = true;
+            isMazePracticeMode = true;
             document.getElementById("main-dashboard").style.display = "none";
             document.getElementById("floating-menu-btn").style.display = "none";
             window.scrollTo(0, 0);
             document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-            document.getElementById("rice-game-page").style.display = "flex";
-            resetRiceGame();
-            document.getElementById("rice-leaderboard-section").style.display = "none"; 
+            document.getElementById("maze-game-page").style.display = "flex";
+            resetMazeGame();
+            document.getElementById("maze-leaderboard-section").style.display = "none"; 
         };
     }
+
 
 
 
@@ -5412,12 +5484,302 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
             knotLeaderboardList.innerHTML = "";
         }
     }
+    /* --- BLINDFOLD MAZE GAME LOGIC --- */
+    const mazeGamePage = document.getElementById("maze-game-page");
+    const mazeContainer = document.getElementById("maze-container");
+    const mazeLayout = document.getElementById("maze-layout");
+    const mazeIndicator = document.getElementById("maze-indicator");
+    const mazeTimerDisplay = document.getElementById("maze-timer");
+    const startMazeBtn = document.getElementById("start-maze-btn");
+    const mazeProgressDisplay = document.getElementById("maze-progress");
+    const mazePenaltyMsg = document.getElementById("maze-penalty-msg");
+    const mazeSaveSection = document.getElementById("maze-save-section");
+    const mazeFinalTime = document.getElementById("maze-final-time");
+    const mazeInputArea = document.getElementById("maze-input-area");
+    const mazeInitials = document.getElementById("maze-initials");
+    const saveMazeBtn = document.getElementById("save-maze-btn");
+    const mazeLeaderboardSection = document.getElementById("maze-leaderboard-section");
+    const mazeLeaderboardList = document.getElementById("maze-leaderboard-list");
+    const mazePlayAgainBtn = document.getElementById("maze-play-again-btn");
+
+    let mazeTimer, mazeStartTime;
+    let mazeActive = false;
+    let isTracing = false;
+    let mazesCompleted = 0;
+    const TOTAL_MAZES = 3;
+    let currentMazeRef = null;
+
+    // Define 3 simple layouts based on a 340x340 grid
+    const mazeLevels = [
+        { // Level 1: L-Shape
+            start: { top: 20, left: 20 }, end: { top: 270, left: 270 },
+            paths: [
+                { top: 20, left: 20, width: 50, height: 260 },
+                { top: 270, left: 20, width: 300, height: 50 }
+            ]
+        },
+        { // Level 2: S-Shape
+            start: { top: 20, left: 270 }, end: { top: 270, left: 20 },
+            paths: [
+                { top: 20, left: 20, width: 300, height: 50 },
+                { top: 20, left: 20, width: 50, height: 160 },
+                { top: 130, left: 20, width: 300, height: 50 },
+                { top: 130, left: 270, width: 50, height: 190 },
+                { top: 270, left: 20, width: 300, height: 50 }
+            ]
+        },
+        { // Level 3: Zig-Zag
+            start: { top: 270, left: 270 }, end: { top: 20, left: 20 },
+            paths: [
+                { top: 270, left: 145, width: 175, height: 50 },
+                { top: 145, left: 145, width: 50, height: 175 },
+                { top: 145, left: 145, width: 175, height: 50 },
+                { top: 20, left: 270, width: 50, height: 175 },
+                { top: 20, left: 20, width: 300, height: 50 }
+            ]
+        }
+    ];
+
+    function loadMazeLevel(levelIndex) {
+        mazeLayout.innerHTML = "";
+        const level = mazeLevels[levelIndex];
+        
+        level.paths.forEach(p => {
+            let pathDiv = document.createElement("div");
+            pathDiv.className = "maze-safe-zone";
+            pathDiv.style.top = p.top + "px"; pathDiv.style.left = p.left + "px";
+            pathDiv.style.width = p.width + "px"; pathDiv.style.height = p.height + "px";
+            mazeLayout.appendChild(pathDiv);
+        });
+
+        let startDiv = document.createElement("div");
+        startDiv.className = "maze-start";
+        startDiv.style.top = level.start.top + "px"; startDiv.style.left = level.start.left + "px";
+        startDiv.innerText = "GO";
+        mazeLayout.appendChild(startDiv);
+
+        let endDiv = document.createElement("div");
+        endDiv.className = "maze-end";
+        endDiv.style.top = level.end.top + "px"; endDiv.style.left = level.end.left + "px";
+        mazeLayout.appendChild(endDiv);
+    }
+
+    mazeContainer.addEventListener('touchstart', function(e) {
+        if (!mazeActive) return;
+        e.preventDefault();
+        
+        let touch = e.changedTouches[0];
+        let elem = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        if (elem && elem.classList.contains("maze-start")) {
+            isTracing = true;
+            mazeIndicator.style.display = "block";
+            mazeIndicator.style.left = (touch.clientX - mazeContainer.getBoundingClientRect().left) + "px";
+            mazeIndicator.style.top = (touch.clientY - mazeContainer.getBoundingClientRect().top) + "px";
+            mazePenaltyMsg.innerText = "";
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+        }
+    }, {passive: false});
+
+    mazeContainer.addEventListener('touchmove', function(e) {
+        if (!mazeActive || !isTracing) return;
+        e.preventDefault();
+        
+        let touch = e.changedTouches[0];
+        let rect = mazeContainer.getBoundingClientRect();
+        mazeIndicator.style.left = (touch.clientX - rect.left) + "px";
+        mazeIndicator.style.top = (touch.clientY - rect.top) + "px";
+
+        mazeIndicator.style.display = "none"; 
+        let elem = document.elementFromPoint(touch.clientX, touch.clientY);
+        mazeIndicator.style.display = "block"; 
+
+        if (!elem) return triggerMazePenalty();
+        
+        if (elem.classList.contains("maze-end")) {
+            isTracing = false;
+            mazeIndicator.style.display = "none";
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(20);
+            
+            mazesCompleted++;
+            mazeProgressDisplay.innerText = `${mazesCompleted} / ${TOTAL_MAZES} Mazes`;
+            
+            if (mazesCompleted >= TOTAL_MAZES) {
+                endMazeGame();
+            } else {
+                loadMazeLevel(mazesCompleted);
+            }
+        } 
+        else if (!elem.classList.contains("maze-safe-zone") && !elem.classList.contains("maze-start") && !elem.classList.contains("maze-end")) {
+            triggerMazePenalty();
+        }
+    }, {passive: false});
+
+    mazeContainer.addEventListener('touchend', function(e) {
+        if (!mazeActive || !isTracing) return;
+        e.preventDefault();
+        isTracing = false;
+        mazeIndicator.style.display = "none";
+        
+        let touch = e.changedTouches[0];
+        mazeIndicator.style.display = "none"; 
+        let elem = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (!elem || !elem.classList.contains("maze-end")) {
+            triggerMazePenalty("LIFTED FINGER! +3s Penalty");
+        }
+    });
+
+    function triggerMazePenalty(msg = "SLIPPED! +3s Penalty") {
+        isTracing = false;
+        mazeIndicator.style.display = "none";
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]);
+        
+        mazePenaltyMsg.innerText = msg;
+        mazeStartTime -= 3000; 
+        
+        mazeContainer.style.borderColor = "var(--low-score)";
+        setTimeout(() => { if(mazeActive) mazeContainer.style.borderColor = "var(--card-border)"; }, 200);
+        
+        loadMazeLevel(mazesCompleted); 
+    }
+
+    window.closeMazeGamePage = function() {
+        isMazePracticeMode = false;
+        mazeGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(mazeTimer);
+        if (currentMazeRef) currentMazeRef.off();
+    };
+
+    function resetMazeGame() {
+        mazeActive = false;
+        isTracing = false;
+        clearInterval(mazeTimer);
+        mazesCompleted = 0;
+        mazeTimerDisplay.innerText = "0.00s";
+        mazeTimerDisplay.style.color = "#fff";
+        mazeProgressDisplay.innerText = `0 / ${TOTAL_MAZES} Mazes`;
+        mazePenaltyMsg.innerText = "";
+        startMazeBtn.style.display = "block";
+        mazeSaveSection.style.display = "none";
+        mazeInputArea.style.display = "block";
+        mazeInitials.value = "";
+        mazePlayAgainBtn.style.display = "none";
+        mazeIndicator.style.display = "none";
+        mazeContainer.style.borderColor = "var(--card-border)";
+        mazeLayout.innerHTML = ""; 
+    }
+
+    startMazeBtn.onclick = function() {
+        resetMazeGame();
+        mazeActive = true;
+        startMazeBtn.style.display = "none";
+        
+        loadMazeLevel(0);
+        
+        mazeStartTime = Date.now();
+        mazeTimer = setInterval(() => {
+            let elapsed = (Date.now() - mazeStartTime) / 1000;
+            mazeTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+        }, 20);
+    };
+
+    function endMazeGame() {
+        mazeActive = false;
+        isTracing = false;
+        clearInterval(mazeTimer);
+        mazeLayout.innerHTML = ""; 
+        mazePenaltyMsg.innerText = "";
+
+        let finalTime = parseFloat(mazeTimerDisplay.innerText).toFixed(2);
+        mazeTimerDisplay.style.color = "var(--leaf-green)";
+        mazeFinalTime.innerText = finalTime;
+        
+        if (typeof sfxWin !== 'undefined' && sfxWin) {
+            sfxWin.currentTime = 0;
+            sfxWin.play().catch(err => {});
+        }
+
+        setTimeout(() => {
+            mazeSaveSection.style.display = "block";
+            mazePlayAgainBtn.style.display = "block";
+
+            if (isMazePracticeMode) {
+                document.querySelector('#maze-save-section h3').innerText = "🧭 PRACTICE OVER 🧭";
+                mazeInputArea.style.display = "none";
+            } else {
+                document.querySelector('#maze-save-section h3').innerText = "🧭 PATH CLEARED! 🧭";
+                mazeInputArea.style.display = "block";
+            }
+        }, 300);
+    }
+
+    mazePlayAgainBtn.onclick = resetMazeGame;
+
+    saveMazeBtn.onclick = function() {
+        let initials = mazeInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(mazeFinalTime.innerText);
+        
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('mazeLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            mazeInputArea.style.display = "none";
+            renderMazeLeaderboard();
+        } else {
+            let board = JSON.parse(localStorage.getItem('mazeLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10);
+            localStorage.setItem('mazeLeaderboard', JSON.stringify(board));
+            mazeInputArea.style.display = "none";
+            renderMazeLeaderboard();
+        }
+    };
+
+    function renderMazeLeaderboard() {
+        if (usingGlobalLeaderboard) {
+            if (currentMazeRef) currentMazeRef.off();
+            currentMazeRef = fireDb.ref('mazeLeaderboard').orderByChild('time').limitToFirst(10);
+            
+            currentMazeRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                board.sort((a, b) => a.time - b.time);
+                updateMazeBoardDOM(board);
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('mazeLeaderboard')) || [];
+            updateMazeBoardDOM(board);
+        }
+    }
+
+    function updateMazeBoardDOM(board) {
+        if(board.length > 0) {
+            mazeLeaderboardSection.style.display = "block";
+            mazeLeaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                mazeLeaderboardList.appendChild(li);
+            });
+        } else {
+            mazeLeaderboardSection.style.display = "none";
+            mazeLeaderboardList.innerHTML = "";
+        }
+    }
 
     
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.92</div>
+        <div class="app-version" id="app-version">v1.0.93</div>
     </div>
 
 </body>
