@@ -1844,8 +1844,9 @@
 <div id="side-menu-overlay" class="side-menu-overlay"></div>
 <div id="side-menu-drawer" class="side-menu-drawer">
 <div class="side-menu-header">
-        YOUR CAMP
+        YOUR <span id="hidden-idol-trigger" style="cursor: pointer;">CAMP</span>
     </div>
+
     
     <p style="text-align: center; font-weight: bold; font-size: 0.85rem; color: #aaa; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Daily Actions</p>
     
@@ -2314,7 +2315,8 @@
         <h3>*FINALE TIE BREAKER</h3>
         <p>If two or more players are tied for 1st place after the final Wordle, the Sole Wordler will be decided by a live, head-to-head <strong>Fire-Making Challenge</strong> using the app's built-in mini-game. The fastest time takes the crown!</p>
         <p style="text-align:center; margin-top: 20px;"><strong>Outwit, Outplay, Outwordle! Who will be the Sole Wordler?</strong></p>
-        <p>*<span id="hidden-idol-trigger" style="cursor: default;">Astrisk</span> on Rule header = newly added or clarified rule</p>
+               <p>*<span>Astrisk</span> on Rule header = newly added or clarified rule</p>
+
         <a href="sms:12676002525" class="text-btn">RULE QUESTION? TEXT JEFF PROBST</a>
     </div>
   </div>
@@ -2683,7 +2685,7 @@
 
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
-    let customTreeMail = "RUMOR HAS IT... AN ADVANTAGE IS HIDDEN SOMEWHERE AT CAMP. LEAVE NO STONE UNTURNED... OR PIXEL UN-TAPPED."; 
+        let customTreeMail = "THE SCOREBOARD IS BARE, THE NUMBERS ARE DEAD. SEEK THE CANVAS REFUGE WHERE THE FIRE IS FED. PULL FROM THE EAST TO THE ZENITH OF YOUR CLAIM, AND STRIKE THE FOUR LETTERS THAT SHELTER YOUR NAME."; 
     let allPlayersData = []; 
     let currentSortView = 'total'; 
 
@@ -5775,7 +5777,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.95</div>
+        <div class="app-version" id="app-version">v1.0.96</div>
     </div>
 
 </body>
