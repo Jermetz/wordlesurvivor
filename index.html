@@ -2795,12 +2795,14 @@
                 bannerContainer.classList.remove('visible');
             }
 
-            const treeMailText = headerRow[10] ? headerRow[10].trim() : '';
+                        let treeMailText = headerRow[10] ? headerRow[10].trim() : '';
+            treeMailText = treeMailText.replace(/^"|"$/g, '').trim();
             if (treeMailText) {
                 customTreeMail = treeMailText;
             } else {
                 customTreeMail = "RUMOR HAS IT... AN ADVANTAGE IS HIDDEN SOMEWHERE AT CAMP. LEAVE NO STONE UNTURNED... OR PIXEL UN-TAPPED.";
             }
+
             
             updateCountdown(); 
 
@@ -5777,7 +5779,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.96</div>
+        <div class="app-version" id="app-version">v1.0.97</div>
     </div>
 
 </body>
