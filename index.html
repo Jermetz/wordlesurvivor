@@ -2258,42 +2258,41 @@
         </div>
     </div>
 </div>
-<div id="dig-game-page" class="full-page">
+<div id="breath-game-page" class="full-page">
     <div class="full-page-content">
         <div class="full-page-header">
-            <span></span> <span>IDOL DIG</span>
-            <span class="close-btn-full" onclick="closeDigGamePage()">&times;</span>
+            <span></span> <span>BREATH HOLD</span>
+            <span class="close-btn-full" onclick="closeBreathGamePage()">&times;</span>
         </div>
         
         <div style="width: 100%;">
             <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
-                <strong>🗿 UNEARTH THE IDOLS 🗿</strong><br>Tap a sand mound 3 times to dig. Find all 3 hidden idols as fast as possible!
+                <strong>🌊 UNDERWATER SURVIVAL 🌊</strong><br>Press and hold the button below. The timer will disappear! Release your finger exactly at 10.00 seconds.
             </p>
-            <p id="dig-progress" style="font-size: 1.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000;">0 / 3 Idols Found</p>
 
-            <h2 id="dig-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+            <h2 id="breath-timer" style="color: #fff; font-size: 3.2rem; margin-top: 20px; font-family: monospace; text-shadow: 2px 2px 4px #000; transition: opacity 0.5s ease;">0.00s</h2>
 
-            <div id="dig-container" class="dig-container"></div>
+            <div id="breath-container" style="width: 200px; height: 200px; border-radius: 50%; background: var(--accent); margin: 40px auto; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: white; box-shadow: 0 0 20px rgba(0,0,0,0.5); user-select: none; touch-action: none; cursor: pointer; text-align: center; border: 4px solid var(--card-border);">
+                HOLD TO<br>SUBMERGE
+            </div>
             
-            <button id="start-dig-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">START DIGGING</button>
-            
-            <div id="dig-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
-                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🗿 IDOLS FOUND! 🗿</h3>
-                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="dig-final-time"></span>s</p>
+            <div id="breath-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🌊 OXYGEN RESTORED! 🌊</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Off by: <span id="breath-final-time"></span>s</p>
                 
-                <div id="dig-input-area" style="margin-top: 15px;">
-                    <input type="text" id="dig-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
-                    <button id="save-dig-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                <div id="breath-input-area" style="margin-top: 15px;">
+                    <input type="text" id="breath-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-breath-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
                 </div>
             </div>
 
-            <div id="dig-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
-                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🗿 FASTEST DIGGERS</h3>
-                <ol id="dig-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+            <div id="breath-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🌊 BEST LUNGS</h3>
+                <ol id="breath-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
                 </ol>
             </div>
 
-            <button id="dig-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+            <button id="breath-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
         </div>
     </div>
 </div>
@@ -3369,19 +3368,19 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
                     function loadPastWinners() {
-                        const challenges = [
-            { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
-            { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
-            { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
-            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' },
-            { ref: 'knotLeaderboard', id: 'winner-knot', title: 'Week 5: Untangle Knots' },
-            { ref: 'riceLeaderboard', id: 'winner-rice', title: 'Week 6: Rice Sorting' },
-            { ref: 'mazeLeaderboard', id: 'winner-maze', title: 'Week 7: Blindfold Maze' },
-            { ref: 'digLeaderboard', id: 'winner-dig', title: 'Week 8: Idol Dig' }
-        ];
+          const challenges = [
+            { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
+            { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
+            { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
+            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' },
+            { ref: 'knotLeaderboard', id: 'winner-knot', title: 'Week 5: Untangle Knots' },
+            { ref: 'riceLeaderboard', id: 'winner-rice', title: 'Week 6: Rice Sorting' },
+            { ref: 'mazeLeaderboard', id: 'winner-maze', title: 'Week 7: Blindfold Maze' },
+            { ref: 'digLeaderboard', id: 'winner-dig', title: 'Week 8: Idol Dig' },
+            { ref: 'breathLeaderboard', id: 'winner-breath', title: 'Week 9: Breath Hold' }
+        ];
 
-        const currentWeekIndex = 7;
-
+        const currentWeekIndex = 8;
         // Season 50 Start Date: Feb 25, 2026 at Midnight
         const seasonStart = new Date(2026, 1, 25, 0, 0, 0).getTime();
         const now = new Date().getTime();
@@ -4281,39 +4280,38 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
         window.scrollTo(0, 0);
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
-// MIDNIGHT SWITCH: Wednesday, April 15, 2026 12:01 AM EDT
-        const switchTime = new Date('2026-04-15T00:01:00-04:00').getTime();
-        const now = new Date().getTime();
+// MIDNIGHT SWITCH: Wednesday, April 22, 2026 12:01 AM EDT
+        const switchTime = new Date('2026-04-22T00:01:00-04:00').getTime();
+        const now = new Date().getTime();
 
-        if (now >= switchTime) {
-            // Launch New Dig Game
-            document.getElementById("dig-game-page").style.display = "flex";
-            resetDigGame();
-            renderDigLeaderboard();
-        } else {
-            // Launch Maze Game
-            document.getElementById("maze-game-page").style.display = "flex";
-            resetMazeGame();
-            renderMazeLeaderboard();
-        }
-    };
+        if (now >= switchTime) {
+            // Launch New Breath Hold Game
+            document.getElementById("breath-game-page").style.display = "flex";
+            resetBreathGame();
+            renderBreathLeaderboard();
+        } else {
+            // Launch Dig Game
+            document.getElementById("dig-game-page").style.display = "flex";
+            resetDigGame();
+            renderDigLeaderboard();
+        }
 
     // Admin Modal Integration
     const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
         let isMazePracticeMode = false; // kept for legacy reference flag
     if (adminPracticeNewBtn) {
-        adminPracticeNewBtn.onclick = function() {
-            closeModal('adminModal');
-            isMazePracticeMode = true; // Use this to toggle practice states on all recent games
-            document.getElementById("main-dashboard").style.display = "none";
-            document.getElementById("floating-menu-btn").style.display = "none";
-            window.scrollTo(0, 0);
-            document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-            document.getElementById("dig-game-page").style.display = "flex";
-            resetDigGame();
-            document.getElementById("dig-leaderboard-section").style.display = "none"; 
-        };
-    }
+        adminPracticeNewBtn.onclick = function() {
+            closeModal('adminModal');
+            isMazePracticeMode = true; // Use this to toggle practice states on all recent games
+            document.getElementById("main-dashboard").style.display = "none";
+            document.getElementById("floating-menu-btn").style.display = "none";
+            window.scrollTo(0, 0);
+            document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+            document.getElementById("breath-game-page").style.display = "flex";
+            resetBreathGame();
+            document.getElementById("breath-leaderboard-section").style.display = "none"; 
+        };
+    }
 
 
 
@@ -5840,210 +5838,177 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
             mazeLeaderboardList.innerHTML = "";
         }
     }
-/* --- IDOL DIG GAME LOGIC --- */
-    const digGamePage = document.getElementById("dig-game-page");
-    const digContainer = document.getElementById("dig-container");
-    const digTimerDisplay = document.getElementById("dig-timer");
-    const startDigBtn = document.getElementById("start-dig-btn");
-    const digProgressDisplay = document.getElementById("dig-progress");
-    const digSaveSection = document.getElementById("dig-save-section");
-    const digFinalTime = document.getElementById("dig-final-time");
-    const digInputArea = document.getElementById("dig-input-area");
-    const digInitials = document.getElementById("dig-initials");
-    const saveDigBtn = document.getElementById("save-dig-btn");
-    const digLeaderboardSection = document.getElementById("dig-leaderboard-section");
-    const digLeaderboardList = document.getElementById("dig-leaderboard-list");
-    const digPlayAgainBtn = document.getElementById("dig-play-again-btn");
+/* --- BREATH HOLD GAME LOGIC --- */
+    const breathGamePage = document.getElementById("breath-game-page");
+    const breathContainer = document.getElementById("breath-container");
+    const breathTimerDisplay = document.getElementById("breath-timer");
+    const breathSaveSection = document.getElementById("breath-save-section");
+    const breathFinalTime = document.getElementById("breath-final-time");
+    const breathInputArea = document.getElementById("breath-input-area");
+    const breathInitials = document.getElementById("breath-initials");
+    const saveBreathBtn = document.getElementById("save-breath-btn");
+    const breathLeaderboardSection = document.getElementById("breath-leaderboard-section");
+    const breathLeaderboardList = document.getElementById("breath-leaderboard-list");
+    const breathPlayAgainBtn = document.getElementById("breath-play-again-btn");
 
-    let digTimer, digStartTime;
-    let digActive = false;
-    let idolsFound = 0;
-    const TOTAL_IDOLS = 3;
-    let currentDigRef = null;
-    
-    let digTiles = [];
-    let tileContents = [];
-    let tapCounts = [];
+    let breathTimer, breathStartTime;
+    let breathActive = false;
+    let hasSubmerged = false;
+    let currentBreathRef = null;
 
-    window.closeDigGamePage = function() {
-        isMazePracticeMode = false; // reuse flag variable context
-        digGamePage.style.display = "none";
+    window.closeBreathGamePage = function() {
+        isMazePracticeMode = false;
+        breathGamePage.style.display = "none";
         document.getElementById("main-dashboard").style.display = "";
         document.getElementById("floating-menu-btn").style.display = "flex";
         document.body.removeEventListener('touchstart', preventDoubleTapZoom);
-        clearInterval(digTimer);
-        if (currentDigRef) currentDigRef.off();
+        clearInterval(breathTimer);
+        document.removeEventListener('pointerup', endBreathHold);
+        if (currentBreathRef) currentBreathRef.off();
     };
 
-    function initDigBoard() {
-        digContainer.innerHTML = "";
-        digTiles = [];
-        tapCounts = new Array(12).fill(3);
-        
-        // Setup 3 Idols and 9 Crabs (decoys)
-        tileContents = ['🗿','🗿','🗿','🦀','🦀','🦀','🦀','🦀','🦀','🦀','🦀','🦀'];
-        for (let i = tileContents.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [tileContents[i], tileContents[j]] = [tileContents[j], tileContents[i]];
-        }
-
-        for (let i = 0; i < 12; i++) {
-            let tile = document.createElement("div");
-            tile.className = "dig-tile";
-            tile.dataset.index = i;
-            
-            tile.addEventListener('pointerdown', (e) => {
-                if (e.cancelable) e.preventDefault();
-                handleDigClick(i, tile);
-            });
-            digContainer.appendChild(tile);
-            digTiles.push(tile);
-        }
+    function resetBreathGame() {
+        breathActive = false;
+        hasSubmerged = false;
+        clearInterval(breathTimer);
+        breathTimerDisplay.innerText = "0.00s";
+        breathTimerDisplay.style.color = "#fff";
+        breathTimerDisplay.style.opacity = "1";
+        breathContainer.style.background = "var(--accent)";
+        breathContainer.innerHTML = "HOLD TO<br>SUBMERGE";
+        breathSaveSection.style.display = "none";
+        breathInputArea.style.display = "block";
+        breathInitials.value = "";
+        breathPlayAgainBtn.style.display = "none";
+        document.addEventListener('pointerup', endBreathHold);
     }
 
-    function handleDigClick(index, tile) {
-        if (!digActive || tapCounts[index] <= 0) return;
+    function startBreathHold(e) {
+        if (e.cancelable) e.preventDefault();
+        if (breathActive || breathSaveSection.style.display === "block" || hasSubmerged) return;
         
-        tapCounts[index]--;
-        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+        breathActive = true;
+        hasSubmerged = true;
+        breathStartTime = Date.now();
+        breathContainer.style.background = "#0f5e9c";
+        breathContainer.innerHTML = "HOLDING...";
         
-        if (tapCounts[index] === 2) {
-            tile.classList.add("tap-1");
-        } else if (tapCounts[index] === 1) {
-            tile.classList.add("tap-2");
-        } else if (tapCounts[index] === 0) {
-            tile.classList.add("revealed");
-            tile.innerText = tileContents[index];
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(20);
+
+        breathTimer = setInterval(() => {
+            let elapsed = (Date.now() - breathStartTime) / 1000;
+            breathTimerDisplay.innerText = elapsed.toFixed(2) + "s";
             
-            if (tileContents[index] === '🗿') {
-                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([30, 50, 30]);
-                idolsFound++;
-                digProgressDisplay.innerText = `${idolsFound} / ${TOTAL_IDOLS} Idols Found`;
-                
-                if (idolsFound >= TOTAL_IDOLS) {
-                    endDigGame();
-                }
+            // Hide timer after 1.5 seconds
+            if (elapsed > 1.5) {
+                breathTimerDisplay.style.opacity = "0";
             }
-        }
-    }
-
-    function resetDigGame() {
-        digActive = false;
-        clearInterval(digTimer);
-        idolsFound = 0;
-        digTimerDisplay.innerText = "0.00s";
-        digTimerDisplay.style.color = "#fff";
-        digProgressDisplay.innerText = `0 / ${TOTAL_IDOLS} Idols Found`;
-        startDigBtn.style.display = "block";
-        digSaveSection.style.display = "none";
-        digInputArea.style.display = "block";
-        digInitials.value = "";
-        digPlayAgainBtn.style.display = "none";
-        initDigBoard();
-    }
-
-    startDigBtn.onclick = function() {
-        resetDigGame();
-        digActive = true;
-        startDigBtn.style.display = "none";
-        
-        digStartTime = Date.now();
-        digTimer = setInterval(() => {
-            let elapsed = (Date.now() - digStartTime) / 1000;
-            digTimerDisplay.innerText = elapsed.toFixed(2) + "s";
         }, 20);
-    };
+    }
 
-    function endDigGame() {
-        digActive = false;
-        clearInterval(digTimer);
-
-        let finalTime = parseFloat(digTimerDisplay.innerText).toFixed(2);
-        digTimerDisplay.style.color = "var(--leaf-green)";
-        digFinalTime.innerText = finalTime;
+    function endBreathHold(e) {
+        if (!breathActive) return;
+        if (e && e.cancelable) e.preventDefault();
         
-        if (typeof sfxWin !== 'undefined' && sfxWin) {
-            sfxWin.currentTime = 0;
-            sfxWin.play().catch(err => {});
+        breathActive = false;
+        clearInterval(breathTimer);
+        
+        let elapsed = (Date.now() - breathStartTime) / 1000;
+        let diff = Math.abs(elapsed - 10.00);
+        
+        breathTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+        breathTimerDisplay.style.opacity = "1";
+        breathContainer.style.background = "var(--accent)";
+        breathContainer.innerHTML = "RELEASED!";
+        
+        if (diff <= 0.5) {
+            breathTimerDisplay.style.color = "var(--leaf-green)";
+            if (typeof sfxWin !== 'undefined' && sfxWin) { sfxWin.currentTime = 0; sfxWin.play().catch(err=>{}); }
+        } else {
+            breathTimerDisplay.style.color = "var(--low-score)";
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]);
         }
-
+        
+        breathFinalTime.innerText = diff.toFixed(2);
+        
         setTimeout(() => {
-            digSaveSection.style.display = "block";
-            digPlayAgainBtn.style.display = "block";
+            breathSaveSection.style.display = "block";
+            breathPlayAgainBtn.style.display = "block";
 
             if (isMazePracticeMode) {
-                document.querySelector('#dig-save-section h3').innerText = "🗿 PRACTICE OVER 🗿";
-                digInputArea.style.display = "none";
+                document.querySelector('#breath-save-section h3').innerText = "🌊 PRACTICE OVER 🌊";
+                breathInputArea.style.display = "none";
             } else {
-                document.querySelector('#dig-save-section h3').innerText = "🗿 IDOLS FOUND! 🗿";
-                digInputArea.style.display = "block";
+                document.querySelector('#breath-save-section h3').innerText = "🌊 OXYGEN RESTORED! 🌊";
+                breathInputArea.style.display = "block";
             }
-        }, 300);
+        }, 500);
     }
 
-    digPlayAgainBtn.onclick = resetDigGame;
+    breathContainer.addEventListener('pointerdown', startBreathHold);
 
-    saveDigBtn.onclick = function() {
-        let initials = digInitials.value.trim().toUpperCase();
+    breathPlayAgainBtn.onclick = resetBreathGame;
+
+    saveBreathBtn.onclick = function() {
+        let initials = breathInitials.value.trim().toUpperCase();
         if(initials === "") initials = "???";
-        let timeTaken = parseFloat(digFinalTime.innerText);
+        let timeTaken = parseFloat(breathFinalTime.innerText); 
         
         if (usingGlobalLeaderboard) {
-            fireDb.ref('digLeaderboard').push({
+            fireDb.ref('breathLeaderboard').push({
                 name: initials,
                 time: timeTaken,
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
-            digInputArea.style.display = "none";
-            renderDigLeaderboard();
+            breathInputArea.style.display = "none";
+            renderBreathLeaderboard();
         } else {
-            let board = JSON.parse(localStorage.getItem('digLeaderboard')) || [];
+            let board = JSON.parse(localStorage.getItem('breathLeaderboard')) || [];
             board.push({ name: initials, time: timeTaken });
             board.sort((a, b) => a.time - b.time);
             board = board.slice(0, 10);
-            localStorage.setItem('digLeaderboard', JSON.stringify(board));
-            digInputArea.style.display = "none";
-            renderDigLeaderboard();
+            localStorage.setItem('breathLeaderboard', JSON.stringify(board));
+            breathInputArea.style.display = "none";
+            renderBreathLeaderboard();
         }
     };
 
-    function renderDigLeaderboard() {
+    function renderBreathLeaderboard() {
         if (usingGlobalLeaderboard) {
-            if (currentDigRef) currentDigRef.off();
-            currentDigRef = fireDb.ref('digLeaderboard').orderByChild('time').limitToFirst(10);
+            if (currentBreathRef) currentBreathRef.off();
+            currentBreathRef = fireDb.ref('breathLeaderboard').orderByChild('time').limitToFirst(10);
             
-            currentDigRef.on('value', (snapshot) => {
+            currentBreathRef.on('value', (snapshot) => {
                 let board = [];
                 snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
                 board.sort((a, b) => a.time - b.time);
-                updateDigBoardDOM(board);
+                updateBreathBoardDOM(board);
             });
         } else {
-            let board = JSON.parse(localStorage.getItem('digLeaderboard')) || [];
-            updateDigBoardDOM(board);
+            let board = JSON.parse(localStorage.getItem('breathLeaderboard')) || [];
+            updateBreathBoardDOM(board);
         }
     }
 
-    function updateDigBoardDOM(board) {
+    function updateBreathBoardDOM(board) {
         if(board.length > 0) {
-            digLeaderboardSection.style.display = "block";
-            digLeaderboardList.innerHTML = "";
+            breathLeaderboardSection.style.display = "block";
+            breathLeaderboardList.innerHTML = "";
             board.forEach(entry => {
                 let li = document.createElement('li');
                 li.style.marginBottom = "8px";
-                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
-                digLeaderboardList.appendChild(li);
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - off by ${entry.time.toFixed(2)}s`;
+                breathLeaderboardList.appendChild(li);
             });
         } else {
-            digLeaderboardSection.style.display = "none";
-            digLeaderboardList.innerHTML = "";
+            breathLeaderboardSection.style.display = "none";
+            breathLeaderboardList.innerHTML = "";
         }
     }
-    
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.0.99</div>
+        <div class="app-version" id="app-version">v1.1.0</div>
     </div>
 
 </body>
