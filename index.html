@@ -608,6 +608,19 @@
             letter-spacing: 0.5px;
             border: 1px solid #fff;
         }
+        .eighty-club-badge {
+            font-size: 0.7rem;
+            background: linear-gradient(135deg, #b026ff 0%, #4a00e0 100%); /* Glowing neon purple */
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            vertical-align: middle;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4), 0 0 8px rgba(176, 38, 255, 0.5); /* Adds a subtle glow */
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            border: 1px solid #fff;
+        }
 
         /* --- CONTROL PANEL ACTION GRID --- */
         .action-grid {
@@ -3038,7 +3051,7 @@
                     <div class="rank">${rankDisplay}</div>
                        <div class="name">
                         ${player.name}
-                        ${player.score >= 70 ? '<span class="seventy-club-badge">70 CLUB</span>' : (player.score >= 60 ? '<span class="sixty-club-badge">60 CLUB</span>' : '')}
+                                 ${player.score >= 80 ? '<span class="eighty-club-badge">80 CLUB</span>' : (player.score >= 70 ? '<span class="seventy-club-badge">70 CLUB</span>' : (player.score >= 60 ? '<span class="sixty-club-badge">60 CLUB</span>' : ''))}
                     </div>
 
                     ${changeHtml}
@@ -6010,7 +6023,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.1.1</div>
+        <div class="app-version" id="app-version">v1.2</div>
     </div>
 
 </body>
