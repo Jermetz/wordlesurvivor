@@ -747,7 +747,7 @@
             touch-action: manipulation;
         }
 
-        .immunity-tile {
+ .immunity-tile {
             aspect-ratio: 1 / 1;
             background-color: var(--card-bg);
             border: 3px solid var(--accent);
@@ -755,7 +755,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2rem;
+            font-size: 0px; /* TRULY hides the emoji on mobile devices */
             cursor: pointer;
             user-select: none;
             -webkit-user-select: none;
@@ -783,9 +783,10 @@
             background-repeat: repeat;
         }
 
-        .immunity-tile .back {
+    .immunity-tile .back {
             transform: rotateY(180deg);
             background-color: #fff;
+            font-size: 2.2rem; /* Reveals emoji when flipped */
         }
 
         .immunity-tile.flipped {
@@ -6372,7 +6373,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.3.0</div>
+        <div class="app-version" id="app-version">v1.3.1</div>
     </div>
 
 </body>
