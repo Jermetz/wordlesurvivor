@@ -1889,8 +1889,8 @@
 
 <div id="side-menu-overlay" class="side-menu-overlay"></div>
 <div id="side-menu-drawer" class="side-menu-drawer">
-<div class="side-menu-header">
-        YOUR <span id="hidden-idol-trigger" style="cursor: pointer;">CAMP</span>
+    <div class="side-menu-header">
+        YOUR CAMP
     </div>
 
     
@@ -2762,14 +2762,13 @@
                 li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
                 riceLeaderboardList.appendChild(li);
             });
-        } else {
+               } else {
             riceLeaderboardSection.style.display = "none";
             riceLeaderboardList.innerHTML = "";
         }
     }
-
-    }
 </script>
+
 
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
@@ -3488,9 +3487,11 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
 
 
 
-    hiddenIdolTrigger.onclick = function() {
+        hiddenIdolTrigger.addEventListener('pointerdown', function(e) {
+        e.stopPropagation(); // Stops the "miss" trap from firing!
         openModalWithNoTab(idolModal);
-    }
+    });
+
 
 
 
@@ -4349,21 +4350,27 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
         }
 
     // Admin Modal Integration
-    const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
-        let isMazePracticeMode = false; // kept for legacy reference flag
-    if (adminPracticeNewBtn) {
-        adminPracticeNewBtn.onclick = function() {
-            closeModal('adminModal');
-            isMazePracticeMode = true; // Use this to toggle practice states on all recent games
-            document.getElementById("main-dashboard").style.display = "none";
-            document.getElementById("floating-menu-btn").style.display = "none";
-            window.scrollTo(0, 0);
-            document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-            document.getElementById("breath-game-page").style.display = "flex";
-            resetBreathGame();
-            document.getElementById("breath-leaderboard-section").style.display = "none"; 
-        };
-    }
+            } // This securely closes the weeklyChallengeBtn.onclick function
+
+        // Global Declaration so other games don't throw errors
+        let isMazePracticeMode = false; 
+
+        // Admin Modal Integration (Moved out of the button click so it loads correctly)
+        const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
+        if (adminPracticeNewBtn) {
+            adminPracticeNewBtn.onclick = function() {
+                closeModal('adminModal');
+                isMazePracticeMode = true; 
+                document.getElementById("main-dashboard").style.display = "none";
+                document.getElementById("floating-menu-btn").style.display = "none";
+                window.scrollTo(0, 0);
+                document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+                document.getElementById("breath-game-page").style.display = "flex";
+                resetBreathGame();
+                document.getElementById("breath-leaderboard-section").style.display = "none"; 
+            };
+        }
+
 }
 
     window.closePuzzleGamePage = function() {
@@ -6058,7 +6065,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.2.8</div>
+        <div class="app-version" id="app-version">v1.2.9</div>
     </div>
 
 </body>
