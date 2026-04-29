@@ -1800,56 +1800,7 @@
         .dig-tile.tap-1 { background-color: #e3cca6; border-width: 2px; }
         .dig-tile.tap-2 { background-color: #f0dfc4; border-width: 1px; background-image: none; }
         .dig-tile.revealed { background-color: #222; border: 2px dashed #444; box-shadow: none; transform: none; cursor: default; background-image: none; }
-/* --- MEMORY MATCH GAME CSS --- */
-   .memory-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            width: 100%;
-            max-width: 380px;
-            margin: 15px auto;
-            touch-action: manipulation;
-        }
-.memory-tile {
-            aspect-ratio: 1 / 1;
-            background-color: #d4b886;
-            background-image: radial-gradient(#8b5a2b 1px, transparent 1px);
-            background-size: 8px 8px;
-            border: 3px solid #8b5a2b;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0px; /* TRULY hides the emoji on mobile devices */
-            cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
-            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3), 0 4px 6px rgba(0,0,0,0.4);
-            transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
-        }
-        .memory-tile:active { transform: scale(0.92); }
-        .memory-tile.flipped {
-            background-color: #f4e4bc;
-            background-image: none;
-            font-size: 2.1rem; /* Reveals emoji when flipped */
-            border-color: var(--accent);
-            transform: rotateY(180deg);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-        }
-        .memory-tile.matched {
-            background-color: #2e7d32; /* Leaf green */
-            background-image: none;
-            font-size: 2.1rem; /* Keeps emoji revealed when matched */
-            border-color: #1b5e20;
-            box-shadow: none;
-            cursor: default;
-            animation: match-pulse 0.4s ease;
-        }
-        @keyframes match-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
+
     </style>
 </head>
 <body>
@@ -1880,8 +1831,11 @@
 <div class="fire-glow"></div>
 
 <div class="dashboard-layout" id="main-dashboard">
-    <header>
-        <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image">
+       <header>
+        <div id="banner-wrapper" style="position: relative; width: 380px; max-width: 90%;">
+            <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image" style="width: 100%; max-width: 100%; margin: 0;">
+            <div id="hidden-idol-trigger" style="position: absolute; top: 40%; left: 62%; width: 12%; height: 25%; cursor: pointer; z-index: 10;"></div>
+        </div>
     </header>
 
     <div class="marquee-wrapper" id="marquee-wrapper">
@@ -2362,45 +2316,7 @@
         </div>
     </div>
 </div>
-    <div id="memory-game-page" class="full-page">
-    <div class="full-page-content">
-        <div class="full-page-header">
-            <span></span> <span>TRIBE MEMORY</span>
-            <span class="close-btn-full" onclick="closeMemoryGamePage()">&times;</span>
-        </div>
-        
-        <div style="width: 100%;">
-          <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
-                <strong>🧠 ANCIENT RECALL 🧠</strong><br>Find all 12 pairs! The timer starts on your first tap.
-            </p>
-            <p id="memory-progress" style="font-size: 1.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000;">0 / 12 Matches</p>
-
-            <h2 id="memory-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
-
-            <div id="memory-grid" class="memory-grid"></div>
-            
-            <button id="start-memory-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">PREPARE GRID</button>
-            
-            <div id="memory-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
-                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🧠 MEMORY MASTERED! 🧠</h3>
-                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="memory-final-time"></span>s</p>
-                
-                <div id="memory-input-area" style="margin-top: 15px;">
-                    <input type="text" id="memory-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
-                    <button id="save-memory-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
-                </div>
-            </div>
-
-            <div id="memory-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
-                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🧠 SHARPEST MINDS</h3>
-                <ol id="memory-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
-                </ol>
-            </div>
-
-            <button id="memory-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
-        </div>
-    </div>
-</div>
+    
 <div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow: hidden; display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: -webkit-fill-available; z-index: 4000;">
     
     <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
@@ -2857,7 +2773,8 @@
 
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
-        let customTreeMail = "THE SCOREBOARD IS BARE, THE NUMBERS ARE DEAD. SEEK THE CANVAS REFUGE WHERE THE FIRE IS FED. PULL FROM THE EAST TO THE ZENITH OF YOUR CLAIM, AND STRIKE THE FOUR LETTERS THAT SHELTER YOUR NAME."; 
+             let customTreeMail = "⛰️ ABOVE CAMP WHERE THE TITLE IS SHOWN, WE CELEBRATE 🖐️⭕, A MILESTONE GROWN. MULTIPLY BY 🔟 TO FORCE MY HAND, FIND THE 🏛️ NUMERAL BURIED IN THE SAND. BUT BEWARE THE FRANTIC 👆, DO NOT BLINDLY TAP THE GLASS, THREE ❌ STRIKES IN THE DARK AND THE IDOL WILL PASS 💨."; 
+
     let allPlayersData = []; 
     let currentSortView = 'total'; 
 
@@ -3472,18 +3389,18 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
                     function loadPastWinners() {
-      const challenges = [
-            { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
-            { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
-            { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
-            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' },
-            { ref: 'knotLeaderboard', id: 'winner-knot', title: 'Week 5: Untangle Knots' },
-            { ref: 'riceLeaderboard', id: 'winner-rice', title: 'Week 6: Rice Sorting' },
-            { ref: 'mazeLeaderboard', id: 'winner-maze', title: 'Week 7: Blindfold Maze' },
-            { ref: 'digLeaderboard', id: 'winner-dig', title: 'Week 8: Idol Dig' },
-            { ref: 'breathLeaderboard', id: 'winner-breath', title: 'Week 9: Breath Hold' },
-            { ref: 'memoryLeaderboard', id: 'winner-memory', title: 'Week 10: Tribe Memory' }
-        ];
+          const challenges = [
+            { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
+            { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
+            { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
+            { ref: 'fishingLeaderboard', id: 'winner-fishing', title: 'Week 4: Spear Fishing' },
+            { ref: 'knotLeaderboard', id: 'winner-knot', title: 'Week 5: Untangle Knots' },
+            { ref: 'riceLeaderboard', id: 'winner-rice', title: 'Week 6: Rice Sorting' },
+            { ref: 'mazeLeaderboard', id: 'winner-maze', title: 'Week 7: Blindfold Maze' },
+            { ref: 'digLeaderboard', id: 'winner-dig', title: 'Week 8: Idol Dig' },
+            { ref: 'breathLeaderboard', id: 'winner-breath', title: 'Week 9: Breath Hold' }
+        ];
+
         const currentWeekIndex = 8;
         // Season 50 Start Date: Feb 25, 2026 at Midnight
         const seasonStart = new Date(2026, 1, 25, 0, 0, 0).getTime();
@@ -3542,9 +3459,46 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
     }
 
 
+        let bannerMisses = 0;
+    const bannerWrapper = document.getElementById("banner-wrapper");
+    
+    if (bannerWrapper) {
+        bannerWrapper.addEventListener('pointerdown', function(e) {
+            if (e.target.id !== "hidden-idol-trigger") {
+                bannerMisses++;
+                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]); // Warning buzz
+                    let bannerMisses = 0;
+    let idolCooldown = false;
+    const bannerWrapper = document.getElementById("banner-wrapper");
+    
+    if (bannerWrapper) {
+        bannerWrapper.addEventListener('pointerdown', function(e) {
+            if (idolCooldown) return; // Prevent strikes from counting while in timeout
+
+            if (e.target.id !== "hidden-idol-trigger") {
+                bannerMisses++;
+                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]); // Warning buzz
+                
+                if (bannerMisses >= 3) {
+                    idolCooldown = true;
+                    hiddenIdolTrigger.style.display = "none"; // Poof! Idol is gone.
+                    
+                    // Reset after 15 seconds
+                    setTimeout(() => {
+                        bannerMisses = 0;
+                        idolCooldown = false;
+                        hiddenIdolTrigger.style.display = "block"; // Idol returns!
+                    }, 15000);
+                }
+            }
+        });
+    }
+
     hiddenIdolTrigger.onclick = function() {
         openModalWithNoTab(idolModal);
     }
+
+
 
     refreshBtn.onclick = function() { 
         document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
@@ -4383,39 +4337,40 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
         document.getElementById("floating-menu-btn").style.display = "none";
         window.scrollTo(0, 0);
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-    // MIDNIGHT SWITCH: Wednesday, April 29, 2026 12:01 AM EDT
-        const switchTime = new Date('2026-04-29T00:01:00-04:00').getTime();
+        
+// MIDNIGHT SWITCH: Wednesday, April 22, 2026 12:01 AM EDT
+        const switchTime = new Date('2026-04-22T00:01:00-04:00').getTime();
         const now = new Date().getTime();
 
         if (now >= switchTime) {
-            // Launch New Memory Game
-            document.getElementById("memory-game-page").style.display = "flex";
-            resetMemoryGame();
-            renderMemoryLeaderboard();
-        } else {
-            // Launch Breath Hold Game
+            // Launch New Breath Hold Game
             document.getElementById("breath-game-page").style.display = "flex";
             resetBreathGame();
             renderBreathLeaderboard();
+        } else {
+            // Launch Dig Game
+            document.getElementById("dig-game-page").style.display = "flex";
+            resetDigGame();
+            renderDigLeaderboard();
         }
 
-    // Admin Modal Integration
-    const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
-    let isMemoryPracticeMode = false; 
-    if (adminPracticeNewBtn) {
+    // Admin Modal Integration
+    const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
+        let isMazePracticeMode = false; // kept for legacy reference flag
+    if (adminPracticeNewBtn) {
         adminPracticeNewBtn.onclick = function() {
             closeModal('adminModal');
-            isMemoryPracticeMode = true; 
+            isMazePracticeMode = true; // Use this to toggle practice states on all recent games
             document.getElementById("main-dashboard").style.display = "none";
             document.getElementById("floating-menu-btn").style.display = "none";
             window.scrollTo(0, 0);
             document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-            document.getElementById("memory-game-page").style.display = "flex";
-            resetMemoryGame();
-            document.getElementById("memory-leaderboard-section").style.display = "none"; 
+            document.getElementById("breath-game-page").style.display = "flex";
+            resetBreathGame();
+            document.getElementById("breath-leaderboard-section").style.display = "none"; 
         };
     }
-}    
+}
 
     window.closePuzzleGamePage = function() {
         puzzleGamePage.style.display = "none";
@@ -6106,243 +6061,10 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
             breathLeaderboardList.innerHTML = "";
         }
     }
-    /* --- MEMORY MATCH GAME LOGIC --- */
-    const memoryGamePage = document.getElementById("memory-game-page");
-    const memoryGrid = document.getElementById("memory-grid");
-    const memoryTimerDisplay = document.getElementById("memory-timer");
-    const startMemoryBtn = document.getElementById("start-memory-btn");
-    const memoryProgressDisplay = document.getElementById("memory-progress");
-    const memorySaveSection = document.getElementById("memory-save-section");
-    const memoryFinalTime = document.getElementById("memory-final-time");
-    const memoryInputArea = document.getElementById("memory-input-area");
-    const memoryInitials = document.getElementById("memory-initials");
-    const saveMemoryBtn = document.getElementById("save-memory-btn");
-    const memoryLeaderboardSection = document.getElementById("memory-leaderboard-section");
-    const memoryLeaderboardList = document.getElementById("memory-leaderboard-list");
-    const memoryPlayAgainBtn = document.getElementById("memory-play-again-btn");
-
-    let memoryTimer, memoryStartTime;
-    let memoryActive = false;
-    let memoryHasStarted = false;
-    let matchedPairs = 0;
-    const TOTAL_PAIRS = 12;
-    let currentMemoryRef = null;
-    
-    let flippedTiles = [];
-    let isCheckingMatch = false;
-    
-    const baseEmojis = ['🗿', '🥥', '🗡️', '🍚', '🪵', '📜', '🔥', '🌴', '🐍', '🧩', '🦀', '⛺'];
-    let gridEmojis = [];
-
-    window.closeMemoryGamePage = function() {
-        isMemoryPracticeMode = false;
-        memoryGamePage.style.display = "none";
-        document.getElementById("main-dashboard").style.display = "";
-        document.getElementById("floating-menu-btn").style.display = "flex";
-        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
-        clearInterval(memoryTimer);
-        if (currentMemoryRef) currentMemoryRef.off();
-    };
-
-    function initMemoryBoard() {
-        memoryGrid.innerHTML = "";
-        gridEmojis = [...baseEmojis, ...baseEmojis]; // Duplicate to make pairs
-        
-        // Shuffle
-        for (let i = gridEmojis.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [gridEmojis[i], gridEmojis[j]] = [gridEmojis[j], gridEmojis[i]];
-        }
-
-        gridEmojis.forEach((emoji, index) => {
-            let tile = document.createElement("div");
-            tile.className = "memory-tile";
-            tile.dataset.index = index;
-            tile.dataset.val = emoji;
-            tile.innerText = emoji;
-            
-            tile.addEventListener('pointerdown', (e) => {
-                if (e.cancelable) e.preventDefault();
-                handleMemoryClick(tile);
-            });
-
-            memoryGrid.appendChild(tile);
-        });
-    }
-
-    function handleMemoryClick(tile) {
-        if (!memoryActive || isCheckingMatch) return;
-        if (tile.classList.contains("flipped") || tile.classList.contains("matched")) return;
-
-        // Start timer on first tap
-        if (!memoryHasStarted) {
-            memoryHasStarted = true;
-            memoryStartTime = Date.now();
-            memoryTimer = setInterval(() => {
-                let elapsed = (Date.now() - memoryStartTime) / 1000;
-                memoryTimerDisplay.innerText = elapsed.toFixed(2) + "s";
-            }, 20);
-        }
-
-        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
-        
-        tile.classList.add("flipped");
-        flippedTiles.push(tile);
-
-        if (flippedTiles.length === 2) {
-            isCheckingMatch = true;
-            checkForMatch();
-        }
-    }
-
-    function checkForMatch() {
-        let tile1 = flippedTiles[0];
-        let tile2 = flippedTiles[1];
-
-        if (tile1.dataset.val === tile2.dataset.val) {
-            // Match found!
-            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([15, 30, 15]);
-            setTimeout(() => {
-                tile1.classList.add("matched");
-                tile2.classList.add("matched");
-                matchedPairs++;
-                memoryProgressDisplay.innerText = `${matchedPairs} / ${TOTAL_PAIRS} Matches`;
-                
-                flippedTiles = [];
-                isCheckingMatch = false;
-
-                if (matchedPairs >= TOTAL_PAIRS) {
-                    endMemoryGame();
-                }
-            }, 200);
-        } else {
-            // No Match
-            setTimeout(() => {
-                tile1.classList.remove("flipped");
-                tile2.classList.remove("flipped");
-                flippedTiles = [];
-                isCheckingMatch = false;
-            }, 600); // 600ms to memorize before it flips back
-        }
-    }
-
-    function resetMemoryGame() {
-        memoryActive = false;
-        memoryHasStarted = false;
-        clearInterval(memoryTimer);
-        matchedPairs = 0;
-        flippedTiles = [];
-        isCheckingMatch = false;
-        
-        memoryTimerDisplay.innerText = "0.00s";
-        memoryTimerDisplay.style.color = "#fff";
-        memoryProgressDisplay.innerText = `0 / ${TOTAL_PAIRS} Matches`;
-        
-        startMemoryBtn.style.display = "block";
-        memorySaveSection.style.display = "none";
-        memoryInputArea.style.display = "block";
-        memoryInitials.value = "";
-        memoryPlayAgainBtn.style.display = "none";
-        
-        memoryGrid.innerHTML = ""; // Clear grid until start
-    }
-
-    startMemoryBtn.onclick = function() {
-        resetMemoryGame();
-        memoryActive = true;
-        startMemoryBtn.style.display = "none";
-        initMemoryBoard(); // Builds and shuffles the grid
-    };
-
-    function endMemoryGame() {
-        memoryActive = false;
-        clearInterval(memoryTimer);
-        
-        let finalTime = parseFloat(memoryTimerDisplay.innerText).toFixed(2);
-        memoryTimerDisplay.style.color = "var(--leaf-green)";
-        memoryFinalTime.innerText = finalTime;
-        
-        if (typeof sfxWin !== 'undefined' && sfxWin) {
-            sfxWin.currentTime = 0;
-            sfxWin.play().catch(err => {});
-        }
-
-        setTimeout(() => {
-            memorySaveSection.style.display = "block";
-            memoryPlayAgainBtn.style.display = "block";
-
-            if (isMemoryPracticeMode) {
-                document.querySelector('#memory-save-section h3').innerText = "🧠 PRACTICE OVER 🧠";
-                memoryInputArea.style.display = "none";
-            } else {
-                document.querySelector('#memory-save-section h3').innerText = "🧠 MEMORY MASTERED! 🧠";
-                memoryInputArea.style.display = "block";
-            }
-        }, 500);
-    }
-
-    memoryPlayAgainBtn.onclick = resetMemoryGame;
-
-    saveMemoryBtn.onclick = function() {
-        let initials = memoryInitials.value.trim().toUpperCase();
-        if(initials === "") initials = "???";
-        let timeTaken = parseFloat(memoryFinalTime.innerText); 
-        
-        if (usingGlobalLeaderboard) {
-            fireDb.ref('memoryLeaderboard').push({
-                name: initials,
-                time: timeTaken,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            memoryInputArea.style.display = "none";
-            renderMemoryLeaderboard();
-        } else {
-            let board = JSON.parse(localStorage.getItem('memoryLeaderboard')) || [];
-            board.push({ name: initials, time: timeTaken });
-            board.sort((a, b) => a.time - b.time);
-            board = board.slice(0, 10);
-            localStorage.setItem('memoryLeaderboard', JSON.stringify(board));
-            memoryInputArea.style.display = "none";
-            renderMemoryLeaderboard();
-        }
-    };
-
-    function renderMemoryLeaderboard() {
-        if (usingGlobalLeaderboard) {
-            if (currentMemoryRef) currentMemoryRef.off();
-            currentMemoryRef = fireDb.ref('memoryLeaderboard').orderByChild('time').limitToFirst(10);
-            
-            currentMemoryRef.on('value', (snapshot) => {
-                let board = [];
-                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
-                board.sort((a, b) => a.time - b.time);
-                updateMemoryBoardDOM(board);
-            });
-        } else {
-            let board = JSON.parse(localStorage.getItem('memoryLeaderboard')) || [];
-            updateMemoryBoardDOM(board);
-        }
-    }
-
-    function updateMemoryBoardDOM(board) {
-        if(board.length > 0) {
-            memoryLeaderboardSection.style.display = "block";
-            memoryLeaderboardList.innerHTML = "";
-            board.forEach(entry => {
-                let li = document.createElement('li');
-                li.style.marginBottom = "8px";
-                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
-                memoryLeaderboardList.appendChild(li);
-            });
-        } else {
-            memoryLeaderboardSection.style.display = "none";
-            memoryLeaderboardList.innerHTML = "";
-        }
-    }
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.2.2</div>
+        <div class="app-version" id="app-version">v1.2.6</div>
     </div>
 
 </body>
