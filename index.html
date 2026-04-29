@@ -2416,7 +2416,42 @@
         </div>
     </div>
 </div>
-    
+<div id="adv-match-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>ADVANCED MATCH</span>
+            <span class="close-btn-full" onclick="closeAdvMatchGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>🧠 MASTER MIND 🧠</strong><br>Tap to flip tiles and find all 12 matching pairs. Timer starts on your first tap!
+            </p>
+
+            <h2 id="adv-match-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+            <div id="adv-match-grid" class="immunity-grid"></div>
+            
+            <div id="adv-match-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🧠 MIND MASTER! 🧠</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="adv-match-final-time"></span>s</p>
+                
+                <div id="adv-match-input-area" style="margin-top: 15px;">
+                    <input type="text" id="adv-match-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-adv-match-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="adv-match-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🧠 SHARPEST MINDS</h3>
+                <ol id="adv-match-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="adv-match-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div>    
 <div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow: hidden; display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: -webkit-fill-available; z-index: 4000;">
     
     <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
@@ -3695,7 +3730,7 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
                     function loadPastWinners() {
-          const challenges = [
+const challenges = [
             { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
             { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
             { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
@@ -3704,10 +3739,11 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
             { ref: 'riceLeaderboard', id: 'winner-rice', title: 'Week 6: Rice Sorting' },
             { ref: 'mazeLeaderboard', id: 'winner-maze', title: 'Week 7: Blindfold Maze' },
             { ref: 'digLeaderboard', id: 'winner-dig', title: 'Week 8: Idol Dig' },
-            { ref: 'breathLeaderboard', id: 'winner-breath', title: 'Week 9: Breath Hold' }
+            { ref: 'breathLeaderboard', id: 'winner-breath', title: 'Week 9: Breath Hold' },
+            { ref: 'advMatchLeaderboard', id: 'winner-adv-match', title: 'Week 10: Advanced Match' }
         ];
 
-        const currentWeekIndex = 8;
+        const currentWeekIndex = 9;
         // Season 50 Start Date: Feb 25, 2026 at Midnight
         const seasonStart = new Date(2026, 1, 25, 0, 0, 0).getTime();
         const now = new Date().getTime();
@@ -4640,16 +4676,16 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
         window.scrollTo(0, 0);
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
-// MIDNIGHT SWITCH: Wednesday, April 22, 2026 12:01 AM EDT
-        const switchTime = new Date('2026-04-22T00:01:00-04:00').getTime();
+// MIDNIGHT SWITCH: Wednesday, April 29, 2026 12:01 AM EDT
+        const switchTime = new Date('2026-04-29T00:01:00-04:00').getTime();
         const now = new Date().getTime();
 
         if (now >= switchTime) {
-            // Launch New Breath Hold Game
-            document.getElementById("breath-game-page").style.display = "flex";
-            resetBreathGame();
-            renderBreathLeaderboard();
-} else {
+            // Launch Advanced Matching Game
+            document.getElementById("adv-match-game-page").style.display = "flex";
+            resetAdvMatchGame();
+            renderAdvMatchLeaderboard();
+        } else {
             // Launch Breath Hold Game
             document.getElementById("breath-game-page").style.display = "flex";
             resetBreathGame();
@@ -4664,23 +4700,22 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
     // Global Declaration so other games don't throw errors
     let isMazePracticeMode = false;
 
-        // Admin Modal Integration (Moved out of the button click so it loads correctly)
+       // Admin Modal Integration (Moved out of the button click so it loads correctly)
         const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
         if (adminPracticeNewBtn) {
             adminPracticeNewBtn.onclick = function() {
                 closeModal('adminModal');
+                // Reusing variable to disable saving scores in practice mode
                 isMazePracticeMode = true; 
                 document.getElementById("main-dashboard").style.display = "none";
                 document.getElementById("floating-menu-btn").style.display = "none";
                 window.scrollTo(0, 0);
                 document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-                document.getElementById("breath-game-page").style.display = "flex";
-                resetBreathGame();
-                document.getElementById("breath-leaderboard-section").style.display = "none"; 
+                document.getElementById("adv-match-game-page").style.display = "flex";
+                resetAdvMatchGame();
+                document.getElementById("adv-match-leaderboard-section").style.display = "none"; 
             };
         }
-
-
     window.closePuzzleGamePage = function() {
         puzzleGamePage.style.display = "none";
         document.getElementById("main-dashboard").style.display = "";
@@ -6368,6 +6403,213 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
         } else {
             breathLeaderboardSection.style.display = "none";
             breathLeaderboardList.innerHTML = "";
+        }
+    }
+    /* --- ADVANCED MATCH GAME LOGIC --- */
+    const advMatchGamePage = document.getElementById("adv-match-game-page");
+    const advMatchGrid = document.getElementById("adv-match-grid");
+    const advMatchTimerDisplay = document.getElementById("adv-match-timer");
+    const advMatchSaveSection = document.getElementById("adv-match-save-section");
+    const advMatchFinalTime = document.getElementById("adv-match-final-time");
+    const advMatchInputArea = document.getElementById("adv-match-input-area");
+    const advMatchInitials = document.getElementById("adv-match-initials");
+    const saveAdvMatchBtn = document.getElementById("save-adv-match-btn");
+    const advMatchLeaderboardSection = document.getElementById("adv-match-leaderboard-section");
+    const advMatchLeaderboardList = document.getElementById("adv-match-leaderboard-list");
+    const advMatchPlayAgainBtn = document.getElementById("adv-match-play-again-btn");
+
+    let advMatchTimer, advMatchStartTime;
+    let advMatchActive = false;
+    let advMatchFlipped = [];
+    let advMatchFound = 0;
+    let advMatchProcessing = false;
+    let currentAdvMatchRef = null;
+
+    // 12 icons (24 tiles total)
+    const advIcons = ['🔥', '🥥', '🌴', '🐍', '🧩', '📿', '🔪', '🛖', '🦀', '🦂', '🐠', '🕷️'];
+
+    window.closeAdvMatchGamePage = function() {
+        isMazePracticeMode = false;
+        advMatchGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(advMatchTimer);
+        if (currentAdvMatchRef) currentAdvMatchRef.off();
+    };
+
+    function initAdvMatchBoard() {
+        advMatchGrid.innerHTML = "";
+        let tileArray = [...advIcons, ...advIcons];
+        
+        for (let i = tileArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tileArray[i], tileArray[j]] = [tileArray[j], tileArray[i]];
+        }
+
+        tileArray.forEach((icon, index) => {
+            let tile = document.createElement("div");
+            tile.className = "immunity-tile";
+            tile.dataset.icon = icon;
+            tile.dataset.index = index;
+            tile.innerHTML = `<div class="front"></div><div class="back">${icon}</div>`;
+            
+            tile.addEventListener('pointerdown', (e) => {
+                if (e.cancelable) e.preventDefault();
+                handleAdvMatchClick(tile);
+            });
+            advMatchGrid.appendChild(tile);
+        });
+    }
+
+    function handleAdvMatchClick(tile) {
+        if (advMatchProcessing || tile.classList.contains('flipped') || tile.classList.contains('matched')) return;
+        
+        if (!advMatchActive) {
+            advMatchActive = true;
+            advMatchStartTime = Date.now();
+            advMatchTimer = setInterval(() => {
+                let elapsed = (Date.now() - advMatchStartTime) / 1000;
+                advMatchTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+            }, 20);
+        }
+
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+        
+        tile.classList.add('flipped');
+        advMatchFlipped.push(tile);
+
+        if (advMatchFlipped.length === 2) {
+            advMatchProcessing = true;
+            checkAdvMatch();
+        }
+    }
+
+    function checkAdvMatch() {
+        let tile1 = advMatchFlipped[0];
+        let tile2 = advMatchFlipped[1];
+
+        if (tile1.dataset.icon === tile2.dataset.icon) {
+            setTimeout(() => {
+                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(30);
+                tile1.classList.add('matched');
+                tile2.classList.add('matched');
+                advMatchFound++;
+                advMatchFlipped = [];
+                advMatchProcessing = false;
+
+                if (advMatchFound === advIcons.length) {
+                    endAdvMatchGame();
+                }
+            }, 300);
+        } else {
+            setTimeout(() => {
+                tile1.classList.remove('flipped');
+                tile2.classList.remove('flipped');
+                advMatchFlipped = [];
+                advMatchProcessing = false;
+            }, 800);
+        }
+    }
+
+    window.resetAdvMatchGame = function() {
+        advMatchActive = false;
+        clearInterval(advMatchTimer);
+        advMatchFound = 0;
+        advMatchFlipped = [];
+        advMatchProcessing = false;
+        advMatchTimerDisplay.innerText = "0.00s";
+        advMatchTimerDisplay.style.color = "#fff";
+        advMatchSaveSection.style.display = "none";
+        advMatchInputArea.style.display = "block";
+        advMatchInitials.value = "";
+        advMatchPlayAgainBtn.style.display = "none";
+        initAdvMatchBoard();
+    }
+
+    function endAdvMatchGame() {
+        advMatchActive = false;
+        clearInterval(advMatchTimer);
+        
+        let finalTime = parseFloat(advMatchTimerDisplay.innerText).toFixed(2);
+        advMatchTimerDisplay.style.color = "var(--leaf-green)";
+        advMatchFinalTime.innerText = finalTime;
+        
+        if (typeof sfxWin !== 'undefined' && sfxWin) {
+            sfxWin.currentTime = 0;
+            sfxWin.play().catch(err => {});
+        }
+
+        setTimeout(() => {
+            advMatchSaveSection.style.display = "block";
+            advMatchPlayAgainBtn.style.display = "block";
+            
+            if (isMazePracticeMode) {
+                document.querySelector('#adv-match-save-section h3').innerText = "🧠 PRACTICE OVER 🧠";
+                advMatchInputArea.style.display = "none";
+            } else {
+                document.querySelector('#adv-match-save-section h3').innerText = "🧠 MIND MASTER! 🧠";
+                advMatchInputArea.style.display = "block";
+            }
+        }, 500);
+    }
+
+    advMatchPlayAgainBtn.onclick = resetAdvMatchGame;
+
+    saveAdvMatchBtn.onclick = function() {
+        let initials = advMatchInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(advMatchFinalTime.innerText);
+        
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('advMatchLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            advMatchInputArea.style.display = "none";
+            renderAdvMatchLeaderboard();
+        } else {
+            let board = JSON.parse(localStorage.getItem('advMatchLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10);
+            localStorage.setItem('advMatchLeaderboard', JSON.stringify(board));
+            advMatchInputArea.style.display = "none";
+            renderAdvMatchLeaderboard();
+        }
+    };
+
+    window.renderAdvMatchLeaderboard = function() {
+        if (usingGlobalLeaderboard) {
+            if (currentAdvMatchRef) currentAdvMatchRef.off();
+            currentAdvMatchRef = fireDb.ref('advMatchLeaderboard').orderByChild('time').limitToFirst(10);
+            
+            currentAdvMatchRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                board.sort((a, b) => a.time - b.time);
+                updateAdvMatchBoardDOM(board);
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('advMatchLeaderboard')) || [];
+            updateAdvMatchBoardDOM(board);
+        }
+    }
+
+    function updateAdvMatchBoardDOM(board) {
+        if(board.length > 0) {
+            advMatchLeaderboardSection.style.display = "block";
+            advMatchLeaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                advMatchLeaderboardList.appendChild(li);
+            });
+        } else {
+            advMatchLeaderboardSection.style.display = "none";
+            advMatchLeaderboardList.innerHTML = "";
         }
     }
 </script>
