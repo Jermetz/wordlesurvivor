@@ -736,6 +736,69 @@
             transform: scale(0.98);
         }
 
+        /* --- MEMORY MATCHING GAME CSS --- */
+        .immunity-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 380px;
+            margin: 20px auto;
+            touch-action: manipulation;
+        }
+
+        .immunity-tile {
+            aspect-ratio: 1 / 1;
+            background-color: var(--card-bg);
+            border: 3px solid var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .immunity-tile .front, .immunity-tile .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+
+        .immunity-tile .front {
+            background-image: linear-gradient(135deg, var(--card-bg) 25%, transparent 25%), linear-gradient(225deg, var(--card-bg) 25%, transparent 25%), linear-gradient(45deg, var(--card-bg) 25%, transparent 25%), linear-gradient(315deg, var(--card-bg) 25%, var(--card-border) 25%);
+            background-position: 10px 0, 10px 0, 0 0, 0 0;
+            background-size: 20px 20px;
+            background-repeat: repeat;
+        }
+
+        .immunity-tile .back {
+            transform: rotateY(180deg);
+            background-color: #fff;
+        }
+
+        .immunity-tile.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .immunity-tile.matched {
+            transform: rotateY(180deg) scale(0.95);
+            opacity: 0.7;
+            box-shadow: inset 0 0 10px var(--leaf-green);
+            border-color: var(--leaf-green);
+        }
+
         /* --- FIRE MINI GAME CSS --- */
         
         /* Dedicated Full Page for Minigame */
@@ -1921,6 +1984,42 @@
         <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
     </button>
 </div>
+<div id="immunity-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>MEMORY MATCH</span>
+            <span class="close-btn-full" onclick="closeImmunityGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>🧠 OUTWIT YOUR MIND 🧠</strong><br>Tap to flip tiles and find all 8 matching pairs. Timer starts on your first tap!
+            </p>
+
+            <h2 id="immunity-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+            <div id="immunity-grid" class="immunity-grid"></div>
+            
+            <div id="immunity-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🧠 MIND MASTER! 🧠</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="immunity-final-time"></span>s</p>
+                
+                <div id="immunity-input-area" style="margin-top: 15px;">
+                    <input type="text" id="immunity-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-immunity-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="immunity-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🧠 SHARPEST MINDS</h3>
+                <ol id="immunity-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="immunity-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div>
 
 <div id="fire-game-page" class="full-page">
     <div class="full-page-content">
@@ -2551,6 +2650,213 @@
         firebase.initializeApp(firebaseConfig);
         fireDb = firebase.database();
         usingGlobalLeaderboard = true;
+          /* --- MEMORY MATCHING GAME LOGIC --- */
+    const immunityGamePage = document.getElementById("immunity-game-page");
+    const immunityGrid = document.getElementById("immunity-grid");
+    const immunityTimerDisplay = document.getElementById("immunity-timer");
+    const immunitySaveSection = document.getElementById("immunity-save-section");
+    const immunityFinalTime = document.getElementById("immunity-final-time");
+    const immunityInputArea = document.getElementById("immunity-input-area");
+    const immunityInitials = document.getElementById("immunity-initials");
+    const saveImmunityBtn = document.getElementById("save-immunity-btn");
+    const immunityLeaderboardSection = document.getElementById("immunity-leaderboard-section");
+    const immunityLeaderboardList = document.getElementById("immunity-leaderboard-list");
+    const immunityPlayAgainBtn = document.getElementById("immunity-play-again-btn");
+
+    let immunityTimer, immunityStartTime;
+    let immunityActive = false;
+    let flippedTiles = [];
+    let matchesFound = 0;
+    let isProcessingMatch = false;
+    let currentImmunityRef = null;
+
+    const gameIcons = ['🔥', '🥥', '🌴', '🐍', '🧩', '📿', '🔪', '🛖'];
+
+    window.closeImmunityGamePage = function() {
+        immunityGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(immunityTimer);
+        if (currentImmunityRef) currentImmunityRef.off();
+    };
+
+    function initImmunityBoard() {
+        immunityGrid.innerHTML = "";
+        let tileArray = [...gameIcons, ...gameIcons];
+        
+        // Shuffle
+        for (let i = tileArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tileArray[i], tileArray[j]] = [tileArray[j], tileArray[i]];
+        }
+
+        tileArray.forEach((icon, index) => {
+            let tile = document.createElement("div");
+            tile.className = "immunity-tile";
+            tile.dataset.icon = icon;
+            tile.dataset.index = index;
+            
+            tile.innerHTML = `
+                <div class="front"></div>
+                <div class="back">${icon}</div>
+            `;
+            
+            tile.addEventListener('pointerdown', (e) => {
+                if (e.cancelable) e.preventDefault();
+                handleImmunityClick(tile);
+            });
+
+            immunityGrid.appendChild(tile);
+        });
+    }
+
+    function handleImmunityClick(tile) {
+        if (isProcessingMatch || tile.classList.contains('flipped') || tile.classList.contains('matched')) return;
+        
+        // Start timer on first tap
+        if (!immunityActive) {
+            immunityActive = true;
+            immunityStartTime = Date.now();
+            immunityTimer = setInterval(() => {
+                let elapsed = (Date.now() - immunityStartTime) / 1000;
+                immunityTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+            }, 20);
+        }
+
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+        
+        tile.classList.add('flipped');
+        flippedTiles.push(tile);
+
+        if (flippedTiles.length === 2) {
+            isProcessingMatch = true;
+            checkImmunityMatch();
+        }
+    }
+
+    function checkImmunityMatch() {
+        let tile1 = flippedTiles[0];
+        let tile2 = flippedTiles[1];
+
+        if (tile1.dataset.icon === tile2.dataset.icon) {
+            // Match found!
+            setTimeout(() => {
+                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(30);
+                tile1.classList.add('matched');
+                tile2.classList.add('matched');
+                matchesFound++;
+                flippedTiles = [];
+                isProcessingMatch = false;
+
+                if (matchesFound === gameIcons.length) {
+                    endImmunityGame();
+                }
+            }, 300);
+        } else {
+            // No match
+            setTimeout(() => {
+                tile1.classList.remove('flipped');
+                tile2.classList.remove('flipped');
+                flippedTiles = [];
+                isProcessingMatch = false;
+            }, 800);
+        }
+    }
+
+    window.resetImmunityGame = function() {
+        immunityActive = false;
+        clearInterval(immunityTimer);
+        matchesFound = 0;
+        flippedTiles = [];
+        isProcessingMatch = false;
+        immunityTimerDisplay.innerText = "0.00s";
+        immunityTimerDisplay.style.color = "#fff";
+        immunitySaveSection.style.display = "none";
+        immunityInputArea.style.display = "block";
+        immunityInitials.value = "";
+        immunityPlayAgainBtn.style.display = "none";
+        initImmunityBoard();
+    }
+
+    function endImmunityGame() {
+        immunityActive = false;
+        clearInterval(immunityTimer);
+        
+        let finalTime = parseFloat(immunityTimerDisplay.innerText).toFixed(2);
+        immunityTimerDisplay.style.color = "var(--leaf-green)";
+        immunityFinalTime.innerText = finalTime;
+        
+        if (typeof sfxWin !== 'undefined' && sfxWin) {
+            sfxWin.currentTime = 0;
+            sfxWin.play().catch(err => {});
+        }
+
+        setTimeout(() => {
+            immunitySaveSection.style.display = "block";
+            immunityPlayAgainBtn.style.display = "block";
+        }, 500);
+    }
+
+    immunityPlayAgainBtn.onclick = resetImmunityGame;
+
+    saveImmunityBtn.onclick = function() {
+        let initials = immunityInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(immunityFinalTime.innerText);
+        
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('immunityLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            immunityInputArea.style.display = "none";
+            renderImmunityLeaderboard();
+        } else {
+            let board = JSON.parse(localStorage.getItem('immunityLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10);
+            localStorage.setItem('immunityLeaderboard', JSON.stringify(board));
+            immunityInputArea.style.display = "none";
+            renderImmunityLeaderboard();
+        }
+    };
+
+    window.renderImmunityLeaderboard = function() {
+        if (usingGlobalLeaderboard) {
+            if (currentImmunityRef) currentImmunityRef.off();
+            currentImmunityRef = fireDb.ref('immunityLeaderboard').orderByChild('time').limitToFirst(10);
+            
+            currentImmunityRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                board.sort((a, b) => a.time - b.time);
+                updateImmunityBoardDOM(board);
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('immunityLeaderboard')) || [];
+            updateImmunityBoardDOM(board);
+        }
+    }
+
+    function updateImmunityBoardDOM(board) {
+        if(board.length > 0) {
+            immunityLeaderboardSection.style.display = "block";
+            immunityLeaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                immunityLeaderboardList.appendChild(li);
+            });
+        } else {
+            immunityLeaderboardSection.style.display = "none";
+            immunityLeaderboardList.innerHTML = "";
+        }
+    }
+
           /* --- RICE SORTING GAME LOGIC --- */
     const riceGamePage = document.getElementById("rice-game-page");
     const riceContainer = document.getElementById("rice-container");
@@ -4343,11 +4649,12 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
             resetBreathGame();
             renderBreathLeaderboard();
         } else {
-            // Launch Dig Game
-            document.getElementById("dig-game-page").style.display = "flex";
-            resetDigGame();
-            renderDigLeaderboard();
+            // Launch Matching Game
+            document.getElementById("immunity-game-page").style.display = "flex";
+            resetImmunityGame();
+            renderImmunityLeaderboard();
         }
+
 
     // Admin Modal Integration
 
