@@ -3459,15 +3459,7 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
     }
 
 
-        let bannerMisses = 0;
-    const bannerWrapper = document.getElementById("banner-wrapper");
-    
-    if (bannerWrapper) {
-        bannerWrapper.addEventListener('pointerdown', function(e) {
-            if (e.target.id !== "hidden-idol-trigger") {
-                bannerMisses++;
-                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]); // Warning buzz
-                        let bannerMisses = 0;
+            let bannerMisses = 0;
     let idolCooldown = false;
     const bannerWrapper = document.getElementById("banner-wrapper");
     
@@ -3493,6 +3485,7 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
             }
         });
     }
+
 
 
     hiddenIdolTrigger.onclick = function() {
@@ -6065,7 +6058,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.2.7</div>
+        <div class="app-version" id="app-version">v1.2.8</div>
     </div>
 
 </body>
