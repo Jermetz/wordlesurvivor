@@ -4649,20 +4649,20 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
             document.getElementById("breath-game-page").style.display = "flex";
             resetBreathGame();
             renderBreathLeaderboard();
-        } else {
-            // Launch Matching Game
-            document.getElementById("immunity-game-page").style.display = "flex";
-            resetImmunityGame();
-            renderImmunityLeaderboard();
+} else {
+            // Launch Breath Hold Game
+            document.getElementById("breath-game-page").style.display = "flex";
+            resetBreathGame();
+            renderBreathLeaderboard();
         }
 
+    // Admin Modal Integration
 
-    // Admin Modal Integration
+    } // <--- THIS IS THE MISSING BRACKET!
+    // This securely closes the weeklyChallengeBtn.onclick function
 
-       // This securely closes the weeklyChallengeBtn.onclick function
-
-        // Global Declaration so other games don't throw errors
-        let isMazePracticeMode = false; 
+    // Global Declaration so other games don't throw errors
+    let isMazePracticeMode = false;
 
         // Admin Modal Integration (Moved out of the button click so it loads correctly)
         const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
