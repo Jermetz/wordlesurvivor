@@ -1810,7 +1810,7 @@
             margin: 15px auto;
             touch-action: manipulation;
         }
-        .memory-tile {
+.memory-tile {
             aspect-ratio: 1 / 1;
             background-color: #d4b886;
             background-image: radial-gradient(#8b5a2b 1px, transparent 1px);
@@ -1820,13 +1820,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.1rem;
-        
+            font-size: 0px; /* TRULY hides the emoji on mobile devices */
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3), 0 4px 6px rgba(0,0,0,0.4);
+            transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
         .memory-tile:active { transform: scale(0.92); }
         .memory-tile.flipped {
             background-color: #f4e4bc;
             background-image: none;
-            color: initial;
+            font-size: 2.1rem; /* Reveals emoji when flipped */
             border-color: var(--accent);
             transform: rotateY(180deg);
             box-shadow: 0 4px 6px rgba(0,0,0,0.4);
@@ -1834,7 +1839,7 @@
         .memory-tile.matched {
             background-color: #2e7d32; /* Leaf green */
             background-image: none;
-            color: initial;
+            font-size: 2.1rem; /* Keeps emoji revealed when matched */
             border-color: #1b5e20;
             box-shadow: none;
             cursor: default;
