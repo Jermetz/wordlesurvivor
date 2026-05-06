@@ -1864,7 +1864,19 @@
         .dig-tile.tap-1 { background-color: #e3cca6; border-width: 2px; }
         .dig-tile.tap-2 { background-color: #f0dfc4; border-width: 1px; background-image: none; }
         .dig-tile.revealed { background-color: #222; border: 2px dashed #444; box-shadow: none; transform: none; cursor: default; background-image: none; }
-
+/* --- BALANCE POLE GAME CSS --- */
+        .balance-container {
+            position: relative; width: 100%; max-width: 340px; height: 30px; margin: 30px auto;
+            background: linear-gradient(to right, rgba(235,64,52,0.8) 0%, rgba(235,64,52,0.8) 10%, rgba(46,125,50,0.5) 20%, rgba(46,125,50,0.5) 80%, rgba(235,64,52,0.8) 90%, rgba(235,64,52,0.8) 100%);
+            border: 3px solid var(--card-border); border-radius: 15px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .balance-indicator {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            font-size: 2.5rem; user-select: none; transition: transform 0.05s linear;
+        }
+        .balance-controls { display: flex; justify-content: space-between; gap: 15px; margin-top: 20px; display: none; }
+        .balance-btn { flex: 1; padding: 20px 10px; font-size: 1.2rem; background: var(--card-bg); border: 3px solid var(--accent); border-radius: 12px; font-weight: 900; color: var(--accent); touch-action: manipulation; -webkit-user-select: none; user-select: none; cursor: pointer; }
+        .balance-btn:active { transform: scale(0.95); background: var(--accent); color: #fff; }
     </style>
 </head>
 <body>
@@ -2451,7 +2463,54 @@
             <button id="adv-match-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
         </div>
     </div>
-</div>    
+</div> 
+   <div id="balance-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>ENDURANCE POLE</span>
+            <span class="close-btn-full" onclick="closeBalanceGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>⚖️ HOLD YOUR BALANCE ⚖️</strong><br>Tap LEFT and RIGHT to counter the wind and keep your castaway safe for 15 seconds! Falling off adds a +3s penalty.
+            </p>
+            <p id="balance-safe-time" style="font-size: 1.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000;">0.00 / 15.00s Safe</p>
+            <div id="balance-penalty-msg" class="fishing-penalty"></div>
+
+            <h2 id="balance-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+            <div class="balance-container">
+                <div id="balance-indicator" class="balance-indicator">🧍</div>
+            </div>
+
+            <button id="start-balance-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 30px;">JUMP ON POLE</button>
+
+            <div id="balance-controls" class="balance-controls">
+                <button id="balance-left-btn" class="balance-btn">⬅️ LEFT</button>
+                <button id="balance-right-btn" class="balance-btn">RIGHT ➡️</button>
+            </div>
+
+            <div id="balance-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">⚖️ IMMUNITY WON! ⚖️</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Total Time: <span id="balance-final-time"></span>s</p>
+                
+                <div id="balance-input-area" style="margin-top: 15px;">
+                    <input type="text" id="balance-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-balance-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="balance-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">⚖️ IRON LEGS</h3>
+                <ol id="balance-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="balance-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div> 
 <div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow: hidden; display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: -webkit-fill-available; z-index: 4000;">
     
     <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
@@ -3112,7 +3171,197 @@
 }
 </script>
 
+/* --- BALANCE POLE GAME LOGIC --- */
+    const balanceGamePage = document.getElementById("balance-game-page");
+    const balanceIndicator = document.getElementById("balance-indicator");
+    const balanceTimerDisplay = document.getElementById("balance-timer");
+    const balanceSafeDisplay = document.getElementById("balance-safe-time");
+    const startBalanceBtn = document.getElementById("start-balance-btn");
+    const balanceControls = document.getElementById("balance-controls");
+    const balanceLeftBtn = document.getElementById("balance-left-btn");
+    const balanceRightBtn = document.getElementById("balance-right-btn");
+    const balancePenaltyMsg = document.getElementById("balance-penalty-msg");
+    const balanceSaveSection = document.getElementById("balance-save-section");
+    const balanceFinalTime = document.getElementById("balance-final-time");
+    const balanceInputArea = document.getElementById("balance-input-area");
+    const balanceInitials = document.getElementById("balance-initials");
+    const saveBalanceBtn = document.getElementById("save-balance-btn");
+    const balanceLeaderboardSection = document.getElementById("balance-leaderboard-section");
+    const balanceLeaderboardList = document.getElementById("balance-leaderboard-list");
+    const balancePlayAgainBtn = document.getElementById("balance-play-again-btn");
 
+    let balanceTimer;
+    let balanceActive = false;
+    let balancePos = 50;
+    let balanceVel = 0;
+    let elapsedTime = 0;
+    let safeTime = 0;
+    let currentBalanceRef = null;
+
+    window.closeBalanceGamePage = function() {
+        isMazePracticeMode = false;
+        balanceGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(balanceTimer);
+        if (currentBalanceRef) currentBalanceRef.off();
+    };
+
+    function resetBalanceGame() {
+        balanceActive = false;
+        clearInterval(balanceTimer);
+        balancePos = 50;
+        balanceVel = 0;
+        elapsedTime = 0;
+        safeTime = 0;
+        balanceIndicator.style.left = "50%";
+        balanceTimerDisplay.innerText = "0.00s";
+        balanceTimerDisplay.style.color = "#fff";
+        balanceSafeDisplay.innerText = "0.00 / 15.00s Safe";
+        balancePenaltyMsg.innerText = "";
+        startBalanceBtn.style.display = "block";
+        balanceControls.style.display = "none";
+        balanceSaveSection.style.display = "none";
+        balanceInputArea.style.display = "block";
+        balanceInitials.value = "";
+        balancePlayAgainBtn.style.display = "none";
+    }
+
+    startBalanceBtn.onclick = function() {
+        resetBalanceGame();
+        balanceActive = true;
+        startBalanceBtn.style.display = "none";
+        balanceControls.style.display = "flex";
+
+        balanceTimer = setInterval(() => {
+            if (!balanceActive) return;
+
+            elapsedTime += 0.05;
+            safeTime += 0.05;
+
+            // Random wind drift mimicking changing conditions
+            balanceVel += (Math.random() - 0.5) * 1.5;
+            balancePos += balanceVel;
+
+            balanceIndicator.style.left = balancePos + "%";
+            balanceTimerDisplay.innerText = elapsedTime.toFixed(2) + "s";
+            balanceSafeDisplay.innerText = safeTime.toFixed(2) + " / 15.00s Safe";
+
+            // Collision check against the "red zones"
+            if (balancePos <= 10 || balancePos >= 90) {
+                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]);
+                balancePenaltyMsg.innerText = "FELL! +3s Penalty";
+                elapsedTime += 3.00;
+                balancePos = 50;
+                balanceVel = 0;
+                balanceIndicator.style.transform = 'translateX(-50%) scale(1.5)';
+                setTimeout(() => { balanceIndicator.style.transform = 'translateX(-50%) scale(1)'; balancePenaltyMsg.innerText = ""; }, 400);
+            }
+
+            if (safeTime >= 15.00) {
+                endBalanceGame();
+            }
+        }, 50);
+    };
+
+    balanceLeftBtn.addEventListener('pointerdown', (e) => {
+        if(e.cancelable) e.preventDefault();
+        if(balanceActive) balanceVel -= 3;
+    });
+    balanceRightBtn.addEventListener('pointerdown', (e) => {
+        if(e.cancelable) e.preventDefault();
+        if(balanceActive) balanceVel += 3;
+    });
+
+    function endBalanceGame() {
+        balanceActive = false;
+        clearInterval(balanceTimer);
+        balanceControls.style.display = "none";
+        balanceSafeDisplay.innerText = "15.00 / 15.00s Safe";
+
+        let finalTime = elapsedTime.toFixed(2);
+        balanceTimerDisplay.style.color = "var(--leaf-green)";
+        balanceTimerDisplay.innerText = finalTime + "s";
+        balanceFinalTime.innerText = finalTime;
+
+        if (typeof sfxWin !== 'undefined' && sfxWin) {
+            sfxWin.currentTime = 0;
+            sfxWin.play().catch(err => {});
+        }
+
+        setTimeout(() => {
+            balanceSaveSection.style.display = "block";
+            balancePlayAgainBtn.style.display = "block";
+
+            if (isMazePracticeMode) {
+                document.querySelector('#balance-save-section h3').innerText = "⚖️ PRACTICE OVER ⚖️";
+                balanceInputArea.style.display = "none";
+            } else {
+                document.querySelector('#balance-save-section h3').innerText = "⚖️ IMMUNITY WON! ⚖️";
+                balanceInputArea.style.display = "block";
+            }
+        }, 500);
+    }
+
+    balancePlayAgainBtn.onclick = resetBalanceGame;
+
+    saveBalanceBtn.onclick = function() {
+        let initials = balanceInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(balanceFinalTime.innerText);
+
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('balanceLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            balanceInputArea.style.display = "none";
+            renderBalanceLeaderboard();
+        } else {
+            let board = JSON.parse(localStorage.getItem('balanceLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10);
+            localStorage.setItem('balanceLeaderboard', JSON.stringify(board));
+            balanceInputArea.style.display = "none";
+            renderBalanceLeaderboard();
+        }
+    };
+
+    window.renderBalanceLeaderboard = function() {
+        if (usingGlobalLeaderboard) {
+            if (currentBalanceRef) currentBalanceRef.off();
+            currentBalanceRef = fireDb.ref('balanceLeaderboard').orderByChild('time').limitToFirst(10);
+
+            currentBalanceRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                board.sort((a, b) => a.time - b.time);
+                updateBalanceBoardDOM(board);
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('balanceLeaderboard')) || [];
+            updateBalanceBoardDOM(board);
+        }
+    }
+
+    function updateBalanceBoardDOM(board) {
+        if(board.length > 0) {
+            balanceLeaderboardSection.style.display = "block";
+            balanceLeaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                balanceLeaderboardList.appendChild(li);
+            });
+        } else {
+            balanceLeaderboardSection.style.display = "none";
+            balanceLeaderboardList.innerHTML = "";
+        }
+    }
 
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk5uES45q8369C8qUMoOQERVb5Wn2JTdcJl8Gu2LLnB5LCxn5bBhDUf1LdI73-Q3lAuvaX1LvU9adF/pub?output=csv';
@@ -3730,7 +3979,7 @@ const pastWinnersBtn = document.getElementById("past-winners-btn");
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
     function loadPastWinners() {
-        const challenges = [
+const challenges = [
             { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
             { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
             { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
@@ -3740,10 +3989,11 @@ const pastWinnersBtn = document.getElementById("past-winners-btn");
             { ref: 'mazeLeaderboard', id: 'winner-maze', title: 'Week 7: Blindfold Maze' },
             { ref: 'digLeaderboard', id: 'winner-dig', title: 'Week 8: Idol Dig' },
             { ref: 'breathLeaderboard', id: 'winner-breath', title: 'Week 9: Breath Hold' },
-            { ref: 'advMatchLeaderboard', id: 'winner-adv-match', title: 'Week 10: Advanced Match' }
+            { ref: 'advMatchLeaderboard', id: 'winner-adv-match', title: 'Week 10: Advanced Match' },
+            { ref: 'balanceLeaderboard', id: 'winner-balance', title: 'Week 11: Endurance Pole' }
         ];
 
-        const currentWeekIndex = 9;
+        const currentWeekIndex = 10;
 
         // Automagically flag the active week based on the date!
         challenges.forEach((c, index) => {
@@ -4676,46 +4926,43 @@ const pastWinnersBtn = document.getElementById("past-winners-btn");
         window.scrollTo(0, 0);
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
-// MIDNIGHT SWITCH: Wednesday, April 29, 2026 12:01 AM EDT
-        const switchTime = new Date('2026-04-29T00:01:00-04:00').getTime();
+// MIDNIGHT SWITCH: Wednesday, May 6, 2026 12:01 AM EDT
+        const switchTime = new Date('2026-05-06T00:01:00-04:00').getTime();
         const now = new Date().getTime();
 
         if (now >= switchTime) {
+            // Launch Endurance Pole Game
+            document.getElementById("balance-game-page").style.display = "flex";
+            resetBalanceGame();
+            renderBalanceLeaderboard();
+        } else {
             // Launch Advanced Matching Game
             document.getElementById("adv-match-game-page").style.display = "flex";
             resetAdvMatchGame();
             renderAdvMatchLeaderboard();
-        } else {
-            // Launch Breath Hold Game
-            document.getElementById("breath-game-page").style.display = "flex";
-            resetBreathGame();
-            renderBreathLeaderboard();
         }
 
-    // Admin Modal Integration
-
-    } // <--- THIS IS THE MISSING BRACKET!
-    // This securely closes the weeklyChallengeBtn.onclick function
+    } // <--- Secures the weeklyChallengeBtn.onclick function
 
     // Global Declaration so other games don't throw errors
     let isMazePracticeMode = false;
 
-       // Admin Modal Integration (Moved out of the button click so it loads correctly)
-        const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
-        if (adminPracticeNewBtn) {
-            adminPracticeNewBtn.onclick = function() {
-                closeModal('adminModal');
-                // Reusing variable to disable saving scores in practice mode
-                isMazePracticeMode = true; 
-                document.getElementById("main-dashboard").style.display = "none";
-                document.getElementById("floating-menu-btn").style.display = "none";
-                window.scrollTo(0, 0);
-                document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
-                document.getElementById("adv-match-game-page").style.display = "flex";
-                resetAdvMatchGame();
-                document.getElementById("adv-match-leaderboard-section").style.display = "none"; 
-            };
-        }
+    // Admin Modal Integration
+    const adminPracticeNewBtn = document.getElementById("admin-practice-new-challenge-btn");
+    if (adminPracticeNewBtn) {
+        adminPracticeNewBtn.onclick = function() {
+            closeModal('adminModal');
+            // Reusing variable to disable saving scores in practice mode
+            isMazePracticeMode = true; 
+            document.getElementById("main-dashboard").style.display = "none";
+            document.getElementById("floating-menu-btn").style.display = "none";
+            window.scrollTo(0, 0);
+            document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
+            document.getElementById("balance-game-page").style.display = "flex";
+            resetBalanceGame();
+            document.getElementById("balance-leaderboard-section").style.display = "none"; 
+        };
+    }
     window.closePuzzleGamePage = function() {
         puzzleGamePage.style.display = "none";
         document.getElementById("main-dashboard").style.display = "";
@@ -6615,7 +6862,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.3.6</div>
+        <div class="app-version" id="app-version">v1.3.7</div>
     </div>
 
 </body>
