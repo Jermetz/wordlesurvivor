@@ -1877,6 +1877,47 @@
         .balance-controls { display: flex; justify-content: space-between; gap: 15px; margin-top: 20px; display: none; }
         .balance-btn { flex: 1; padding: 20px 10px; font-size: 1.2rem; background: var(--card-bg); border: 3px solid var(--accent); border-radius: 12px; font-weight: 900; color: var(--accent); touch-action: manipulation; -webkit-user-select: none; user-select: none; cursor: pointer; }
         .balance-btn:active { transform: scale(0.95); background: var(--accent); color: #fff; }
+              /* --- TRIBAL SEQUENCE GAME CSS --- */
+             .seq-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 340px;
+            margin: 20px auto;
+            touch-action: manipulation;
+        }
+        .seq-btn {
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            border: 4px solid var(--card-border);
+            opacity: 0.5;
+            transition: transform 0.1s ease, opacity 0.1s ease, box-shadow 0.1s ease;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.5);
+            cursor: pointer;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .seq-btn:active { transform: scale(0.95); }
+        .seq-btn.active {
+            opacity: 1;
+            transform: scale(1.05);
+            border-color: #fff;
+            box-shadow: 0 0 25px currentColor;
+        }
+        /* 9 Distinct Tribe Colors */
+        .seq-orange { background-color: #d95100; color: #d95100; }
+        .seq-green { background-color: #2e7d32; color: #2e7d32; }
+        .seq-blue { background-color: #1976d2; color: #1976d2; }
+        .seq-red { background-color: #d32f2f; color: #d32f2f; }
+        .seq-purple { background-color: #7b1fa2; color: #7b1fa2; }
+        .seq-yellow { background-color: #fbc02d; color: #fbc02d; }
+        .seq-teal { background-color: #00897b; color: #00897b; }
+        .seq-pink { background-color: #d81b60; color: #d81b60; }
+        .seq-brown { background-color: #6d4c41; color: #6d4c41; }
+
+
     </style>
 </head>
 <body>
@@ -2511,6 +2552,58 @@
         </div>
     </div>
 </div> 
+<div id="sequence-game-page" class="full-page">
+    <div class="full-page-content">
+        <div class="full-page-header">
+            <span></span> <span>TRIBAL SEQUENCE</span>
+            <span class="close-btn-full" onclick="closeSequenceGamePage()">&times;</span>
+        </div>
+        
+        <div style="width: 100%;">
+            <p style="font-size: 1rem; margin-bottom: 5px; color: #fff; text-shadow: 1px 1px 2px #000;">
+                <strong>🧠 MEMORIZE THE BUFFS 🧠</strong><br>Watch the colors flash, then tap them in the exact order. Survive 5 rounds! A wrong tap adds +3s and resets the current round.
+            </p>
+            <p id="sequence-progress" style="font-size: 1.2rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; text-shadow: 1px 1px 2px #000;">Round 1 / 5</p>
+            <div id="sequence-penalty-msg" class="fishing-penalty"></div>
+
+            <h2 id="sequence-timer" style="color: #fff; font-size: 2.2rem; margin-top: 10px; font-family: monospace; text-shadow: 2px 2px 4px #000;">0.00s</h2>
+
+                      <div id="sequence-container" class="seq-grid">
+                <div class="seq-btn seq-orange" id="seq-btn-0" data-idx="0"></div>
+                <div class="seq-btn seq-green" id="seq-btn-1" data-idx="1"></div>
+                <div class="seq-btn seq-blue" id="seq-btn-2" data-idx="2"></div>
+                <div class="seq-btn seq-red" id="seq-btn-3" data-idx="3"></div>
+                <div class="seq-btn seq-purple" id="seq-btn-4" data-idx="4"></div>
+                <div class="seq-btn seq-yellow" id="seq-btn-5" data-idx="5"></div>
+                <div class="seq-btn seq-teal" id="seq-btn-6" data-idx="6"></div>
+                <div class="seq-btn seq-pink" id="seq-btn-7" data-idx="7"></div>
+                <div class="seq-btn seq-brown" id="seq-btn-8" data-idx="8"></div>
+            </div>
+
+            
+            <button id="start-sequence-btn" class="text-btn" style="background-color: var(--accent); color: white; margin-top: 20px;">START SEQUENCE</button>
+            
+            <div id="sequence-save-section" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 2px dashed var(--leaf-green);">
+                <h3 style="color: var(--leaf-green); margin-top: 0; font-size: 1.4rem; text-shadow: 1px 1px 2px #000;">🧠 MIND MASTER! 🧠</h3>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #fff;">Time: <span id="sequence-final-time"></span>s</p>
+                
+                <div id="sequence-input-area" style="margin-top: 15px;">
+                    <input type="text" id="sequence-initials" placeholder="Initials (e.g. JEF)" maxlength="3" style="padding: 10px; font-size: 1rem; width: 120px; text-align: center; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border: 2px solid var(--card-border); border-radius: 6px;">
+                    <button id="save-sequence-btn" class="action-btn" style="display: inline-block; padding: 10px 15px; margin-left: 10px; vertical-align: bottom;">SAVE</button>
+                </div>
+            </div>
+
+            <div id="sequence-leaderboard-section" style="margin-top: 25px; text-align: left; display: none; width: 100%; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; box-sizing: border-box;">
+                <h3 style="color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; text-align: center; font-size: 1.2rem; margin-top: 0;">🧠 SHARPEST MINDS</h3>
+                <ol id="sequence-leaderboard-list" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.05rem; color: #fff; font-weight: bold; padding-left: 20px; column-count: 2; column-gap: 15px; margin-bottom: 0;">
+                </ol>
+            </div>
+
+            <button id="sequence-play-again-btn" class="text-btn" style="display: none; margin-top: 15px; background-color: var(--card-bg); color: var(--accent);">PLAY AGAIN</button>
+        </div>
+    </div>
+</div>
+
 <div id="chat-page" class="full-page" style="background-color: #000; background-image: none; overflow: hidden; display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: -webkit-fill-available; z-index: 4000;">
     
     <div class="full-page-header" style="padding: max(20px, env(safe-area-inset-top)) 20px 10px 20px; margin-bottom: 0; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #333; z-index: 10; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
@@ -3785,7 +3878,7 @@ const pastWinnersBtn = document.getElementById("past-winners-btn");
     const pastWinnersModal = document.getElementById("pastWinnersModal");
 
     function loadPastWinners() {
-const challenges = [
+        const challenges = [
             { ref: 'immunityLeaderboard', id: 'winner-matching', title: 'Week 1: Matching Game' },
             { ref: 'puzzleLeaderboard', id: 'winner-puzzle', title: 'Week 2: Puzzle' },
             { ref: 'coconutLeaderboard', id: 'winner-coconut', title: 'Week 3: Coconut Chop' },
@@ -3796,10 +3889,12 @@ const challenges = [
             { ref: 'digLeaderboard', id: 'winner-dig', title: 'Week 8: Idol Dig' },
             { ref: 'breathLeaderboard', id: 'winner-breath', title: 'Week 9: Breath Hold' },
             { ref: 'advMatchLeaderboard', id: 'winner-adv-match', title: 'Week 10: Advanced Match' },
-            { ref: 'balanceLeaderboard', id: 'winner-balance', title: 'Week 11: Endurance Pole' }
+            { ref: 'balanceLeaderboard', id: 'winner-balance', title: 'Week 11: Endurance Pole' },
+            { ref: 'sequenceLeaderboard', id: 'winner-sequence', title: 'Week 12: Tribal Sequence' }
         ];
 
-        const currentWeekIndex = 10;
+        const currentWeekIndex = 11;
+
 
         // Automagically flag the active week based on the date!
         challenges.forEach((c, index) => {
@@ -4732,21 +4827,22 @@ const challenges = [
         window.scrollTo(0, 0);
         document.body.addEventListener('touchstart', preventDoubleTapZoom, { passive: false });
         
-// MIDNIGHT SWITCH: Wednesday, May 6, 2026 12:01 AM EDT
-        const switchTime = new Date('2026-05-06T00:01:00-04:00').getTime();
+        // MIDNIGHT SWITCH: Wednesday, May 13, 2026 12:00 AM EDT
+        const switchTime = new Date('2026-05-13T00:00:00-04:00').getTime();
         const now = new Date().getTime();
 
         if (now >= switchTime) {
+            // Launch Tribal Sequence Game
+            document.getElementById("sequence-game-page").style.display = "flex";
+            resetSequenceGame();
+            renderSequenceLeaderboard();
+        } else {
             // Launch Endurance Pole Game
             document.getElementById("balance-game-page").style.display = "flex";
             resetBalanceGame();
             renderBalanceLeaderboard();
-        } else {
-            // Launch Advanced Matching Game
-            document.getElementById("adv-match-game-page").style.display = "flex";
-            resetAdvMatchGame();
-            renderAdvMatchLeaderboard();
         }
+
 
     } // <--- Secures the weeklyChallengeBtn.onclick function
 
@@ -6856,10 +6952,244 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
             balanceLeaderboardList.innerHTML = "";
         }
     }
+       /* --- TRIBAL SEQUENCE GAME LOGIC --- */
+    const sequenceGamePage = document.getElementById("sequence-game-page");
+    const sequenceTimerDisplay = document.getElementById("sequence-timer");
+    const startSequenceBtn = document.getElementById("start-sequence-btn");
+    const sequenceProgressDisplay = document.getElementById("sequence-progress");
+    const sequencePenaltyMsg = document.getElementById("sequence-penalty-msg");
+    const sequenceSaveSection = document.getElementById("sequence-save-section");
+    const sequenceFinalTime = document.getElementById("sequence-final-time");
+    const sequenceInputArea = document.getElementById("sequence-input-area");
+    const sequenceInitials = document.getElementById("sequence-initials");
+    const saveSequenceBtn = document.getElementById("save-sequence-btn");
+    const sequenceLeaderboardSection = document.getElementById("sequence-leaderboard-section");
+    const sequenceLeaderboardList = document.getElementById("sequence-leaderboard-list");
+    const sequencePlayAgainBtn = document.getElementById("sequence-play-again-btn");
+
+    let sequenceTimer, sequenceStartTime;
+    let sequenceActive = false;
+    let isPlayerTurn = false;
+    let currentSequenceRef = null;
+
+    let simonSequence = [];
+    let playerStep = 0;
+    let currentRound = 1;
+    const TOTAL_ROUNDS = 5;
+    const STARTING_LENGTH = 3;
+
+    window.closeSequenceGamePage = function() {
+        isMazePracticeMode = false;
+        sequenceGamePage.style.display = "none";
+        document.getElementById("main-dashboard").style.display = "";
+        document.getElementById("floating-menu-btn").style.display = "flex";
+        document.body.removeEventListener('touchstart', preventDoubleTapZoom);
+        clearInterval(sequenceTimer);
+        if (currentSequenceRef) currentSequenceRef.off();
+    };
+
+    function resetSequenceGame() {
+        sequenceActive = false;
+        isPlayerTurn = false;
+        clearInterval(sequenceTimer);
+        simonSequence = [];
+        playerStep = 0;
+        currentRound = 1;
+        
+        sequenceTimerDisplay.innerText = "0.00s";
+        sequenceTimerDisplay.style.color = "#fff";
+        sequenceProgressDisplay.innerText = `Round 1 / ${TOTAL_ROUNDS}`;
+        sequencePenaltyMsg.innerText = "";
+        
+        startSequenceBtn.style.display = "block";
+        sequenceSaveSection.style.display = "none";
+        sequenceInputArea.style.display = "block";
+        sequenceInitials.value = "";
+        sequencePlayAgainBtn.style.display = "none";
+    }
+
+    startSequenceBtn.onclick = function() {
+        resetSequenceGame();
+        sequenceActive = true;
+        startSequenceBtn.style.display = "none";
+        
+        sequenceStartTime = Date.now();
+        sequenceTimer = setInterval(() => {
+            let elapsed = (Date.now() - sequenceStartTime) / 1000;
+            sequenceTimerDisplay.innerText = elapsed.toFixed(2) + "s";
+        }, 20);
+
+        // Generate initial sequence
+        for(let i=0; i<STARTING_LENGTH; i++) {
+            simonSequence.push(Math.floor(Math.random() * 9));
+        }
+        
+        setTimeout(playSimonSequence, 500);
+    };
+
+    function playSimonSequence() {
+        isPlayerTurn = false;
+        playerStep = 0;
+        let delay = 0;
+        
+        simonSequence.forEach((colorIdx) => {
+            setTimeout(() => {
+                flashSimonButton(colorIdx);
+            }, delay);
+            delay += 600; // 600ms between flashes
+        });
+
+        setTimeout(() => {
+            isPlayerTurn = true;
+        }, delay);
+    }
+
+    function flashSimonButton(idx) {
+        let btn = document.getElementById(`seq-btn-${idx}`);
+        if(btn) {
+            btn.classList.add('active');
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(15);
+            setTimeout(() => btn.classList.remove('active'), 300);
+        }
+    }
+
+    // Attach click listeners to the 9 buttons
+    for(let i=0; i<9; i++) {
+        let btn = document.getElementById(`seq-btn-${i}`);
+        if(btn) {
+            btn.addEventListener('pointerdown', (e) => {
+                if (e.cancelable) e.preventDefault();
+                handleSimonTap(i, btn);
+            });
+        }
+    }
+
+    function handleSimonTap(idx, btn) {
+        if (!sequenceActive || !isPlayerTurn) return;
+        
+        btn.classList.add('active');
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+        setTimeout(() => btn.classList.remove('active'), 150);
+
+        if (idx === simonSequence[playerStep]) {
+            // Correct tap
+            playerStep++;
+            sequencePenaltyMsg.innerText = "";
+            
+            if (playerStep === simonSequence.length) {
+                // Round complete!
+                isPlayerTurn = false;
+                if (currentRound >= TOTAL_ROUNDS) {
+                    endSequenceGame();
+                } else {
+                    currentRound++;
+                    sequenceProgressDisplay.innerText = `Round ${currentRound} / ${TOTAL_ROUNDS}`;
+                    simonSequence.push(Math.floor(Math.random() * 9)); // Add one more to the pattern
+                    setTimeout(playSimonSequence, 1000);
+                }
+            }
+        } else {
+            // Wrong tap!
+            isPlayerTurn = false;
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]);
+            sequencePenaltyMsg.innerText = "WRONG! +3s Penalty. Watch again.";
+            sequenceStartTime -= 3000; // Add 3s penalty
+            
+            // Replay the SAME sequence after a short delay
+            setTimeout(playSimonSequence, 1200);
+        }
+    }
+
+    function endSequenceGame() {
+        sequenceActive = false;
+        clearInterval(sequenceTimer);
+
+        let finalTime = parseFloat(sequenceTimerDisplay.innerText).toFixed(2);
+        sequenceTimerDisplay.style.color = "var(--leaf-green)";
+        sequenceFinalTime.innerText = finalTime;
+        
+        if (typeof sfxWin !== 'undefined' && sfxWin) {
+            sfxWin.currentTime = 0;
+            sfxWin.play().catch(err => {});
+        }
+
+        setTimeout(() => {
+            sequenceSaveSection.style.display = "block";
+            sequencePlayAgainBtn.style.display = "block";
+
+            if (isMazePracticeMode) {
+                document.querySelector('#sequence-save-section h3').innerText = "🧠 PRACTICE OVER 🧠";
+                sequenceInputArea.style.display = "none";
+            } else {
+                document.querySelector('#sequence-save-section h3').innerText = "🧠 MIND MASTER! 🧠";
+                sequenceInputArea.style.display = "block";
+            }
+        }, 500);
+    }
+
+    sequencePlayAgainBtn.onclick = resetSequenceGame;
+
+    saveSequenceBtn.onclick = function() {
+        let initials = sequenceInitials.value.trim().toUpperCase();
+        if(initials === "") initials = "???";
+        let timeTaken = parseFloat(sequenceFinalTime.innerText);
+        
+        if (usingGlobalLeaderboard) {
+            fireDb.ref('sequenceLeaderboard').push({
+                name: initials,
+                time: timeTaken,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            sequenceInputArea.style.display = "none";
+            renderSequenceLeaderboard();
+        } else {
+            let board = JSON.parse(localStorage.getItem('sequenceLeaderboard')) || [];
+            board.push({ name: initials, time: timeTaken });
+            board.sort((a, b) => a.time - b.time);
+            board = board.slice(0, 10);
+            localStorage.setItem('sequenceLeaderboard', JSON.stringify(board));
+            sequenceInputArea.style.display = "none";
+            renderSequenceLeaderboard();
+        }
+    };
+
+    window.renderSequenceLeaderboard = function() {
+        if (usingGlobalLeaderboard) {
+            if (currentSequenceRef) currentSequenceRef.off();
+            currentSequenceRef = fireDb.ref('sequenceLeaderboard').orderByChild('time').limitToFirst(10);
+            
+            currentSequenceRef.on('value', (snapshot) => {
+                let board = [];
+                snapshot.forEach((childSnapshot) => { board.push(childSnapshot.val()); });
+                board.sort((a, b) => a.time - b.time);
+                updateSequenceBoardDOM(board);
+            });
+        } else {
+            let board = JSON.parse(localStorage.getItem('sequenceLeaderboard')) || [];
+            updateSequenceBoardDOM(board);
+        }
+    }
+
+    function updateSequenceBoardDOM(board) {
+        if(board.length > 0) {
+            sequenceLeaderboardSection.style.display = "block";
+            sequenceLeaderboardList.innerHTML = "";
+            board.forEach(entry => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<span style="display:inline-block; width: 45px; color: var(--accent);">${entry.name}</span> - ${entry.time.toFixed(2)}s`;
+                sequenceLeaderboardList.appendChild(li);
+            });
+        } else {
+            sequenceLeaderboardSection.style.display = "none";
+            sequenceLeaderboardList.innerHTML = "";
+        }
+    }
+
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.3.9</div>
+        <div class="app-version" id="app-version">v1.4.0</div>
     </div>
 
 </body>
