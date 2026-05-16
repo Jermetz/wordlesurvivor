@@ -1917,7 +1917,17 @@
         .seq-pink { background-color: #d81b60; color: #d81b60; }
         .seq-brown { background-color: #6d4c41; color: #6d4c41; }
 
-
+/* --- BIG R IDOL SEQUENCE --- */
+        .idol-letter {
+            display: inline-block;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .idol-letter.active {
+            transform: scale(1.4);
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
     </style>
 </head>
 <body>
@@ -1951,7 +1961,7 @@
        <header>
         <div id="banner-wrapper" style="position: relative; width: 380px; max-width: 90%;">
             <img src="image_27.png" alt="Survivor Wordle Logo" class="banner-image" style="width: 100%; max-width: 100%; margin: 0;">
-                     <div id="hidden-idol-trigger" style="position: absolute; top: 26%; left: 51%; width: 14%; height: 22%; cursor: pointer; z-index: 10; background-color: rgba(0, 0, 0, 0.01);"></div>
+                
 
     </header>
 
@@ -2723,7 +2733,7 @@
 <div id="bigrModal" class="modal">
   <div class="modal-content">
     <div class="sticky-close-wrapper"><span class="close" onclick="closeModal('bigrModal')">&times;</span></div>
-    <div class="modal-header">BIG R</div>
+<div class="modal-header"><span id="idol-b" class="idol-letter">B</span><span id="idol-i" class="idol-letter">I</span><span id="idol-g" class="idol-letter">G</span> <span id="idol-r" class="idol-letter">R</span></div>
     <div class="modal-body" style="text-align: center; margin-top: 15px;">
         <img src="bigr.jpg?v=1" alt="Big R Ultimate Survivor" style="display: block; margin: 0 auto; max-width: 100%; height: auto; border-radius: 8px; border: 3px solid var(--text);">
     </div>
@@ -2772,8 +2782,8 @@
         <h3 style="font-size: 1.6rem; color: var(--text); margin-top: 0;">Hidden Immunity Idol</h3>
         <p style="font-size: 1.2rem; margin-top: 15px;">Congratulations. You scoured the camp and found the secret.</p>
         <p style="font-size: 1.2rem; margin-top: 15px; margin-bottom: 25px;">To officially claim this advantage, tap the button below to text Jeff the secret phrase:</p>
-        <div style="background: var(--text); color: var(--card-bg); padding: 15px; border-radius: 8px; font-size: 1.5rem; font-weight: 900; letter-spacing: 2px;">Survivor 50</div>
-        <a href="sms:12676002525?body=Survivor%2050" class="text-btn" style="margin-top: 25px;">TEXT JEFF TO CLAIM IDOL</a>
+        <div style="background: var(--text); color: var(--card-bg); padding: 15px; border-radius: 8px; font-size: 1.5rem; font-weight: 900; letter-spacing: 2px;">Survivor</div>
+   <a href="sms:12676002525?body=Survivor" class="text-btn" style="margin-top: 25px;">TEXT JEFF TO CLAIM IDOL</a>
     </div>
   </div>
 </div>
@@ -3787,7 +3797,6 @@ const bestWordleBanner = document.getElementById('best-wordle-banner');
           quoteBtn = document.getElementById("quote-btn"),
           tribeBtn = document.getElementById("tribe-btn"),
           groupChatBtn = document.getElementById("group-chat-btn"),
-          hiddenIdolTrigger = document.getElementById("hidden-idol-trigger"),
          floatingMenuBtn = document.getElementById("floating-menu-btn"),
          sideMenuOverlay = document.getElementById("side-menu-overlay"),
          sideMenuDrawer = document.getElementById("side-menu-drawer"),
@@ -3952,42 +3961,51 @@ const pastWinnersBtn = document.getElementById("past-winners-btn");
     }
 
 
-            let bannerMisses = 0;
-    let idolCooldown = false;
-    const bannerWrapper = document.getElementById("banner-wrapper");
-    
-    if (bannerWrapper) {
-        bannerWrapper.addEventListener('pointerdown', function(e) {
-            if (idolCooldown) return; // Prevent strikes from counting while in timeout
-
-            if (e.target.id !== "hidden-idol-trigger") {
-                bannerMisses++;
-                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([20, 50, 20]); // Warning buzz
-                
-                if (bannerMisses >= 3) {
-                    idolCooldown = true;
-                    hiddenIdolTrigger.style.display = "none"; // Poof! Idol is gone.
-                    
-                    // Reset after 15 seconds
-                    setTimeout(() => {
-                        bannerMisses = 0;
-                        idolCooldown = false;
-                        hiddenIdolTrigger.style.display = "block"; // Idol returns!
-                    }, 15000);
-                }
-            }
-        });
-    }
 
 
+let bigRSequence = 0;
+   const idolB = document.getElementById("idol-b");
+   const idolI = document.getElementById("idol-i");
+   const idolG = document.getElementById("idol-g");
+   const idolR = document.getElementById("idol-r");
 
-        hiddenIdolTrigger.addEventListener('pointerdown', function(e) {
-        e.stopPropagation(); // Stops the "miss" trap from firing!
-        openModalWithNoTab(idolModal);
-    });
+   function resetBigR() {
+       bigRSequence = 0;
+       if(idolB) idolB.classList.remove("active");
+       if(idolI) idolI.classList.remove("active");
+       if(idolG) idolG.classList.remove("active");
+       if(idolR) idolR.classList.remove("active");
+   }
 
-
-
+   if (idolB) idolB.onclick = function() { 
+       resetBigR(); // Start fresh if they tap B again
+       bigRSequence = 1; 
+       this.classList.add("active");
+   };
+   if (idolI) idolI.onclick = function() { 
+       if (bigRSequence === 1) {
+           bigRSequence = 2;
+           this.classList.add("active");
+       } else resetBigR();
+   };
+   if (idolG) idolG.onclick = function() { 
+       if (bigRSequence === 2) {
+           bigRSequence = 3;
+           this.classList.add("active");
+       } else resetBigR();
+   };
+   if (idolR) idolR.onclick = function() {
+       if (bigRSequence === 3) {
+           this.classList.add("active");
+           
+           // Slight delay so they see the final 'R' highlight before the modal opens
+           setTimeout(() => {
+               closeModal('bigrModal');
+               openModalWithNoTab(idolModal);
+               resetBigR();
+           }, 400); 
+       } else resetBigR();
+   };
 
     refreshBtn.onclick = function() { 
         document.getElementById('leaderboard').innerHTML = '<p style="text-align:center; color: white; font-size: 1.2rem;">Gathering the tribe...</p>';
@@ -7189,7 +7207,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.4.0</div>
+        <div class="app-version" id="app-version">v1.4.1</div>
     </div>
 
 </body>
