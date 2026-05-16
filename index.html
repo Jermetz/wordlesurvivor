@@ -3994,7 +3994,7 @@ let bigRSequence = 0;
            this.classList.add("active");
        } else resetBigR();
    };
-   if (idolR) idolR.onclick = function() {
+ if (idolR) idolR.onclick = function() {
        if (bigRSequence === 3) {
            this.classList.add("active");
            
@@ -4002,6 +4002,17 @@ let bigRSequence = 0;
            setTimeout(() => {
                closeModal('bigrModal');
                openModalWithNoTab(idolModal);
+               
+               // Fire the confetti!
+               confetti({
+                   particleCount: 100,
+                   spread: 80,
+                   origin: { y: 0.4 }, // Starts slightly higher up on the screen
+                   colors: ['#ffd700', '#ffffff', '#d4b886'], // Gold, White, and Sand colors
+                   zIndex: 3000, 
+                   disableForReducedMotion: true
+               });
+
                resetBigR();
            }, 400); 
        } else resetBigR();
@@ -7207,7 +7218,7 @@ const adminPracticeFishingBtn = document.getElementById("admin-practice-fishing-
 </script>
     <div class="app-footer">
         <div class="ripafin-logo">RIPAFIN</div>
-        <div class="app-version" id="app-version">v1.4.1</div>
+        <div class="app-version" id="app-version">v1.4.2</div>
     </div>
 
 </body>
